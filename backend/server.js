@@ -51,20 +51,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 // Security: Helmet headers (with customized CSP for Leaflet, Google Fonts, CDN assets)
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://unpkg.com"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://unpkg.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "blob:", "https:", "http:"],
-      connectSrc: ["'self'", "https:", "http:", "ws:", "wss:"],
-      objectSrc: ["'none'"]
-    }
-  },
-  crossOriginEmbedderPolicy: false
-}));
+app.use(helmet({ contentSecurityPolicy: false }));
 
 // Security: CORS configuration
 app.use(cors({
