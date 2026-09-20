@@ -1,0 +1,33 @@
+# Render.com deployment configuration
+# https://render.com/docs/render-yaml
+
+services:
+  - type: web
+    name: safar-app
+    env: node
+    region: frankfurt  # Closest to Uzbekistan
+    plan: free         # Free tier (change to 'starter' for always-on)
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /api/health
+
+    # Environment variables (set these in Render Dashboard)
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000  # Render assigns this automatically
+      - key: JWT_SECRET
+        generateValue: true  # Render auto-generates a secure random value
+      - key: ADMIN_EMAIL
+        value: abdulquddusxoshimov777@gmail.com
+
+    # Static files served from public/ folder
+    staticPublicPath: ../public
+
+    # Persistent disk for JSON data files (keeps data on redeploy)
+    disk:
+      name: safar-data
+      mountPath: /app/data
+      sizeGB: 1  # 1GB free on paid plan; use filesystem workaround on free tier

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="uz" data-lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xizmatlar va Mahsulotlar ? Safar</title>
+<meta name="description" content="Safar platformasining barcha sayyohlik xizmatlari va milliy mahsulotlari: turar joylar, tarixiy maskanlar, milliy taomlar va hunarmandchilik.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .services-hero {
+    padding: 70px 0 40px;
+    text-align: center;
+    background: radial-gradient(circle at 50% 30%, rgba(200, 93, 40, 0.08) 0%, transparent 70%);
+  }
+  .services-hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 5vw, 50px);
+    color: var(--indigo);
+    margin: 12px 0 16px;
+    letter-spacing: -0.02em;
+  }
+  .services-hero p {
+    font-size: 17.5px;
+    color: rgba(28, 26, 23, 0.78);
+    max-width: 720px;
+    margin: 0 auto;
+    line-height: 1.65;
+  }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin: 40px 0 70px;
+  }
+  @media (max-width: 950px) {
+    .services-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .services-grid { grid-template-columns: 1fr; }
+  }
+  .service-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-pop);
+  }
+  .service-img-wrap {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+  }
+  .service-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  .service-card:hover .service-img-wrap img {
+    transform: scale(1.06);
+  }
+  .service-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: rgba(20, 32, 56, 0.85);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .service-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .service-body h3 {
+    font-family: var(--font-display);
+    font-size: 21px;
+    color: var(--indigo);
+    margin-bottom: 10px;
+  }
+  .service-body p {
+    font-size: 14.5px;
+    color: rgba(28, 26, 23, 0.75);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    flex: 1;
+  }
+  .service-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--clay);
+    font-weight: 700;
+    font-size: 14.5px;
+    transition: gap 0.2s;
+  }
+  .service-link:hover {
+    gap: 12px;
+  }
+  .how-banner {
+    background: var(--sand-deep);
+    border: 1px solid var(--sand-dark);
+    border-radius: 24px;
+    padding: 48px 36px;
+    margin-bottom: 70px;
+  }
+  .how-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: 32px;
+  }
+  @media (max-width: 800px) {
+    .how-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .how-step {
+    background: var(--paper);
+    padding: 22px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    text-align: center;
+  }
+  .how-step-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--clay);
+    color: #fff;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+  }
+  .how-step h4 {
+    font-size: 16px;
+    color: var(--indigo);
+    margin-bottom: 6px;
+  }
+  .how-step p {
+    font-size: 13.5px;
+    color: rgba(28, 26, 23, 0.7);
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<main>
+  <section class="services-hero">
+    <div class="container">
+      <span class="eyebrow" data-i18n="services_eyebrow">Xizmatlar va Mahsulotlar</span>
+      <h1 data-i18n="services_title">Safar bilan O'zbekistonning barcha imkoniyatlari</h1>
+      <p data-i18n="services_subtitle">
+        Turar joylardan tortib milliy kulolchilik durdonalarigacha ? sayohatingizni unutilmas qiladigan barcha xizmatlar va mahsulotlar bir joyda.
+      </p>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="services-grid">
+      <!-- Service 1: Stays -->
+      <div class="service-card">
+        <div class="service-img-wrap">
+          <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80" alt="Turar joylar">
+          <span class="service-badge">Homes & Stays</span>
+        </div>
+        <div class="service-body">
+          <h3>Milliy Hovlilar va Mehmonxonalar</h3>
+          <p>
+            Buxoro va Xivadagi qadimiy naqshinkor milliy uylar, zamonaviy mehmonxonalar, Zomin tog' kottejlari hamda Qizilqum cho'lidagi o'tov (yurta) lagerlari.
+          </p>
+          <a href="stays.html" class="service-link">Joy tanlash va bron qilish ?</a>
+        </div>
+      </div>
+
+      <!-- Service 2: Places -->
+      <div class="service-card">
+        <div class="service-img-wrap">
+          <img src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&q=80" alt="Tarixiy maskanlar">
+          <span class="service-badge">Places & Culture</span>
+        </div>
+        <div class="service-body">
+          <h3>Diqqatga Sazovor Qadamjolar</h3>
+          <p>
+            Registon, Ichan Qal'a, Shohi Zinda, Ark qal'asi va O'zbekistonning 14 ta hududidagi afsonaviy tarixiy hamda tabiiy go'shalarining interaktiv xaritasi.
+          </p>
+          <a href="places.html" class="service-link">Maskanlarni xaritada ko'rish ?</a>
+        </div>
+      </div>
+
+      <!-- Service 3: Foods -->
+      <div class="service-card">
+        <div class="service-img-wrap">
+          <img src="https://images.unsplash.com/photo-1541832676-9b763b0239ab?w=600&q=80" alt="Milliy taomlar">
+          <span class="service-badge">Traditional Foods</span>
+        </div>
+        <div class="service-body">
+          <h3>O'zbek Milliy Oshxonasi</h3>
+          <p>
+            Samarqandcha ziq palov, Toshkent to'y oshi, Jizzax somsasi, G'ijduvon shashligi va Tandir go'sht tayyorlanadigan eng mashhur choyxonalar.
+          </p>
+          <a href="foods.html" class="service-link">Taomlar va oshpazlar katalogi ?</a>
+        </div>
+      </div>
+
+      <!-- Service 4: Crafts -->
+      <div class="service-card">
+        <div class="service-img-wrap">
+          <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=600&q=80" alt="Milliy hunarmandchilik">
+          <span class="service-badge">Artisan Crafts</span>
+        </div>
+        <div class="service-body">
+          <h3>Asl Hunarmandchilik Buyumlari</h3>
+          <p>
+            Rishton moviy kulolchiligi, Marg'ilon tabiiy shoyi va atlasi, Chust pichoqlari hamda qo'lda tikilgan milliy do'ppilar va esdalik sovg'alari.
+          </p>
+          <a href="crafts.html" class="service-link">Hunarmand buyumlarini tanlash ?</a>
+        </div>
+      </div>
+
+      <!-- Service 5: Saved & Favourites -->
+      <div class="service-card">
+        <div class="service-img-wrap">
+          <img src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80" alt="Shaxsiy reja">
+          <span class="service-badge">Smart Trip</span>
+        </div>
+        <div class="service-body">
+          <h3>Shaxsiy Sayohat Marshruti</h3>
+          <p>
+            O'zingizga yoqqan turar joylar, maskanlar va taomlarni saralab (Sevimlilar ro'yxati), bir tugma bilan individual marshrut tuzing.
+          </p>
+          <a href="saved.html" class="service-link">Sevimlilar ro'yxatiga o'tish ?</a>
+        </div>
+      </div>
+
+      <!-- Service 6: Hosting -->
+      <div class="service-card">
+        <div class="service-img-wrap">
+          <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=600&q=80" alt="Mezbonlik qilish">
+          <span class="service-badge">Host & Earn</span>
+        </div>
+        <div class="service-body">
+          <h3>Mezbonlik Qilish (Host Bo'lish)</h3>
+          <p>
+            O'z mehmon uyingiz, oshxonangiz yoki hunarmandchilik ustaxonangiz bormi? E'loningizni platformaga bepul qo'shing va butun dunyodan sayyohlarni kutib oling.
+          </p>
+          <a href="#" id="servicesOpenAddBtn" class="service-link">+ E'lon joylashtirish ?</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- How it Works -->
+    <section class="how-banner">
+      <div style="text-align:center;">
+        <span class="eyebrow">Qulaylik</span>
+        <h2 style="font-family:var(--font-display); font-size:28px; color:var(--indigo); margin-top:8px;">
+          Safar orqali sayohat qilish tartibi
+        </h2>
+      </div>
+
+      <div class="how-grid">
+        <div class="how-step">
+          <div class="how-step-num">1</div>
+          <h4>Joyni tanlang</h4>
+          <p>Viloyat, shahar va toifa bo'yicha saralang</p>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">2</div>
+          <h4>Batafsil tanishing</h4>
+          <p>Sharhlar, fotosuratlar va qulayliklarni ko'ring</p>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">3</div>
+          <h4>To'g'ridan-to'g'ri bog'laning</h4>
+          <p>Mezbon bilan vositachisiz aloqaga chiqing</p>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">4</div>
+          <h4>Sayohatdan zavqlaning</h4>
+          <p>Haqiqiy o'zbek mehmondo'stligini his eting</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/auth.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/partials.js"></script>
+<script>
+  document.getElementById("servicesOpenAddBtn").addEventListener("click", (e) => {
+    e.preventDefault();
+    const btn = document.getElementById("openAddListingBtn");
+    if (btn) btn.click();
+  });
+</script>
+</body>
+</html>
