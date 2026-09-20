@@ -686,8 +686,16 @@ if (searchSubmitBtn) {
 // Only show general reviews (no targetType) on home page preview row
 function buildReviewCard(r) {
   const session = window.SafarSession ? window.SafarSession.getSession() : null;
-  const isOwner = session && r.id && (r.userId === session.user.id || r.userEmail === session.user.email);
-  const deleteBtn = isOwner ? `<button type="button" class="btn-delete-review" onclick="deleteReview('${r.id}')" title="Sharhni o'chirish">🗑 Ochirish</button>` : '';
+  const isAdmin = session && (session.user.role === "admin" || (session.user.email || "").toLowerCase() === "abdulquddusxoshimov777@gmail.com");
+  const isOwner = session && r.id && (
+    isAdmin ||
+    (r.userId && String(r.userId) === String(session.user.id)) ||
+    (r.userEmail && r.userEmail.toLowerCase() === (session.user.email || "").toLowerCase())
+  );
+
+  const safeRevText = (r.text || "").replace(/\\/g, "\\\\").replace(/`/g, "\\`").replace(/\$/g, "\\$").replace(/"/g, "&quot;");
+  const editBtn = isOwner ? `<button type="button" class="btn-edit-review" onclick="editReviewItem('${r.id}', \`${safeRevText}\`, ${r.rating})" title="Sharhni tahrirlash" style="margin-left:6px; font-size:11px; background:rgba(20,32,56,0.08); color:var(--indigo); border:none; border-radius:6px; padding:2px 8px; cursor:pointer; font-weight:700;">✏️ Tahrirlash</button>` : '';
+  const deleteBtn = isOwner ? `<button type="button" class="btn-delete-review" onclick="deleteReview('${r.id}')" title="Sharhni o'chirish" style="margin-left:4px; font-size:11px; background:rgba(193,101,47,0.1); color:var(--clay); border:none; border-radius:6px; padding:2px 8px; cursor:pointer; font-weight:700;">🗑 O'chirish</button>` : '';
 
   const stars = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
   const date = new Date(r.createdAt).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
@@ -713,7 +721,7 @@ function buildReviewCard(r) {
       <div class="review-header">
         <div class="review-avatar" aria-hidden="true">${escapeHtml((r.userName||"?")[0].toUpperCase())}</div>
         <div class="review-meta">
-          <strong>${escapeHtml(r.userName)} ${deleteBtn}</strong>
+          <strong style="display:inline-flex; align-items:center; flex-wrap:wrap;">${escapeHtml(r.userName)} ${editBtn} ${deleteBtn}</strong>
           <span class="review-loc">${escapeHtml(r.location || r.stayTitle || "")}</span>
         </div>
         <div class="review-stars" aria-label="${r.rating} stars">${stars}</div>
@@ -724,10 +732,29 @@ function buildReviewCard(r) {
     </div>`;
 }
 
+window.editReviewItem = function(id, currentText, currentRating) {
+  if (window.openEditReviewModal) {
+    window.openEditReviewModal(id, currentText, currentRating, () => {
+      loadReviews();
+    });
+  }
+};
+
 window.deleteReview = async function(id) {
-  if (!confirm("Ushbu sharhni o'chirishni tasdiqlaysizmi?")) return;
   const sessionObj = window.SafarSession ? window.SafarSession.getSession() : null;
   if (!sessionObj) return alert("Avval tizimga kiring.");
+
+  const confirmed = window.safarConfirm ? await window.safarConfirm({
+    title: "Sharhni o'chirish",
+    message: "Ushbu sharhni o'chirishni tasdiqlaysizmi?",
+    icon: "🗑",
+    confirmText: "Ha, o'chirish",
+    cancelText: "Bekor qilish",
+    danger: true
+  }) : confirm("Ushbu sharhni o'chirishni tasdiqlaysizmi?");
+
+  if (!confirmed) return;
+
   try {
     const res = await fetch(`${API}/api/reviews/${id}`, {
       method: "DELETE",
@@ -735,7 +762,11 @@ window.deleteReview = async function(id) {
     });
     const dData = await res.json();
     if (dData.ok) {
-      alert("Sharh muvaffaqiyatli o'chirildi.");
+      if (window.safarAlert) {
+        await window.safarAlert({ title: "O'chirildi", message: "Sharh muvaffaqiyatli o'chirildi.", icon: "✅" });
+      } else {
+        alert("Sharh muvaffaqiyatli o'chirildi.");
+      }
       loadReviews();
     } else {
       alert(dData.message || "Sharhni o'chirishda xatolik.");

@@ -144,6 +144,47 @@ function writeUsers(users) {
   fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
 }
 
+// Automatically ensure default Admin user exists with correct password and role
+function ensureAdminUser() {
+  try {
+    const users = readUsers();
+    let admin = users.find(u => u.email && u.email.toLowerCase() === ADMIN_EMAIL);
+    let changed = false;
+
+    if (!admin) {
+      admin = {
+        id: "admin_" + Date.now().toString(36),
+        name: "Abdulquddus Xoshimov",
+        email: ADMIN_EMAIL,
+        role: "admin",
+        passwordHash: bcrypt.hashSync("Abdulquddus1", 10),
+        lastListingCreatedAt: null,
+        lastListingCreatedAtByCategory: {},
+        createdAt: new Date().toISOString()
+      };
+      users.unshift(admin);
+      changed = true;
+    } else {
+      if (admin.role !== "admin") {
+        admin.role = "admin";
+        changed = true;
+      }
+      const matches = bcrypt.compareSync("Abdulquddus1", admin.passwordHash || "");
+      if (!matches) {
+        admin.passwordHash = bcrypt.hashSync("Abdulquddus1", 10);
+        changed = true;
+      }
+    }
+    if (changed) {
+      writeUsers(users);
+      console.log("Admin account verified & updated: " + ADMIN_EMAIL);
+    }
+  } catch(e) {
+    console.error("Failed to ensure admin user:", e.message);
+  }
+}
+ensureAdminUser();
+
 function readReviews() {
   if (!fs.existsSync(REVIEWS_FILE)) return [];
   try { return JSON.parse(fs.readFileSync(REVIEWS_FILE, "utf-8")); }
@@ -326,7 +367,7 @@ app.post("/api/signup", signupLimiter, (req, res) => {
   writeUsers(users);
 
   const token = jwt.sign({ id: user.id, email: user.email, name: user.name, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
-  res.json({ ok: true, token, user: { id: user.id, name: user.name, email: user.email, role: user.role, avatarUrl: user.avatarUrl || null, lastListingCreatedAt: user.lastListingCreatedAt, createdAt: user.createdAt } });
+  res.json({ ok: true, token, user: { id: user.id, name: user.name, email: user.email, role: user.role, avatarUrl: user.avatarUrl || null, lastListingCreatedAt: user.lastListingCreatedAt, lastListingCreatedAtByCategory: user.lastListingCreatedAtByCategory || {}, createdAt: user.createdAt } });
 });
 
 // Sign in (Protected against brute-force attacks)
@@ -344,7 +385,7 @@ app.post("/api/login", authLimiter, (req, res) => {
   }
 
   const token = jwt.sign({ id: user.id, email: user.email, name: user.name, role: user.role || "tourist" }, JWT_SECRET, { expiresIn: "7d" });
-  res.json({ ok: true, token, user: { id: user.id, name: user.name, email: user.email, role: user.role || "tourist", avatarUrl: user.avatarUrl || null, lastListingCreatedAt: user.lastListingCreatedAt || null, createdAt: user.createdAt } });
+  res.json({ ok: true, token, user: { id: user.id, name: user.name, email: user.email, role: user.role || "tourist", avatarUrl: user.avatarUrl || null, lastListingCreatedAt: user.lastListingCreatedAt || null, lastListingCreatedAtByCategory: user.lastListingCreatedAtByCategory || {}, createdAt: user.createdAt } });
 });
 
 // Current signed-in user
@@ -353,7 +394,41 @@ app.get("/api/me", requireAuth, (req, res) => {
   const user = users.find((u) => u.id === req.user.id);
   if (!user) return res.status(404).json({ ok: false, message: "Account not found." });
   if (isUserAdmin(user)) user.role = "admin";
-  res.json({ ok: true, user: { id: user.id, name: user.name, email: user.email, role: user.role || "tourist", avatarUrl: user.avatarUrl || null, lastListingCreatedAt: user.lastListingCreatedAt || null, createdAt: user.createdAt } });
+  res.json({ ok: true, user: { id: user.id, name: user.name, email: user.email, role: user.role || "tourist", avatarUrl: user.avatarUrl || null, lastListingCreatedAt: user.lastListingCreatedAt || null, lastListingCreatedAtByCategory: user.lastListingCreatedAtByCategory || {}, createdAt: user.createdAt } });
+});
+
+// Category posting cooldowns checker for current user (15 days per category)
+app.get("/api/me/cooldowns", requireAuth, (req, res) => {
+  const users = readUsers();
+  const user = users.find(u => u.id === req.user.id);
+  if (!user) return res.status(404).json({ ok: false, message: "Foydalanuvchi topilmadi." });
+  
+  const isAdmin = isUserAdmin(user) || isUserAdmin(req.user);
+  const FIFTEEN_DAYS_MS = 15 * 24 * 60 * 60 * 1000;
+  const cats = ["homes", "places", "foods", "crafts"];
+  const cooldowns = {};
+
+  cats.forEach(cat => {
+    if (isAdmin) {
+      cooldowns[cat] = { canPost: true, remainingDays: 0, remainingMs: 0 };
+    } else {
+      const lastTimeIso = (user.lastListingCreatedAtByCategory || {})[cat];
+      if (!lastTimeIso) {
+        cooldowns[cat] = { canPost: true, remainingDays: 0, remainingMs: 0 };
+      } else {
+        const elapsed = Date.now() - new Date(lastTimeIso).getTime();
+        if (elapsed < FIFTEEN_DAYS_MS) {
+          const remainingMs = FIFTEEN_DAYS_MS - elapsed;
+          const remainingDays = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
+          cooldowns[cat] = { canPost: false, remainingDays, remainingMs, lastDate: lastTimeIso };
+        } else {
+          cooldowns[cat] = { canPost: true, remainingDays: 0, remainingMs: 0 };
+        }
+      }
+    }
+  });
+
+  res.json({ ok: true, isAdmin, cooldowns });
 });
 
 // Update user role (Host ↔ Tourist)
@@ -375,7 +450,7 @@ app.put("/api/me/role", requireAuth, (req, res) => {
   users[userIndex] = user;
   writeUsers(users);
 
-  res.json({ ok: true, message: `Akkaunt turi muvaffaqiyatli ${user.role === "host" ? "Mezbon (Host)" : "Sayohatchi (Tourist)"}ga o'zgartirildi!`, user: { id: user.id, name: user.name, email: user.email, role: user.role, avatarUrl: user.avatarUrl || null, lastListingCreatedAt: user.lastListingCreatedAt || null, createdAt: user.createdAt } });
+  res.json({ ok: true, message: `Akkaunt turi muvaffaqiyatli ${user.role === "host" ? "Mezbon (Host)" : "Sayohatchi (Tourist)"}ga o'zgartirildi!`, user: { id: user.id, name: user.name, email: user.email, role: user.role, avatarUrl: user.avatarUrl || null, lastListingCreatedAt: user.lastListingCreatedAt || null, lastListingCreatedAtByCategory: user.lastListingCreatedAtByCategory || {}, createdAt: user.createdAt } });
 });
 
 // Update user profile picture (avatar)
@@ -392,7 +467,7 @@ app.put("/api/me/avatar", requireAuth, (req, res) => {
   users[userIndex] = user;
   writeUsers(users);
 
-  res.json({ ok: true, message: "Profil rasmi muvaffaqiyatli yangilandi!", user: { id: user.id, name: user.name, email: user.email, role: user.role || "tourist", avatarUrl: user.avatarUrl, lastListingCreatedAt: user.lastListingCreatedAt || null, createdAt: user.createdAt } });
+  res.json({ ok: true, message: "Profil rasmi muvaffaqiyatli yangilandi!", user: { id: user.id, name: user.name, email: user.email, role: user.role || "tourist", avatarUrl: user.avatarUrl, lastListingCreatedAt: user.lastListingCreatedAt || null, lastListingCreatedAtByCategory: user.lastListingCreatedAtByCategory || {}, createdAt: user.createdAt } });
 });
 
 // DELETE ACCOUNT
@@ -496,6 +571,57 @@ app.post("/api/reviews", requireAuth, postActionLimiter, (req, res) => {
   res.json({ ok: true, review: newReview });
 });
 
+// EDIT REVIEW (Owner or Admin can edit review)
+app.put("/api/reviews/:id", requireAuth, (req, res) => {
+  const { id } = req.params;
+  let reviews = readReviews();
+  const index = reviews.findIndex(r => String(r.id) === String(id));
+  if (index === -1) return res.status(404).json({ ok: false, message: "Sharh topilmadi." });
+
+  const review = reviews[index];
+  const userEmail = (req.user.email || "").trim().toLowerCase();
+  const revEmail = (review.userEmail || "").trim().toLowerCase();
+  const isAdmin = isUserAdmin(req.user);
+  const isOwner = (review.userId && String(review.userId) === String(req.user.id)) || (revEmail && revEmail === userEmail);
+
+  if (!isAdmin && !isOwner) {
+    return res.status(403).json({ ok: false, message: "Faqat o'zingiz yozgan sharhni (yoki Admin) tahrirlay olasiz." });
+  }
+
+  const { text, rating } = req.body || {};
+  if (!text || !text.trim()) {
+    return badRequest(res, "Sharh matnini kiritishingiz shart.");
+  }
+
+  review.text = text.trim();
+  if (rating !== undefined && rating !== null) {
+    const numRating = Number(rating);
+    if (!isNaN(numRating) && numRating >= 1 && numRating <= 5) {
+      review.rating = numRating;
+    }
+  }
+  review.updatedAt = new Date().toISOString();
+  reviews[index] = review;
+  writeReviews(reviews);
+
+  // Recalculate item rating and reviews count if target item exists
+  const tType = review.targetType || (review.stayId ? "stay" : null);
+  const tId = review.targetId || review.stayId;
+  if (tType && tId) {
+    let dataset = STAYS_DATA;
+    if (tType === "place") dataset = PLACES_DATA;
+    else if (tType === "food") dataset = FOODS_DATA;
+    else if (tType === "craft") dataset = CRAFTS_DATA;
+    const targetItem = dataset.find(x => String(x.id) === String(tId));
+    if (targetItem) {
+      attachCalculatedRating(targetItem, tType);
+      saveAllListings();
+    }
+  }
+
+  res.json({ ok: true, message: "Sharh muvaffaqiyatli tahrirlandi!", review });
+});
+
 // DELETE REVIEW (Owner or Admin can delete any review)
 app.delete("/api/reviews/:id", requireAuth, (req, res) => {
   const { id } = req.params;
@@ -515,6 +641,22 @@ app.delete("/api/reviews/:id", requireAuth, (req, res) => {
 
   reviews.splice(index, 1);
   writeReviews(reviews);
+
+  // Recalculate item rating
+  const tType = review.targetType || (review.stayId ? "stay" : null);
+  const tId = review.targetId || review.stayId;
+  if (tType && tId) {
+    let dataset = STAYS_DATA;
+    if (tType === "place") dataset = PLACES_DATA;
+    else if (tType === "food") dataset = FOODS_DATA;
+    else if (tType === "craft") dataset = CRAFTS_DATA;
+    const targetItem = dataset.find(x => String(x.id) === String(tId));
+    if (targetItem) {
+      attachCalculatedRating(targetItem, tType);
+      saveAllListings();
+    }
+  }
+
   res.json({ ok: true, message: "Sharh muvaffaqiyatli o'chirildi." });
 });
 
@@ -548,9 +690,9 @@ app.post("/api/listings/add", requireAuth, postActionLimiter, (req, res) => {
   else if (targetCategory.includes("craft")) { normCat = "crafts"; catLabel = "Buyumlar va Hunarmandchilik (Crafts)"; }
   else { normCat = "homes"; catLabel = "Uylar (Homes)"; }
 
-  // 30 days limit check (Skip for admin if needed, or apply)
+  // 15 days limit check per category (Skip for admin)
   if (!isAdmin) {
-    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+    const FIFTEEN_DAYS_MS = 15 * 24 * 60 * 60 * 1000;
     user.lastListingCreatedAtByCategory = user.lastListingCreatedAtByCategory || {};
     const lastTimeIso = user.lastListingCreatedAtByCategory[normCat];
 
@@ -558,12 +700,12 @@ app.post("/api/listings/add", requireAuth, postActionLimiter, (req, res) => {
       const lastTime = new Date(lastTimeIso).getTime();
       const now = Date.now();
       const elapsed = now - lastTime;
-      if (elapsed < THIRTY_DAYS_MS) {
-        const remainingMs = THIRTY_DAYS_MS - elapsed;
+      if (elapsed < FIFTEEN_DAYS_MS) {
+        const remainingMs = FIFTEEN_DAYS_MS - elapsed;
         const remainingDays = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
         return res.status(400).json({
           ok: false,
-          message: `Siz ${catLabel} bo'limiga har 30 kunda faqat 1 ta yangi joy qo'shishingiz mumkin. Ushbu bo'limga navbatdagi e'lonni ${remainingDays} kundan keyin qo'shishingiz mumkin.`
+          message: `Siz ${catLabel} bo'limiga har 15 kunda faqat 1 ta yangi e'lon qo'shishingiz mumkin. Ushbu bo'limga navbatdagi e'lonni ${remainingDays} kundan keyin qo'shishingiz mumkin.`
         });
       }
     }

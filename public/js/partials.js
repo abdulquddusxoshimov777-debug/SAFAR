@@ -115,13 +115,19 @@
     mount.innerHTML = `
       <nav class="nav" aria-label="Main navigation">
         <div class="container nav-row">
-          <a href="index.html" class="brand" aria-label="Safar Home">
-            <span class="brand-mark" aria-hidden="true">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 20L9 8L13 15L16 10L21 20" stroke="#16233f" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></svg>
-            </span>
-            Safar
-          </a>
-          <ul class="nav-links">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <button type="button" class="mobile-menu-toggle" id="openMobileMenuBtn" aria-label="Mobil menyuni ochish">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+            </button>
+            <a href="index.html" class="brand" aria-label="Safar Home">
+              <span class="brand-mark" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 20L9 8L13 15L16 10L21 20" stroke="#16233f" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></svg>
+              </span>
+              Safar
+            </a>
+          </div>
+
+          <ul class="nav-links desktop-only-nav">
             ${navLink("index.html", "nav_home", "Home",
               `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3v-6h6v6h3a1 1 0 001-1V10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`
             )}
@@ -138,11 +144,12 @@
               `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`
             )}
           </ul>
+
           <div class="nav-actions">
             <a href="#" id="openAddListingBtn" class="add-nav-btn" title="Yangi joy qo'shish" aria-label="Add new listing">
               + Add
             </a>
-            <a href="saved.html" class="liked-nav-btn" title="Sevimlilar" aria-label="View saved items">
+            <a href="saved.html" class="liked-nav-btn desktop-only-actions" title="Sevimlilar" aria-label="View saved items">
               ❤️
             </a>
             <div class="lang-pill" id="siteLangPill" tabIndex="0" role="button" aria-label="Language selector">
@@ -157,7 +164,96 @@
             ${authControls}
           </div>
         </div>
-      </nav>`;
+      </nav>
+
+      <!-- Mobile Nav Drawer -->
+      <div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop"></div>
+      <aside class="mobile-nav-drawer" id="mobileNavDrawer" aria-label="Mobil navigatsiya paneli">
+        <div class="mobile-drawer-header">
+          <div class="brand" style="font-size:22px;">
+            <span class="brand-mark" style="width:30px; height:30px;" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 20L9 8L13 15L16 10L21 20" stroke="#16233f" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></svg>
+            </span>
+            Safar
+          </div>
+          <button type="button" class="mobile-drawer-close" id="closeMobileDrawerBtn" aria-label="Yopish">✕</button>
+        </div>
+        <div class="mobile-drawer-links">
+          <a href="index.html" class="${page === 'index.html' ? 'active' : ''}">🏠 Asosiy (Home)</a>
+          <a href="places.html" class="${page === 'places.html' ? 'active' : ''}">🏛 Diqqatga sazovor joylar (Places)</a>
+          <a href="stays.html" class="${page === 'stays.html' ? 'active' : ''}">🏨 Uylar va Mehmonxonalar (Homes)</a>
+          <a href="foods.html" class="${page === 'foods.html' ? 'active' : ''}">🍲 Milliy taomlar (Foods)</a>
+          <a href="crafts.html" class="${page === 'crafts.html' ? 'active' : ''}">🏺 Hunarmandchilik (Crafts)</a>
+          <a href="saved.html" class="${page === 'saved.html' ? 'active' : ''}">❤️ Sevimlilar ro'yxati (Saved)</a>
+          <a href="#" onclick="const b=document.getElementById('openAddListingBtn');if(b)b.click();closeMobileMenu();return false;" style="background:var(--turquoise-deep); color:#fff; font-weight:700;">➕ Yangi e'lon joylash</a>
+        </div>
+        <div class="mobile-drawer-footer">
+          ${session ? `
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+              ${session.user.avatarUrl ? `<img src="${session.user.avatarUrl}" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">` : `<div class="avatar-dot" style="width:36px; height:36px; font-size:14px;">${initials(session.user.name)}</div>`}
+              <div style="line-height:1.2;">
+                <div style="font-weight:700; font-size:14px; color:#fff;">${escapeHtml(session.user.name)}</div>
+                <div style="font-size:12px; opacity:0.7;">${escapeHtml(session.user.email)}</div>
+              </div>
+            </div>
+            <a href="account.html" class="btn btn-primary" style="text-align:center; padding:10px; font-size:14px; text-decoration:none;">👤 Profil kabineti</a>
+          ` : `
+            <a href="login.html" class="btn btn-primary" style="text-align:center; padding:10px; font-size:14px; text-decoration:none;">Kirish (Log in)</a>
+            <a href="signup.html" class="btn btn-ghost" style="text-align:center; padding:10px; font-size:14px; text-decoration:none; color:#fff; border-color:rgba(255,255,255,0.3);">Ro'yxatdan o'tish (Sign up)</a>
+          `}
+        </div>
+      </aside>
+
+      <!-- Smartfonlar uchun qulay Pastki Navigatsiya Paneli (Bottom Nav Bar - 9:16 formati) -->
+      <nav class="mobile-bottom-nav" aria-label="Pastki mobil navigatsiya">
+        <a href="index.html" class="bottom-nav-item ${page === 'index.html' ? 'active' : ''}">
+          <span class="b-icon">🏠</span>
+          <span class="b-label">Asosiy</span>
+        </a>
+        <a href="places.html" class="bottom-nav-item ${page === 'places.html' ? 'active' : ''}">
+          <span class="b-icon">🏛</span>
+          <span class="b-label">Joylar</span>
+        </a>
+        <a href="stays.html" class="bottom-nav-item ${page === 'stays.html' ? 'active' : ''}">
+          <span class="b-icon">🏨</span>
+          <span class="b-label">Uylar</span>
+        </a>
+        <a href="foods.html" class="bottom-nav-item ${page === 'foods.html' ? 'active' : ''}">
+          <span class="b-icon">🍲</span>
+          <span class="b-label">Taomlar</span>
+        </a>
+        <a href="crafts.html" class="bottom-nav-item ${page === 'crafts.html' ? 'active' : ''}">
+          <span class="b-icon">🏺</span>
+          <span class="b-label">Buyumlar</span>
+        </a>
+        <a href="${session ? 'account.html' : 'login.html'}" class="bottom-nav-item ${(page === 'account.html' || page === 'login.html') ? 'active' : ''}">
+          <span class="b-icon">${session ? '👤' : '🔑'}</span>
+          <span class="b-label">${session ? 'Kabinet' : 'Kirish'}</span>
+        </a>
+      </nav>
+    `;
+
+    // Mobile drawer event listeners
+    const openBtn = document.getElementById("openMobileMenuBtn");
+    const closeBtn = document.getElementById("closeMobileDrawerBtn");
+    const drawer = document.getElementById("mobileNavDrawer");
+    const backdrop = document.getElementById("mobileDrawerBackdrop");
+
+    function openMobileMenu() {
+      if (drawer) drawer.classList.add("open");
+      if (backdrop) backdrop.classList.add("open");
+      document.body.style.overflow = "hidden";
+    }
+    function closeMobileMenu() {
+      if (drawer) drawer.classList.remove("open");
+      if (backdrop) backdrop.classList.remove("open");
+      document.body.style.overflow = "";
+    }
+    window.closeMobileMenu = closeMobileMenu;
+
+    if (openBtn) openBtn.onclick = openMobileMenu;
+    if (closeBtn) closeBtn.onclick = closeMobileMenu;
+    if (backdrop) backdrop.onclick = closeMobileMenu;
   }
 
   function renderFooter() {
@@ -277,6 +373,7 @@
           <button type="button" class="modal-close" id="closeAddListingModal">✕</button>
         </div>
         <form id="addListingForm">
+          <div id="categoryCooldownNotice" style="display:none; padding:12px 16px; background:rgba(201,162,39,0.14); border:1px solid rgba(201,162,39,0.4); border-radius:12px; margin-bottom:14px; font-size:13px; color:var(--ink); line-height:1.5;"></div>
           <div class="rev-field">
             <label>Bo'lim / Kategoriya *</label>
             <select id="addCategory" class="field-input" style="width:100%; border-radius:12px; padding:10px 14px; font-weight:700;">
@@ -385,11 +482,49 @@
     const tagSelect = document.getElementById("addTag");
     const customTagInput = document.getElementById("addCustomTag");
 
+    async function checkCooldown(selectedCat) {
+      const noticeBox = document.getElementById("categoryCooldownNotice");
+      const submitBtn = document.getElementById("submitAddListingBtn");
+      if (!noticeBox) return;
+      const session = getSession();
+      if (!session) return;
+      if (session.user.role === "admin" || session.user.email === "abdulquddusxoshimov777@gmail.com") {
+        noticeBox.style.display = "none";
+        if (submitBtn) submitBtn.disabled = false;
+        return;
+      }
+      try {
+        const res = await fetch(`${API}/api/me/cooldowns`, {
+          headers: { Authorization: `Bearer ${session.token}` }
+        });
+        const d = await res.json();
+        if (d.ok && d.cooldowns && d.cooldowns[selectedCat]) {
+          const c = d.cooldowns[selectedCat];
+          if (!c.canPost) {
+            const catNames = { homes: "Uylar", places: "Diqqatga sazovor joylar", foods: "Milliy taomlar", crafts: "Hunarmandchilik" };
+            noticeBox.innerHTML = `⏳ <strong>15 kunlik cheklov:</strong> Siz <em>${catNames[selectedCat] || selectedCat}</em> bo'limiga 15 kunda 1 ta e'lon joylay olasiz. Ushbu bo'limga navbatdagi e'lonni <strong>${c.remainingDays} kundan keyin</strong> qo'shishingiz mumkin.<br><small style="color:rgba(28,26,23,0.7); display:inline-block; margin-top:4px;">💡 Ammo siz hoziroq boshqa bo'limlarga e'lon qo'sha olasiz!</small>`;
+            noticeBox.style.display = "block";
+            if (submitBtn) submitBtn.disabled = true;
+          } else {
+            noticeBox.style.display = "none";
+            if (submitBtn) submitBtn.disabled = false;
+          }
+        } else {
+          noticeBox.style.display = "none";
+          if (submitBtn) submitBtn.disabled = false;
+        }
+      } catch(e) {
+        noticeBox.style.display = "none";
+      }
+    }
+
     // Initialize tag dropdown based on initial category
     updateTagSelectOptions(categorySelect.value, tagSelect, customTagInput);
+    checkCooldown(categorySelect.value);
 
     categorySelect.addEventListener("change", () => {
       updateTagSelectOptions(categorySelect.value, tagSelect, customTagInput);
+      checkCooldown(categorySelect.value);
     });
 
     tagSelect.addEventListener("change", () => {
@@ -1066,6 +1201,144 @@
     if (itemOwnerEmail && itemOwnerEmail === userEmail) return true;
     if (itemOwnerName && itemOwnerName === userName) return true;
     return false;
+  };
+
+  // Global review permission checker (Admin or author only)
+  window.checkCanEditOrDeleteReview = function(review, user) {
+    if (!user || !review) return false;
+    if (window.checkUserIsAdmin(user)) return true;
+    const userId = String(user.id || "");
+    const userEmail = (user.email || "").trim().toLowerCase();
+
+    const revUserId = String(review.userId || "");
+    const revEmail = (review.userEmail || "").trim().toLowerCase();
+
+    if (revUserId && revUserId === userId) return true;
+    if (revEmail && revEmail === userEmail) return true;
+    return false;
+  };
+
+  // Edit Review Modal Dialog (Accessible by Author or Admin)
+  window.openEditReviewModal = function(reviewId, currentText, currentRating, onUpdated) {
+    const session = getSession();
+    if (!session) {
+      return window.safarAlert({ title: "Diqqat", message: "Sharhni tahrirlash uchun avval tizimga kiring.", icon: "🔒" });
+    }
+
+    const existingModal = document.getElementById("safarEditReviewModal");
+    if (existingModal) existingModal.remove();
+
+    let selectedRating = Number(currentRating) || 5;
+
+    const modal = document.createElement("div");
+    modal.id = "safarEditReviewModal";
+    modal.className = "modal-overlay";
+    modal.style.cssText = "display:flex; z-index:999999; backdrop-filter:blur(12px); background:rgba(10,18,40,0.65); animation:modalIn 0.22s ease;";
+
+    function escapeModalHtml(str) {
+      if (!str) return "";
+      const d = document.createElement("div");
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    modal.innerHTML = `
+      <div class="modal-box" style="max-width:520px; width:94vw; padding:26px; border-radius:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3 style="margin:0; font-size:20px; font-family:var(--font-display); color:var(--ink);">✏️ Sharhni tahrirlash</h3>
+          <button type="button" id="closeEditRevBtn" style="background:none; border:none; font-size:22px; cursor:pointer; color:var(--ink); line-height:1;">✕</button>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:13.5px; font-weight:700; margin-bottom:6px; color:var(--ink);">Bahoyingiz (Yulduzcha):</label>
+          <div id="editRevStarsBox" style="display:flex; gap:8px; font-size:26px; cursor:pointer; color:var(--gold); user-select:none;">
+            ${[1,2,3,4,5].map(n => `<span data-star="${n}">${n <= selectedRating ? "★" : "☆"}</span>`).join("")}
+          </div>
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <label style="display:block; font-size:13.5px; font-weight:700; margin-bottom:6px; color:var(--ink);">Sharh matni:</label>
+          <textarea id="editRevTextInput" rows="4" style="width:100%; border-radius:12px; padding:12px 14px; border:1px solid rgba(28,26,23,0.2); font-family:inherit; font-size:14.5px; line-height:1.5; resize:vertical; background:rgba(255,255,255,0.9);" required>${escapeModalHtml(currentText || "")}</textarea>
+        </div>
+
+        <div id="editRevAlert" style="display:none; color:var(--clay); font-size:13px; font-weight:700; margin-bottom:14px; padding:8px 12px; background:rgba(193,101,47,0.1); border-radius:8px;"></div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+          <button type="button" id="cancelEditRevBtn" class="btn btn-ghost" style="border-radius:12px; padding:9px 18px; font-size:13.5px;">Bekor qilish</button>
+          <button type="button" id="saveEditRevBtn" class="btn btn-primary" style="border-radius:12px; padding:9px 22px; font-size:13.5px; font-weight:700;">Saqlash</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Star selection click
+    const starsBox = modal.querySelector("#editRevStarsBox");
+    starsBox.addEventListener("click", (e) => {
+      const starEl = e.target.closest("[data-star]");
+      if (!starEl) return;
+      selectedRating = parseInt(starEl.getAttribute("data-star"), 10);
+      starsBox.querySelectorAll("[data-star]").forEach(el => {
+        const num = parseInt(el.getAttribute("data-star"), 10);
+        el.textContent = num <= selectedRating ? "★" : "☆";
+      });
+    });
+
+    const close = () => modal.remove();
+    modal.querySelector("#closeEditRevBtn").onclick = close;
+    modal.querySelector("#cancelEditRevBtn").onclick = close;
+    modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
+
+    // Save review
+    modal.querySelector("#saveEditRevBtn").onclick = async () => {
+      const textVal = modal.querySelector("#editRevTextInput").value.trim();
+      const alertEl = modal.querySelector("#editRevAlert");
+      alertEl.style.display = "none";
+
+      if (!textVal) {
+        alertEl.textContent = "Sharh matnini kiritishingiz shart.";
+        alertEl.style.display = "block";
+        return;
+      }
+
+      const saveBtn = modal.querySelector("#saveEditRevBtn");
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Saqlanmoqda...";
+
+      try {
+        const res = await fetch(`${API}/api/reviews/${reviewId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session.token}`
+          },
+          body: JSON.stringify({
+            text: textVal,
+            rating: selectedRating
+          })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          modal.remove();
+          await window.safarAlert({ title: "Muvaffaqiyatli", message: "Sharhingiz muvaffaqiyatli tahrirlandi!", icon: "✅" });
+          if (typeof onUpdated === "function") {
+            onUpdated(data.review);
+          } else {
+            location.reload();
+          }
+        } else {
+          alertEl.textContent = data.message || "Sharhni saqlashda xatolik.";
+          alertEl.style.display = "block";
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Saqlash";
+        }
+      } catch(err) {
+        alertEl.textContent = "Server bilan bog'lanishda xatolik yuz berdi.";
+        alertEl.style.display = "block";
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Saqlash";
+      }
+    };
   };
 
   // Custom App-Native Glassmorphism Confirm Dialog

@@ -311,16 +311,25 @@ async function loadDetail() {
       return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
     });
 
-    const isAdmin = session && (session.user.role === "admin" || session.user.email === "abdulquddusxoshimov777@gmail.com");
+    const isAdmin = session && (session.user.role === "admin" || (session.user.email || "").toLowerCase() === "abdulquddusxoshimov777@gmail.com");
 
     const reviewsHtml = combinedReviews.map(r => {
-      const isOwner = session && r.id && (r.userId === session.user.id || r.userEmail === session.user.email || isAdmin);
-      const deleteBtn = isOwner ? `<button type="button" class="btn-delete-review" onclick="deleteReview('${r.id}')" title="Sharhni o'chirish" style="margin-left:8px; font-size:12px; background:rgba(193,101,47,0.12); color:var(--clay); border:none; border-radius:6px; padding:2px 8px; cursor:pointer;">🗑 Ochirish</button>` : '';
+      const canManageRev = session && r.id && (
+        isAdmin ||
+        (r.userId && String(r.userId) === String(session.user.id)) ||
+        (r.userEmail && r.userEmail.toLowerCase() === (session.user.email || "").toLowerCase())
+      );
+      
+      const safeRevText = (r.text || "").replace(/\\/g, "\\\\").replace(/`/g, "\\`").replace(/\$/g, "\\$").replace(/"/g, "&quot;");
+      const editBtn = canManageRev ? `<button type="button" class="btn-edit-review" onclick="editReviewItem('${r.id}', \`${safeRevText}\`, ${r.rating})" title="Sharhni tahrirlash" style="margin-left:8px; font-size:12px; background:rgba(20,32,56,0.08); color:var(--indigo); border:none; border-radius:6px; padding:2px 8px; cursor:pointer; font-weight:700;">✏️ Tahrirlash</button>` : '';
+      const deleteBtn = canManageRev ? `<button type="button" class="btn-delete-review" onclick="deleteReview('${r.id}')" title="Sharhni o'chirish" style="margin-left:6px; font-size:12px; background:rgba(193,101,47,0.12); color:var(--clay); border:none; border-radius:6px; padding:2px 8px; cursor:pointer;">🗑 O'chirish</button>` : '';
+
       return `
       <div class="review-item" id="review-item-${r.id || Math.random().toString(36).slice(2)}">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-          <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:6px;">
+          <div style="display:flex; align-items:center; flex-wrap:wrap;">
             <strong>${escapeHtml(r.userName || r.name)}</strong>
+            ${editBtn}
             ${deleteBtn}
           </div>
           <span style="color:var(--gold); font-weight:700;">★ ${r.rating}</span>
@@ -331,7 +340,12 @@ async function loadDetail() {
     `;
     }).join("");
 
-    const isListingOwner = session && (isAdmin || item.ownerId === session.user.id || item.ownerName === session.user.name);
+    const isListingOwner = session && (
+      isAdmin ||
+      (item.ownerId && String(item.ownerId) === String(session.user.id)) ||
+      (item.ownerEmail && (item.ownerEmail || "").toLowerCase() === (session.user.email || "").toLowerCase()) ||
+      (!item.ownerId && !item.ownerEmail && item.ownerName && item.ownerName.toLowerCase() === (session.user.name || "").toLowerCase())
+    );
 
     container.innerHTML = `
       <div style="margin-bottom:20px;">
@@ -462,6 +476,15 @@ async function loadDetail() {
         detailStars.forEach((x, i) => x.classList.toggle("active", i < selectedRating));
       };
     });
+
+    // Handle Edit Review logic
+    window.editReviewItem = function(revId, currentText, currentRating) {
+      if (window.openEditReviewModal) {
+        window.openEditReviewModal(revId, currentText, currentRating, () => {
+          loadDetail();
+        });
+      }
+    };
 
     // Handle Delete Review logic
     window.deleteReview = async function(revId) {

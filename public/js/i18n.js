@@ -301,7 +301,10 @@
   function applyNavI18n() {
     document.querySelectorAll(".nav-tab").forEach(tab => {
       const key = tab.getAttribute("data-i18n");
-      if (key) tab.querySelector("span").textContent = t(key);
+      if (key) {
+    const span = tab.querySelector("span");
+    if (span) span.textContent = t(key);
+}
     });
   }
 
