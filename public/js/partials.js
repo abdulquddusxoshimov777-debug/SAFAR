@@ -146,13 +146,13 @@
           </ul>
 
           <div class="nav-actions">
-            <a href="#" id="openAddListingBtn" class="add-nav-btn" title="Yangi joy qo'shish" aria-label="Add new listing">
+            <a href="#" id="openAddListingBtn" class="add-nav-btn desktop-only-actions" title="Yangi joy qo'shish" aria-label="Add new listing">
               + Add
             </a>
             <a href="saved.html" class="liked-nav-btn desktop-only-actions" title="Sevimlilar" aria-label="View saved items">
               ❤️
             </a>
-            <div class="lang-pill" id="siteLangPill" tabIndex="0" role="button" aria-label="Language selector">
+            <div class="lang-pill desktop-only-actions" id="siteLangPill" tabIndex="0" role="button" aria-label="Language selector">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18" stroke="currentColor" stroke-width="1.6"/></svg>
               <span id="siteLangLabel">${currLangCode.toUpperCase()}</span>
               <div class="lang-dropdown" id="siteLangDropdown">
@@ -186,6 +186,15 @@
           <a href="crafts.html" class="${page === 'crafts.html' ? 'active' : ''}">🏺 Hunarmandchilik (Crafts)</a>
           <a href="saved.html" class="${page === 'saved.html' ? 'active' : ''}">❤️ Sevimlilar ro'yxati (Saved)</a>
           <a href="#" onclick="const b=document.getElementById('openAddListingBtn');if(b)b.click();closeMobileMenu();return false;" style="background:var(--turquoise-deep); color:#fff; font-weight:700;">➕ Yangi e'lon joylash</a>
+        </div>
+                <!-- Mobile Drawer Language Switcher -->
+        <div style="padding:14px 18px; border-top:1px solid rgba(255,255,255,0.12); margin-top:8px;">
+          <div style="font-size:12px; color:rgba(255,255,255,0.6); margin-bottom:8px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">🌐 Til / Language</div>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="lang-option" data-lang="uz" style="flex:1; padding:7px 4px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:${currLangCode === 'uz' ? 'var(--clay)' : 'rgba(255,255,255,0.08)'}; color:#fff; font-size:12px; font-weight:700; cursor:pointer;">🇺🇿 UZ</button>
+            <button type="button" class="lang-option" data-lang="ru" style="flex:1; padding:7px 4px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:${currLangCode === 'ru' ? 'var(--clay)' : 'rgba(255,255,255,0.08)'}; color:#fff; font-size:12px; font-weight:700; cursor:pointer;">🇷🇺 RU</button>
+            <button type="button" class="lang-option" data-lang="en" style="flex:1; padding:7px 4px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:${currLangCode === 'en' ? 'var(--clay)' : 'rgba(255,255,255,0.08)'}; color:#fff; font-size:12px; font-weight:700; cursor:pointer;">🇬🇧 EN</button>
+          </div>
         </div>
         <div class="mobile-drawer-footer">
           ${session ? `
@@ -1413,66 +1422,70 @@
     });
   };
 
+  async function openAddListingModal() {
+    const session = getSession();
+    if (!session) {
+      await window.safarAlert({ title: "Tizimga kirish kerak", message: "Joy qo'shish uchun avval tizimga kiring.", icon: "🔒" });
+      location.href = "login.html?redirect=add";
+      return;
+    }
+
+    const isAdmin = window.checkUserIsAdmin(session.user);
+    const isHost = session.user.role === "host";
+
+    if (!isHost && !isAdmin) {
+      const wantUpgrade = await window.safarConfirm({
+        title: "Mezbon akkaunti kerak",
+        message: "E'lon qo'shish uchun Mezbon / Joy beruvchi (Host) akkaunti kerak.\n\nAkkauntingiz turini hoziroq Mezbon (Host) ga o'tkazishni xohlaysizmi?",
+        icon: "🏠",
+        confirmText: "Ha, Mezbon bo'lish",
+        cancelText: "Yo'q, bekor qilish"
+      });
+
+      if (wantUpgrade) {
+        try {
+          const res = await fetch(`${API}/api/me/role`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${session.token}`
+            },
+            body: JSON.stringify({ role: "host" })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            await window.safarAlert({ title: "Muvaffaqiyatli", message: "Akkauntingiz muvaffaqiyatli Mezbon (Host) roliga o'tkazildi!", icon: "🎉" });
+            localStorage.setItem("safar_user", JSON.stringify(data.user));
+            renderHeader();
+          } else {
+            await window.safarAlert({ title: "Xatolik", message: data.message || "Xatolik yuz berdi.", icon: "⚠️" });
+            return;
+          }
+        } catch(err) {
+          await window.safarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
+          return;
+        }
+      } else {
+        return;
+      }
+    }
+
+    initAddListingModal();
+    const modal = document.getElementById("addListingModal");
+    if (modal) {
+      modal.style.display = "flex";
+      modal.style.zIndex = "99999";
+    }
+  }
+  window.openAddListingModal = openAddListingModal;
+
   function setupAddListingBtnHandler() {
     // Document-level event delegation prevents losing listener when header re-renders
     document.addEventListener("click", async (e) => {
-      const btn = e.target.closest("#openAddListingBtn") || e.target.closest(".add-nav-btn");
+      const btn = e.target.closest("#openAddListingBtn") || e.target.closest(".add-nav-btn") || e.target.closest(".trigger-add-listing");
       if (!btn) return;
       e.preventDefault();
-
-      const session = getSession();
-      if (!session) {
-        await window.safarAlert({ title: "Tizimga kirish kerak", message: "Joy qo'shish uchun avval tizimga kiring.", icon: "🔒" });
-        location.href = "login.html?redirect=add";
-        return;
-      }
-
-      const isAdmin = window.checkUserIsAdmin(session.user);
-      const isHost = session.user.role === "host";
-
-      if (!isHost && !isAdmin) {
-        const wantUpgrade = await window.safarConfirm({
-          title: "Mezbon akkaunti kerak",
-          message: "E'lon qo'shish uchun Mezbon / Joy beruvchi (Host) akkaunti kerak.\n\nAkkauntingiz turini hoziroq Mezbon (Host) ga o'tkazishni xohlaysizmi?",
-          icon: "🏠",
-          confirmText: "Ha, Mezbon bo'lish",
-          cancelText: "Yo'q, bekor qilish"
-        });
-
-        if (wantUpgrade) {
-          try {
-            const res = await fetch(`${API}/api/me/role`, {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${session.token}`
-              },
-              body: JSON.stringify({ role: "host" })
-            });
-            const data = await res.json();
-            if (data.ok) {
-              await window.safarAlert({ title: "Muvaffaqiyatli", message: "Akkauntingiz muvaffaqiyatli Mezbon (Host) roliga o'tkazildi!", icon: "🎉" });
-              localStorage.setItem("safar_user", JSON.stringify(data.user));
-              renderHeader();
-            } else {
-              await window.safarAlert({ title: "Xatolik", message: data.message || "Xatolik yuz berdi.", icon: "⚠️" });
-              return;
-            }
-          } catch(err) {
-            await window.safarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
-            return;
-          }
-        } else {
-          return;
-        }
-      }
-
-      initAddListingModal();
-      const modal = document.getElementById("addListingModal");
-      if (modal) {
-        modal.style.display = "flex";
-        modal.style.zIndex = "99999";
-      }
+      await openAddListingModal();
     });
   }
 
