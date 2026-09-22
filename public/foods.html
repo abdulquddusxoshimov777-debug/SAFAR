@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uzbek Foods & Culinary Map — Safar</title>
+<meta name="description" content="Discover authentic Uzbek dishes and see where they are created on Uzbekistan's interactive culinary map.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Leaflet.js -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<link rel="stylesheet" href="css/style.css?v=2.2">
+<style>
+  .filter-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(28,26,23,0.5);
+    margin-bottom: 6px;
+    margin-top: 12px;
+  }
+  .btn-detail {
+    display: inline-block;
+    padding: 8px 14px;
+    background: var(--sand-deep);
+    border: 1px solid var(--sand-dark);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--charcoal);
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .btn-detail:hover {
+    background: var(--sand-dark);
+  }
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<section style="padding-top:28px;">
+  <div class="container">
+    <div class="section-head" style="margin-bottom:20px;">
+      <div>
+        <span class="eyebrow" id="foodCountLabel">6 Iconic Dishes along the Silk Road</span>
+        <h2>Uzbek Cuisine &amp; Culinary Map</h2>
+        <p style="margin-top:6px; color:rgba(28,26,23,0.7);">Taste the authentic flavours of Uzbekistan and discover where each traditional dish originates.</p>
+      </div>
+    </div>
+
+    <!-- VILOYAT / CITY FILTERS -->
+    <div class="filter-section-title">📍 Viloyat / Shahar bo'yicha saralash:</div>
+    <div class="filters" id="foodCityFilterRow" style="margin-bottom:12px;">
+      <button type="button" class="pill active" data-city="All">🌐 Barcha viloyatlar</button>
+      <button type="button" class="pill" data-city="Tashkent">Toshkent</button>
+      <button type="button" class="pill" data-city="Andijan">Andijon</button>
+      <button type="button" class="pill" data-city="Bukhara">Buxoro</button>
+      <button type="button" class="pill" data-city="Jizzakh">Jizzax</button>
+      <button type="button" class="pill" data-city="Kashkadarya">Qashqadaryo</button>
+      <button type="button" class="pill" data-city="Navoiy">Navoiy</button>
+      <button type="button" class="pill" data-city="Namangan">Namangan</button>
+      <button type="button" class="pill" data-city="Samarkand">Samarqand</button>
+      <button type="button" class="pill" data-city="Surkhandarya">Surxondaryo</button>
+      <button type="button" class="pill" data-city="Sirdarya">Sirdaryo</button>
+      <button type="button" class="pill" data-city="Fergana">Farg`ona</button>
+      <button type="button" class="pill" data-city="Khorazm">Xorazm</button>
+    </div>
+
+    <!-- TYPE FILTERS -->
+    <div class="filter-section-title">🍲 Taom turi bo'yicha saralash:</div>
+    <div class="filters" id="foodFilterRow">
+      <button type="button" class="pill active" data-tag="All">✨ Barcha taomlar</button>
+      <button type="button" class="pill" data-tag="Liquid Dishes">Suyuq taomlar</button>
+      <button type="button" class="pill" data-tag="Main Dishes">Quyuq taomlar</button>
+      <button type="button" class="pill" data-tag="Dough-Based Foods and Breads">Xamir ovqatlar va pishiriqlar</button>
+      <button type="button" class="pill" data-tag="Meat Dishes and Kebabs">Goʻshtli taomlar va kaboblar</button>
+      <button type="button" class="pill" data-tag="Salads and Cold Appetizers">Salatlar va sovuq gazaklar</button>
+      <button type="button" class="pill" data-tag="Sweets and Traditional Desserts">Shirinliklar va milliy qandolat mahsulotlari</button>
+    </div>
+
+    <div class="listing-layout">
+      <div class="stay-list" id="foodList">
+        <div class="review-skeleton-card"></div>
+        <div class="review-skeleton-card"></div>
+      </div>
+
+      <div class="map-panel" id="mapPanel">
+        <div id="mapMount" style="width:100%;height:100%;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="js/partials.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/favorites.js"></script>
+<script src="js/map.js"></script>
+<script>
+const API = window.SAFAR_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
+
+function escapeHtml(str) {
+  if (!str) return "";
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+let allFoods = [];
+let activeCity = "All";
+let activeFoodTag = "All";
+let foodMapController = null;
+
+function getFilteredFoods() {
+  return allFoods.filter(f => {
+    if (activeCity !== "All") {
+      const c = (f.city || "").toLowerCase();
+      const a = activeCity.toLowerCase();
+      const cityAliases = {
+        "tashkent": ["tashkent", "toshkent"],
+        "samarkand": ["samarkand", "samarqand"],
+        "bukhara": ["bukhara", "buxoro"],
+        "andijan": ["andijan", "andijon"],
+        "fergana": ["fergana", "farg'ona", "farg`ona", "fargona"],
+        "namangan": ["namangan"],
+        "khorazm": ["khorazm", "xorazm", "xiva", "khiva"],
+        "kashkadarya": ["kashkadarya", "qashqadaryo", "qarshi"],
+        "surkhandarya": ["surkhandarya", "surxondaryo", "termiz"],
+        "jizzakh": ["jizzakh", "jizzax"],
+        "navoiy": ["navoiy", "navoi"],
+        "sirdarya": ["sirdarya", "guliston"]
+      };
+      const allowed = cityAliases[a] || [a];
+      if (!allowed.some(name => c.includes(name))) return false;
+    }
+
+    if (activeFoodTag !== "All") {
+      const tagMap = {
+        "liquid dishes": ["liquid", "suyuq", "sho'rva", "lag'mon", "mastava"],
+        "main dishes": ["main", "quyuq", "osh", "palov", "dimlama", "qovurma"],
+        "dough-based foods and breads": ["dough", "xamir", "somsa", "manti", "non", "pishiriq"],
+        "meat dishes and kebabs": ["meat", "goʻsht", "go'sht", "kabob", "shashlik", "jiz", "qazi"],
+        "salads and cold appetizers": ["salad", "salat", "gazak", "achchiq"],
+        "sweets and traditional desserts": ["sweet", "shirinlik", "qandolat", "holva", "nisholda"]
+      };
+      const ft = (f.tag || "").toLowerCase();
+      const at = activeFoodTag.toLowerCase();
+      const allowedTags = tagMap[at] || [at];
+      if (!allowedTags.some(t => ft.includes(t)) && !ft.includes(at)) return false;
+    }
+    return true;
+  });
+}
+
+function renderFoodList() {
+  const list = document.getElementById("foodList");
+  const filtered = getFilteredFoods();
+  document.getElementById("foodCountLabel").textContent = `${filtered.length} taomlar`;
+
+  if (!filtered.length) {
+    list.innerHTML = `
+      <div class="empty-stays-card">
+        <div class="empty-icon" aria-hidden="true">🍲</div>
+        <h3>Ushbu mezon bo'yicha taomlar topilmadi</h3>
+        <button type="button" class="btn btn-ghost" onclick="resetFoodFilters()" style="margin-top:12px;">Filtrlarni tozalash</button>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(f => {
+    const session = window.SafarSession ? window.SafarSession.getSession() : null;
+    const isOwner = session && window.checkCanEditOrDelete && window.checkCanEditOrDelete(f, session.user);
+    const deleteListingBtn = isOwner ? `<button type="button" class="btn-delete-listing" onclick="event.stopPropagation(); deleteListing('foods', ${f.id})" title="E'lonni o'chirish">🗑 Ochirish</button>` : '';
+    const editListingBtn = isOwner ? `<button type="button" class="btn-edit-listing" onclick="event.stopPropagation(); openEditListingModal('foods', ${f.id})" title="E'lonni tahrirlash" style="background:rgba(20,32,56,0.08); color:var(--indigo); border:none; border-radius:8px; padding:6px 12px; font-size:12.5px; font-weight:700; cursor:pointer;">✏️ Tahrirlash</button>` : '';
+    const gMapUrl = f.googleMapsUrl || `https://maps.google.com/?q=${f.coordinates ? f.coordinates[0] : 41.3113},${f.coordinates ? f.coordinates[1] : 69.2797}`;
+    return `
+    <div class="stay-card food-card-item" data-id="${f.id}" onclick="selectFood(${f.id}, true)">
+      <div class="stay-thumb">
+        <img src="${escapeHtml(f.image)}" alt="${escapeHtml(f.title)}" loading="lazy">
+        <span class="badge-super">${escapeHtml(f.tag || "Taom")}</span>
+        <button type="button" class="heart-btn ${window.SafarFav?.isFavorite('food', f.id) ? 'active' : ''}" aria-label="Favorite food" onclick="toggleFav(event, 'food', ${f.id})">${window.SafarFav?.isFavorite('food', f.id) ? '❤️' : '♡'}</button>
+      </div>
+      <div class="stay-body">
+        <div class="stay-top">
+          <div>
+            <div class="stay-loc">O'zbekiston, ${escapeHtml(f.city)}</div>
+            <div class="stay-title">${escapeHtml(f.title)}</div>
+          </div>
+          <div class="rating"><span style="color:var(--gold)" aria-hidden="true">★</span> ${f.rating || "5.0"} <span style="font-weight:400;opacity:.6">(${f.reviews || 0})</span></div>
+        </div>
+        <p style="font-size:13.5px; color:rgba(28,26,23,0.7); margin:6px 0 10px; line-height:1.5;">${escapeHtml(f.desc)}</p>
+        <div style="font-size:12.5px; color:var(--clay); font-weight:600; margin-bottom:8px;">📍 ${escapeHtml(f.bestPlace || f.address || "Tavsiya etilgan maskan")}</div>
+        
+        <div class="stay-price-row" style="margin-top:12px; display:flex; gap:8px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+          <div class="stay-price">${escapeHtml(String(f.price))} <span>narxi</span></div>
+          <div style="display:flex; gap:6px; align-items:center;">
+            ${editListingBtn}
+            ${deleteListingBtn}
+          </div>
+        </div>
+        <div class="card-actions-row" style="margin-top:12px;">
+          <a class="btn-detail" href="detail.html?type=food&id=${f.id}" onclick="event.stopPropagation()">🔍 Batafsil</a>
+          <a href="${escapeHtml(gMapUrl)}" class="btn-book" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">📍 Maps xarita</a>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+window.toggleFav = function(e, type, id) {
+  e.stopPropagation();
+  const item = allFoods.find(x => x.id === id);
+  if (item && window.SafarFav) {
+    const isNowFav = window.SafarFav.toggleFavorite({ type: "food", id: item.id, title: item.title, city: item.city, price: item.price, image: item.image });
+    const btn = e.currentTarget;
+    btn.classList.toggle("active", isNowFav);
+    btn.textContent = isNowFav ? "❤️" : "♡";
+  }
+};
+
+window.selectFood = function (id, syncMap) {
+  const food = allFoods.find((f) => f.id === id);
+  if (!food) return;
+  document.querySelectorAll(".food-card-item").forEach((c) => c.classList.remove("selected"));
+  const cardEl = document.querySelector(`.food-card-item[data-id="${id}"]`);
+  if (cardEl) {
+    cardEl.classList.add("selected");
+    if (!syncMap) cardEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  if (syncMap && foodMapController) foodMapController.highlightStay(id);
+};
+
+window.resetFoodFilters = function() {
+  activeCity = "All";
+  activeFoodTag = "All";
+  document.querySelectorAll("#foodCityFilterRow .pill").forEach(p => p.classList.toggle("active", p.dataset.city === "All"));
+  document.querySelectorAll("#foodFilterRow .pill").forEach(p => p.classList.toggle("active", p.dataset.tag === "All"));
+  renderFoodList();
+  if (foodMapController) foodMapController.updateMarkers(allFoods);
+};
+
+// City filter
+document.getElementById("foodCityFilterRow").addEventListener("click", (e) => {
+  const pill = e.target.closest(".pill");
+  if (!pill) return;
+  document.querySelectorAll("#foodCityFilterRow .pill").forEach((p) => p.classList.remove("active"));
+  pill.classList.add("active");
+  activeCity = pill.dataset.city;
+  renderFoodList();
+  const filtered = getFilteredFoods();
+  if (foodMapController) {
+    foodMapController.updateMarkers(filtered);
+    if (filtered.length > 0) selectFood(filtered[0].id, true);
+  }
+});
+
+// Category filter
+document.getElementById("foodFilterRow").addEventListener("click", (e) => {
+  const pill = e.target.closest(".pill");
+  if (!pill) return;
+  document.querySelectorAll("#foodFilterRow .pill").forEach((p) => p.classList.remove("active"));
+  pill.classList.add("active");
+  activeFoodTag = pill.dataset.tag;
+  renderFoodList();
+  const filtered = getFilteredFoods();
+  if (foodMapController) {
+    foodMapController.updateMarkers(filtered);
+    if (filtered.length > 0) selectFood(filtered[0].id, true);
+  }
+});
+
+async function loadFoods() {
+  try {
+    const res = await fetch(`${API}/api/foods`);
+    const data = await res.json();
+    allFoods = data.foods || [];
+  } catch (err) {
+    console.error("Failed to load foods:", err);
+    document.getElementById("foodList").innerHTML =
+      `<p style="color:rgba(28,26,23,0.5);">Could not load Uzbek culinary map. Make sure backend server is running.</p>`;
+    return;
+  }
+
+  renderFoodList();
+
+  // Initialize Leaflet Map for Foods
+  foodMapController = window.initStaysMap("mapMount", allFoods, (clickedFood) => {
+    selectFood(clickedFood.id, false);
+  });
+
+  if (allFoods[0]) setTimeout(() => { selectFood(allFoods[0].id, true); }, 450);
+}
+
+loadFoods();
+</script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>An'anaviy Hunarmandchilik va Buyumlar — Safar</title>
+<meta name="description" content="O'zbekistonning milliy buyumlari, Rishton sopollari, Marg'ilon atlaslari, Buxoro zardo'zlik mahsulotlari va Chust pichoqlari.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Leaflet.js -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<link rel="stylesheet" href="css/style.css?v=2.2">
+<style>
+  .filter-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(28,26,23,0.5);
+    margin-bottom: 6px;
+    margin-top: 12px;
+  }
+  .btn-detail {
+    display: inline-block;
+    padding: 8px 14px;
+    background: var(--sand-deep);
+    border: 1px solid var(--sand-dark);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--charcoal);
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .btn-detail:hover {
+    background: var(--sand-dark);
+  }
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<section style="padding-top:28px; padding-bottom:80px;">
+  <div class="container">
+    <div class="section-head" style="margin-bottom:20px;">
+      <div>
+        <span class="eyebrow" id="craftCountLabel">6 Iconic Crafts along the Silk Road</span>
+        <h2>An'anaviy Buyumlar &amp; Hunarmandchilik</h2>
+        <p style="margin-top:6px; color:rgba(28,26,23,0.7);">O'zbekiston usta va hunarmandlarining qo'l mehnati mahsulotlari va milliy esdalik sovg'alari.</p>
+      </div>
+    </div>
+
+    <!-- VILOYAT / CITY FILTERS -->
+    <div class="filter-section-title">📍 Viloyat / Shahar bo'yicha saralash:</div>
+    <div class="filters" id="craftCityFilterRow" style="margin-bottom:12px;">
+      <button type="button" class="pill active" data-city="All">🌐 Barcha viloyatlar</button>
+      <button type="button" class="pill" data-city="Tashkent">Toshkent</button>
+      <button type="button" class="pill" data-city="Andijan">Andijon</button>
+      <button type="button" class="pill" data-city="Bukhara">Buxoro</button>
+      <button type="button" class="pill" data-city="Jizzakh">Jizzax</button>
+      <button type="button" class="pill" data-city="Kashkadarya">Qashqadaryo</button>
+      <button type="button" class="pill" data-city="Navoiy">Navoiy</button>
+      <button type="button" class="pill" data-city="Namangan">Namangan</button>
+      <button type="button" class="pill" data-city="Samarkand">Samarqand</button>
+      <button type="button" class="pill" data-city="Surkhandarya">Surxondaryo</button>
+      <button type="button" class="pill" data-city="Sirdarya">Sirdaryo</button>
+      <button type="button" class="pill" data-city="Fergana">Farg`ona</button>
+      <button type="button" class="pill" data-city="Khorazm">Xorazm</button>
+    </div>
+
+    <!-- TYPE FILTERS -->
+    <div class="filter-section-title">🏺 Hunarmandchilik turi bo'yicha saralash:</div>
+    <div class="filters" id="craftFilterRow">
+      <button type="button" class="pill active" data-tag="All">✨ Barcha buyumlar</button>
+      <button type="button" class="pill" data-tag="Sopolchilik">🏺 Sopolchilik (Choynak-piyola)</button>
+      <button type="button" class="pill" data-tag="To'qimachilik">🧵 Atlas &amp; Adras</button>
+      <button type="button" class="pill" data-tag="Zardo'zlik">👑 Zardo'zlik &amp; So'zana</button>
+      <button type="button" class="pill" data-tag="Temirchilik">🗡 Chust Pichoqlari</button>
+      <button type="button" class="pill" data-tag="Qog'ozchilik">📜 Samarqand Ipak Qog'ozi</button>
+      <button type="button" class="pill" data-tag="Yog'och o'ymakorligi">🪵 Yog'och o'ymakorligi</button>
+    </div>
+
+    <div class="listing-layout">
+      <div class="stay-list" id="craftList">
+        <div class="review-skeleton-card"></div>
+        <div class="review-skeleton-card"></div>
+      </div>
+
+      <div class="map-panel" id="mapPanel">
+        <div id="mapMount" style="width:100%;height:100%;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="js/partials.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/favorites.js"></script>
+<script src="js/map.js"></script>
+<script>
+const API = window.SAFAR_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
+
+function escapeHtml(str) {
+  if (!str) return "";
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+let allCrafts = [];
+let activeCity = "All";
+let activeTag = "All";
+let craftMapController = null;
+
+function getFilteredCrafts() {
+  return allCrafts.filter(c => {
+    if (activeCity !== "All") {
+      const city = (c.city || "").toLowerCase();
+      const a = activeCity.toLowerCase();
+      const cityAliases = {
+        "tashkent": ["tashkent", "toshkent"],
+        "samarkand": ["samarkand", "samarqand"],
+        "bukhara": ["bukhara", "buxoro"],
+        "andijan": ["andijan", "andijon"],
+        "fergana": ["fergana", "farg'ona", "farg`ona", "fargona"],
+        "namangan": ["namangan"],
+        "khorazm": ["khorazm", "xorazm", "xiva", "khiva"],
+        "kashkadarya": ["kashkadarya", "qashqadaryo", "qarshi"],
+        "surkhandarya": ["surkhandarya", "surxondaryo", "termiz"],
+        "jizzakh": ["jizzakh", "jizzax"],
+        "navoiy": ["navoiy", "navoi"],
+        "sirdarya": ["sirdarya", "guliston"]
+      };
+      const allowed = cityAliases[a] || [a];
+      if (!allowed.some(name => city.includes(name))) return false;
+    }
+
+    if (activeTag !== "All") {
+      const ct = (c.tag || "").toLowerCase();
+      const at = activeTag.toLowerCase();
+      if (!ct.includes(at) && !at.includes(ct)) return false;
+    }
+    return true;
+  });
+}
+
+function renderCraftList() {
+  const list = document.getElementById("craftList");
+  const filtered = getFilteredCrafts();
+  document.getElementById("craftCountLabel").textContent = `${filtered.length} buyumlar`;
+
+  if (!filtered.length) {
+    list.innerHTML = `
+      <div class="empty-stays-card">
+        <div class="empty-icon" aria-hidden="true">🏺</div>
+        <h3>Ushbu kategoriyada buyumlar topilmadi</h3>
+        <button type="button" class="btn btn-ghost" onclick="resetCraftFilters()" style="margin-top:12px;">Filtrlarni tozalash</button>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(c => {
+    const session = window.SafarSession ? window.SafarSession.getSession() : null;
+    const isOwner = session && window.checkCanEditOrDelete && window.checkCanEditOrDelete(c, session.user);
+    const deleteListingBtn = isOwner ? `<button type="button" class="btn-delete-listing" onclick="event.stopPropagation(); deleteListing('crafts', ${c.id})" title="E'lonni o'chirish">🗑 Ochirish</button>` : '';
+    const editListingBtn = isOwner ? `<button type="button" class="btn-edit-listing" onclick="event.stopPropagation(); openEditListingModal('crafts', ${c.id})" title="E'lonni tahrirlash" style="background:rgba(20,32,56,0.08); color:var(--indigo); border:none; border-radius:8px; padding:6px 12px; font-size:12.5px; font-weight:700; cursor:pointer;">✏️ Tahrirlash</button>` : '';
+    const isFav = window.SafarFav ? window.SafarFav.isFavorite("craft", c.id) : false;
+    const gMapUrl = c.googleMapsUrl || `https://maps.google.com/?q=${c.coordinates[0]},${c.coordinates[1]}`;
+    return `
+    <div class="stay-card craft-card-item" data-id="${c.id}" onclick="selectCraft(${c.id}, true)">
+      <div class="stay-thumb">
+        <img src="${escapeHtml(c.image)}" alt="${escapeHtml(c.title)}" loading="lazy">
+        <span class="badge-super">${escapeHtml(c.tag || "Buyum")}</span>
+        <button type="button" class="heart-btn ${isFav ? 'active' : ''}" aria-label="Favorite craft" onclick="toggleFav(event, 'craft', ${c.id})">${isFav ? '❤️' : '♡'}</button>
+      </div>
+      <div class="stay-body">
+        <div class="stay-top">
+          <div>
+            <div class="stay-loc">Usta: ${escapeHtml(c.masterName || c.ownerName || 'Usta')} · ${escapeHtml(c.city)}</div>
+            <div class="stay-title">${escapeHtml(c.title)}</div>
+          </div>
+          <div class="rating"><span style="color:var(--gold)" aria-hidden="true">★</span> ${c.rating || "5.0"} <span style="font-weight:400;opacity:.6">(${c.reviews || 0})</span></div>
+        </div>
+        <p style="font-size:13.5px; color:rgba(28,26,23,0.7); margin:6px 0 10px; line-height:1.5;">${escapeHtml(c.desc)}</p>
+        <div style="font-size:12.5px; color:var(--clay); font-weight:600; margin-bottom:8px;">📍 ${escapeHtml(c.address || c.city || "")}</div>
+        
+        <div class="stay-price-row" style="margin-top:12px; display:flex; gap:8px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+          <div class="stay-price">${escapeHtml(String(c.price))} <span>bahosi</span></div>
+          <div style="display:flex; gap:6px; align-items:center;">
+            ${editListingBtn}
+            ${deleteListingBtn}
+          </div>
+        </div>
+        <div class="card-actions-row" style="margin-top:12px;">
+          <a class="btn-detail" href="detail.html?type=craft&id=${c.id}" onclick="event.stopPropagation()">🔍 Batafsil</a>
+          <a href="${escapeHtml(gMapUrl)}" class="btn-book" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">📍 Maps xarita</a>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+window.toggleFav = function(e, type, id) {
+  e.stopPropagation();
+  const item = allCrafts.find(x => x.id === id);
+  if (item && window.SafarFav) {
+    const isNowFav = window.SafarFav.toggleFavorite({ type: "craft", id: item.id, title: item.title, city: item.city, price: item.price, image: item.image });
+    const btn = e.currentTarget;
+    btn.classList.toggle("active", isNowFav);
+    btn.textContent = isNowFav ? "❤️" : "♡";
+  }
+};
+
+window.selectCraft = function (id, syncMap) {
+  const craft = allCrafts.find((c) => c.id === id);
+  if (!craft) return;
+  document.querySelectorAll(".craft-card-item").forEach((c) => c.classList.remove("selected"));
+  const cardEl = document.querySelector(`.craft-card-item[data-id="${id}"]`);
+  if (cardEl) {
+    cardEl.classList.add("selected");
+    if (!syncMap) cardEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  if (syncMap && craftMapController) craftMapController.highlightStay(id);
+};
+
+window.resetCraftFilters = function() {
+  activeCity = "All";
+  activeTag = "All";
+  document.querySelectorAll("#craftCityFilterRow .pill").forEach(p => p.classList.toggle("active", p.dataset.city === "All"));
+  document.querySelectorAll("#craftFilterRow .pill").forEach(p => p.classList.toggle("active", p.dataset.tag === "All"));
+  renderCraftList();
+  if (craftMapController) craftMapController.updateMarkers(allCrafts);
+};
+
+// City filter
+document.getElementById("craftCityFilterRow").addEventListener("click", (e) => {
+  const pill = e.target.closest(".pill");
+  if (!pill) return;
+  document.querySelectorAll("#craftCityFilterRow .pill").forEach((p) => p.classList.remove("active"));
+  pill.classList.add("active");
+  activeCity = pill.dataset.city;
+  renderCraftList();
+  const filtered = getFilteredCrafts();
+  if (craftMapController) {
+    craftMapController.updateMarkers(filtered);
+    if (filtered.length > 0) selectCraft(filtered[0].id, true);
+  }
+});
+
+// Category filter
+document.getElementById("craftFilterRow").addEventListener("click", (e) => {
+  const pill = e.target.closest(".pill");
+  if (!pill) return;
+  document.querySelectorAll("#craftFilterRow .pill").forEach((p) => p.classList.remove("active"));
+  pill.classList.add("active");
+  activeTag = pill.dataset.tag;
+  renderCraftList();
+  const filtered = getFilteredCrafts();
+  if (craftMapController) {
+    craftMapController.updateMarkers(filtered);
+    if (filtered.length > 0) selectCraft(filtered[0].id, true);
+  }
+});
+
+async function loadCrafts() {
+  try {
+    const res = await fetch(`${API}/api/crafts`);
+    const data = await res.json();
+    allCrafts = data.crafts || [];
+  } catch (err) {
+    console.error("Failed to load crafts:", err);
+    document.getElementById("craftList").innerHTML =
+      `<p style="color:rgba(28,26,23,0.5);">Ma'lumotlarni yuklashda xatolik yuz berdi. Backend server ishlayotganiga ishonch hosil qiling.</p>`;
+    return;
+  }
+
+  renderCraftList();
+
+  // Initialize Leaflet Map for Crafts
+  craftMapController = window.initStaysMap("mapMount", allCrafts, (clickedCraft) => {
+    selectCraft(clickedCraft.id, false);
+  });
+
+  if (allCrafts[0]) setTimeout(() => { selectCraft(allCrafts[0].id, true); }, 450);
+}
+
+loadCrafts();
+</script>
+</body>
+</html>

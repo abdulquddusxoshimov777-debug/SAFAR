@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saqlanganlar (Sevimlilar) — Safar</title>
+<meta name="description" content="Siz saqlab qo'ygan uylar, taomlar va joylar ro'yxati.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=2.2">
+<style>
+  .saved-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    margin-top: 28px;
+  }
+  .btn-detail {
+    display: inline-block;
+    padding: 8px 14px;
+    background: var(--sand-deep);
+    border: 1px solid var(--sand-dark);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--charcoal);
+    text-decoration: none;
+  }
+  .saved-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 28px;
+    background: #ffffff;
+    border: 1.8px solid #5a5a5a;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #1c1a17;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  .saved-pill-btn:hover {
+    background: #1c1a17;
+    color: #ffffff;
+    border-color: #1c1a17;
+    transform: translateY(-1px);
+  }
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<section style="padding-top:36px; padding-bottom:80px;">
+  <div class="container">
+    <div class="section-head" style="margin-bottom:24px;">
+      <div>
+        <span class="eyebrow">Sevimlilar to'plami</span>
+        <h2>Saqlangan uylar, taomlar va joylar</h2>
+        <p style="margin-top:6px; color:rgba(28,26,23,0.7);">Siz yurakcha tugmasi orqali belgilagan barcha sevimli e'lonlaringiz shu yerda saqlanadi.</p>
+      </div>
+    </div>
+
+    <div id="savedListContainer" class="saved-grid">
+      <div class="review-skeleton-card"></div>
+      <div class="review-skeleton-card"></div>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="js/partials.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/favorites.js"></script>
+<script>
+function escapeHtml(str) {
+  if (!str) return "";
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function renderSavedItems() {
+  const container = document.getElementById("savedListContainer");
+  const favs = window.SafarFav ? window.SafarFav.getFavorites() : [];
+
+  if (!favs.length) {
+    container.innerHTML = `
+      <div class="empty-stays-card" style="grid-column: 1 / -1; padding:70px 20px; text-align:center;">
+        <div class="empty-icon" style="font-size:54px; margin-bottom:12px;" aria-hidden="true">❤️</div>
+        <h2 style="font-family:var(--font-display); font-size:32px; font-weight:700; color:var(--ink); margin-bottom:12px;">Hozircha saqlanganlar yo'q</h2>
+        <p style="font-size:16px; color:rgba(28,26,23,0.7); max-width:540px; margin:0 auto 28px; line-height:1.5;">Uylar, taomlar yoki joylar sahifasidagi yurakcha (♡) tugmasini bosing!</p>
+        <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+          <a href="stays.html" class="saved-pill-btn">Uylarga o'tish</a>
+          <a href="foods.html" class="saved-pill-btn">Taomlarga o'tish</a>
+          <a href="crafts.html" class="saved-pill-btn">Buyumlarga o'tish</a>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = favs.map(item => {
+    const detailUrl = `detail.html?type=${item.type}&id=${item.id}`;
+    return `
+      <div class="stay-card" style="display:flex; flex-direction:column; padding:0; overflow:hidden;">
+        <div class="stay-thumb" style="height:200px; border-radius:0;">
+          <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}" loading="lazy">
+          <button type="button" class="heart-btn active" aria-label="Remove favorite" onclick="removeFav('${item.type}', ${item.id})">❤️</button>
+        </div>
+        <div class="stay-body" style="padding:16px;">
+          <div class="stay-loc" style="text-transform:uppercase; font-size:11px;">${escapeHtml(item.type)} · ${escapeHtml(item.city)}</div>
+          <h4 style="font-size:17px; margin:6px 0 10px;">${escapeHtml(item.title)}</h4>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:auto;">
+            ${item.price ? `<strong style="font-size:16px;">${escapeHtml(String(item.price))}</strong>` : '<span></span>'}
+            <a class="btn-detail" href="${detailUrl}">🔍 Batafsil</a>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+window.removeFav = function(type, id) {
+  if (window.SafarFav) {
+    window.SafarFav.toggleFavorite({ type, id });
+    renderSavedItems();
+  }
+};
+
+renderSavedItems();
+</script>
+</body>
+</html>

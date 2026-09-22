@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+  <meta name="google-site-verification" content="0MnrU8IUo58E18Jqmvo5F3fQUBKcRydj9GqilJ5d8Ac" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Safar — O'zbekiston bo'ylab sayohat va turar joylar</title>
+<meta name="description" content="O'zbekistonning har bir burchagidan tanlab olingan joylar, uylar va taomlar haritasi.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=2.2">
+
+<!-- Leaflet.js -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<style>
+  /* Home Services / Products */
+  .home-services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 32px;
+  }
+  @media (max-width: 900px) {
+    .home-services-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .home-services-grid { grid-template-columns: 1fr; }
+  }
+  .home-service-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .home-service-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-pop);
+  }
+  .home-service-img {
+    height: 180px;
+    overflow: hidden;
+    position: relative;
+  }
+  .home-service-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+  }
+  .home-service-card:hover .home-service-img img {
+    transform: scale(1.05);
+  }
+  .home-service-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(20, 32, 56, 0.85);
+    backdrop-filter: blur(4px);
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+  }
+  .home-service-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .home-service-body h3 {
+    font-family: var(--font-display);
+    font-size: 19px;
+    color: var(--indigo);
+    margin-bottom: 8px;
+  }
+  .home-service-body p {
+    font-size: 14px;
+    color: rgba(28, 26, 23, 0.72);
+    line-height: 1.55;
+    margin-bottom: 16px;
+    flex: 1;
+  }
+  .home-service-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--clay);
+    font-weight: 700;
+    font-size: 14px;
+    transition: gap 0.2s;
+  }
+  .home-service-link:hover { gap: 10px; }
+
+  /* Home About */
+  .home-about-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 40px;
+    align-items: center;
+    margin: 32px 0 40px;
+  }
+  @media (max-width: 850px) {
+    .home-about-wrap { grid-template-columns: 1fr; }
+  }
+  .home-about-img {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-pop);
+  }
+  .home-about-img img {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    display: block;
+  }
+  .home-about-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 32px;
+  }
+  @media (max-width: 700px) {
+    .home-about-stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  .home-stat-box {
+    background: var(--sand-deep);
+    border: 1px solid var(--sand-dark);
+    border-radius: 14px;
+    padding: 16px 12px;
+    text-align: center;
+  }
+  .home-stat-num {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--clay);
+  }
+  .home-stat-lbl {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: rgba(28, 26, 23, 0.75);
+    margin-top: 4px;
+  }
+
+  /* Home Contact */
+  .home-contact-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 36px;
+    margin-top: 32px;
+  }
+  @media (max-width: 850px) {
+    .home-contact-grid { grid-template-columns: 1fr; }
+  }
+  .home-contact-form-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 30px 26px;
+    box-shadow: var(--shadow-card);
+  }
+  .home-contact-form-card h3 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--indigo);
+    margin-bottom: 18px;
+  }
+  .home-form-group {
+    margin-bottom: 16px;
+  }
+  .home-form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--ink);
+  }
+  .home-form-group input,
+  .home-form-group select,
+  .home-form-group textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--sand);
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .home-form-group input:focus,
+  .home-form-group select:focus,
+  .home-form-group textarea:focus {
+    border-color: var(--clay);
+    box-shadow: 0 0 0 3px rgba(200, 93, 40, 0.15);
+  }
+  .home-info-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .home-info-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    box-shadow: var(--shadow-card);
+  }
+  .home-info-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: rgba(200, 93, 40, 0.12);
+    color: var(--clay);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .home-info-text h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--indigo);
+    margin-bottom: 3px;
+  }
+  .home-info-text p, .home-info-text a {
+    font-size: 13.5px;
+    color: rgba(28, 26, 23, 0.8);
+    line-height: 1.45;
+  }
+  .home-info-text a:hover {
+    color: var(--clay);
+    text-decoration: underline;
+  }
+  .home-status-msg {
+    display: none;
+    padding: 12px 16px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .home-status-msg.success {
+    display: block;
+    background: rgba(46, 125, 50, 0.12);
+    color: #1b5e20;
+    border: 1px solid rgba(46, 125, 50, 0.3);
+  }
+  .home-status-msg.error {
+    display: block;
+    background: rgba(211, 47, 47, 0.12);
+    color: #c62828;
+    border: 1px solid rgba(211, 47, 47, 0.3);
+  }
+</style>
+
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<!-- ============ HERO (Full Photo Header) ============ -->
+<header class="hero hero-photo">
+  <div class="hero-overlay"></div>
+  <div class="container hero-inner">
+    <h1>
+      <span data-i18n="hero_h1a">O'zbekistonning</span><br>
+      <em data-i18n="hero_h1b">buyuk</em>
+      <span data-i18n="hero_h1c"> tarixini his qiling</span>
+    </h1>
+    <p data-i18n=""></p>
+
+
+  </div>
+</header>
+
+<!-- ============ ABOUT US / BIZ HAQIMIZDA SECTION ============ -->
+<section id="about-section" style="padding:74px 0; background:var(--paper); border-top:1px solid var(--line);">
+  <div class="container">
+    <div class="home-about-wrap">
+      <div class="home-about-img">
+        <img src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80" alt="Registon maydoni" loading="lazy">
+      </div>
+      <div>
+        <span class="eyebrow">Biz haqimizda</span>
+        <h2 style="font-family:var(--font-display); font-size:clamp(26px, 3.5vw, 36px); color:var(--indigo); margin:10px 0 16px; line-height:1.2;">
+          O'zbekistonning haqiqiy ruhi va mehmondo'stligini kashf eting
+        </h2>
+        <p style="font-size:15.5px; color:rgba(28,26,23,0.78); line-height:1.65; margin-bottom:16px;">
+          Safar ? qadimiy Ipak yo'li bo'ylab sayohat qiluvchilar, mahalliy samimiy mezbonlar, milliy hunarmandlar va mohir oshpazlarni vositachisiz birlashtiruvchi zamonaviy ochiq sayyohlik platformasi.
+        </p>
+        <p style="font-size:15px; color:rgba(28,26,23,0.75); line-height:1.6; margin-bottom:24px;">
+          Biz har bir mehmonga o'zbek xalqining haqiqiy mehmondo'stligini his qildirish, madaniy merosimizni butun jahonga tanitish niyatida ishlaymiz.
+        </p>
+        <a href="about.html" class="btn btn-ghost" style="padding:10px 20px; font-size:14px;">Batafsil biz haqimizda ?</a>
+      </div>
+    </div>
+
+    <div class="home-about-stats">
+      <div class="home-stat-box">
+        <div class="home-stat-num">14</div>
+        <div class="home-stat-lbl">Viloyat va Hududlar</div>
+      </div>
+      <div class="home-stat-box">
+        <div class="home-stat-num">500+</div>
+        <div class="home-stat-lbl">Tarixiy Maskonlar</div>
+      </div>
+      <div class="home-stat-box">
+        <div class="home-stat-num">10,000+</div>
+        <div class="home-stat-lbl">Mamnun Sayyohlar</div>
+      </div>
+      <div class="home-stat-box">
+        <div class="home-stat-num">100%</div>
+        <div class="home-stat-lbl">Asl Milliy Tajriba</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============ UZBEKISTAN POPULATION / DEMOGRAPHICS (2-rasmdagi ko'rinish) ============ -->
+<section id="population-section" style="padding:48px 0; background:var(--sand-light); border-top:1px solid var(--line);">
+  <div class="container">
+    <div style="max-width:860px; margin:0 auto; background:#ffffff; border:1px solid var(--line); border-radius:24px; padding:clamp(20px, 4vw, 36px); box-shadow:var(--shadow-card);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; flex-wrap:wrap; gap:10px;">
+        <div>
+          <div style="display:flex; align-items:center; gap:8px; font-size:20px; font-weight:800; color:var(--indigo);">
+            <span>🌐</span> <span data-i18n="pop_title">Uzbekistan Population</span>
+          </div>
+          <div style="font-size:13px; color:rgba(28,26,23,0.6); margin-top:3px;">
+            Source: Worldometer (UN data)
+          </div>
+        </div>
+        <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(46,125,50,0.1); border:1px solid rgba(46,125,50,0.25); color:#2e7d32; font-size:12px; font-weight:700; padding:4px 12px; border-radius:999px;">
+          <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#2e7d32; animation:pulseDot 1.5s infinite;"></span>
+          LIVE
+        </div>
+      </div>
+
+      <div style="text-align:center; margin:28px 0 32px;">
+        <div id="livePopNumber" style="font-family:var(--font-display); font-size:clamp(38px, 6vw, 62px); font-weight:800; color:var(--indigo); letter-spacing:-0.02em; line-height:1;">
+          37,869,795
+        </div>
+        <div style="margin-top:10px; font-size:14.5px; font-weight:700; color:#2e7d32; display:flex; align-items:center; justify-content:center; gap:6px;">
+          <span>↗</span> +1.81% / year (~670,795)
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:18px; margin-bottom:24px;">
+        <!-- Male Card (Blue) -->
+        <div style="background:#eef3fc; border:1px solid rgba(25,118,210,0.18); border-radius:18px; padding:22px 20px; text-align:center;">
+          <div style="font-size:32px; margin-bottom:6px;">👱‍♂️</div>
+          <div style="font-size:14px; font-weight:700; color:rgba(28,26,23,0.7); margin-bottom:6px;"><span data-i18n="pop_male">Male</span> (50.4%)</div>
+          <div style="font-family:var(--font-display); font-size:26px; font-weight:800; color:var(--indigo);" id="popMaleCount">19,086,377</div>
+        </div>
+
+        <!-- Female Card (Pink) -->
+        <div style="background:#fdeef2; border:1px solid rgba(233,30,99,0.18); border-radius:18px; padding:22px 20px; text-align:center;">
+          <div style="font-size:32px; margin-bottom:6px;">👱‍♀️</div>
+          <div style="font-size:14px; font-weight:700; color:rgba(28,26,23,0.7); margin-bottom:6px;"><span data-i18n="pop_female">Female</span> (49.6%)</div>
+          <div style="font-family:var(--font-display); font-size:26px; font-weight:800; color:var(--indigo);" id="popFemaleCount">18,783,418</div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px; margin-bottom:20px;">
+        <div style="background:#f7f7f9; border-radius:14px; padding:12px 10px; text-align:center; border:1px solid var(--line-soft);">
+          <div style="font-size:12px; color:rgba(28,26,23,0.6); font-weight:600;" data-i18n="pop_median_age">Median Age</div>
+          <div style="font-size:17px; font-weight:800; color:var(--indigo); margin-top:2px;">27 yrs</div>
+        </div>
+        <div style="background:#f7f7f9; border-radius:14px; padding:12px 10px; text-align:center; border:1px solid var(--line-soft);">
+          <div style="font-size:12px; color:rgba(28,26,23,0.6); font-weight:600;" data-i18n="pop_density">Density</div>
+          <div style="font-size:17px; font-weight:800; color:var(--indigo); margin-top:2px;">89/km²</div>
+        </div>
+        <div style="background:#f7f7f9; border-radius:14px; padding:12px 10px; text-align:center; border:1px solid var(--line-soft);">
+          <div style="font-size:12px; color:rgba(28,26,23,0.6); font-weight:600;" data-i18n="pop_urban">Urban</div>
+          <div style="font-size:17px; font-weight:800; color:var(--indigo); margin-top:2px;">47.9%</div>
+        </div>
+        <div style="background:#f7f7f9; border-radius:14px; padding:12px 10px; text-align:center; border:1px solid var(--line-soft);">
+          <div style="font-size:12px; color:rgba(28,26,23,0.6); font-weight:600;" data-i18n="pop_rank">World Rank</div>
+          <div style="font-size:17px; font-weight:800; color:var(--indigo); margin-top:2px;">#43</div>
+        </div>
+      </div>
+
+      <div style="text-align:center; margin-top:16px;">
+        <a href="https://www.worldometers.info/world-population/uzbekistan-population/" target="_blank" rel="noopener noreferrer" style="font-size:13.5px; font-weight:700; color:var(--clay); text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+          View on Worldometer ↗
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============ UZBEKISTAN 14 REGIONS WEATHER SECTION ============ -->
+<section id="weather-section" style="padding:60px 0; background:var(--sand); border-top:1px solid var(--line);">
+  <div class="container">
+    <div class="section-head" style="margin-bottom:24px;">
+      <div>
+        <span class="eyebrow" data-i18n="weather_eyebrow">Ob-havo ma'lumotlari</span>
+        <h2 style="font-family:var(--font-display); font-size:clamp(24px, 3.5vw, 34px); color:var(--indigo); margin-top:4px;" data-i18n="weather_title">
+          O'zbekiston viloyatlari bo'yicha jonli ob-havo
+        </h2>
+        <p style="margin-top:6px; color:rgba(28,26,23,0.7); max-width:620px; font-size:14.5px;" data-i18n="weather_sub">
+          Sayohatingizni rejalashtirish uchun 14 ta hududdagi ayni paytdagi havo harorati va holati.
+        </p>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <input type="text" id="weatherRegionFilter" placeholder="Viloyatni qidirish..." style="padding:8px 14px; border-radius:10px; border:1px solid var(--line); font-size:13.5px; width:180px;">
+      </div>
+    </div>
+
+    <div id="weatherGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:16px;">
+      <!-- Populated via JavaScript with 14 regions -->
+    </div>
+  </div>
+</section>
+
+
+<!-- ============ TASHKENT METRO BANNER (3-rasmdagi metro) ============ -->
+<section id="metro-banner-section" style="padding:40px 0; background:var(--paper); border-top:1px solid var(--line);">
+  <div class="container">
+    <div style="background:linear-gradient(135deg, var(--indigo) 0%, #0d172c 100%); border-radius:24px; padding:clamp(24px, 5vw, 42px); color:#ffffff; display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap; box-shadow:var(--shadow-pop);">
+      <div style="max-width:580px;">
+        <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.15); padding:4px 12px; border-radius:999px; font-size:12px; font-weight:700; margin-bottom:12px; letter-spacing:0.04em;">
+          🚇 YANGI IMKONIYAT
+        </div>
+        <h2 style="font-family:var(--font-display); font-size:clamp(24px, 3.5vw, 34px); line-height:1.2; margin:0 0 10px;">
+          Toshkent Metropoliteni Interaktiv Xaritasi
+        </h2>
+        <p style="font-size:15px; color:rgba(255,255,255,0.8); line-height:1.55; margin:0;">
+          Chilonzor, O'zbekiston, Yunusobod va yangi Yerusti Halqa yo'li bekatlari bo'yicha eng qulay yo'nalish va sayohat vaqtini aniqlang.
+        </p>
+      </div>
+      <div>
+        <a href="metro.html" class="btn" style="background:#ffffff; color:var(--indigo); font-weight:800; padding:14px 26px; border-radius:14px; font-size:15px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 4px 16px rgba(0,0,0,0.2); transition:transform 0.15s ease;">
+          🗺️ Metro xaritasini ochish →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<!-- ============ HOMES GALLERY ("O'zbekistonning har bir burchagidan tanlab olingan joylar") ============ -->
+<section id="homes-gallery" style="padding:74px 0;">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow" data-i18n="homes_eyebrow">Uylar va turargohlar</span>
+        <h2 data-i18n="homes_h2">O'zbekistonning har bir burchagidan tanlab olingan joylar.</h2>
+      </div>
+      <a href="stays.html" class="view-all" data-i18n="homes_viewall">Barchasini ko'rish →</a>
+    </div>
+    <div class="gallery-mosaic">
+      <div class="gallery-left-col">
+        <a class="gallery-small gallery-card-link" href="stays.html?tag=Courtyard">
+          <img src="https://i.pinimg.com/originals/d1/29/82/d129822a2e000bff87a006931a840348.jpg?nii=t" alt="Samarqand Registon Maydoni" loading="lazy">
+          <span class="gallery-label">Registan · Samarkand</span>
+        </a>
+        <a class="gallery-small gallery-card-link" href="stays.html?city=Bukhara">
+          <img src="https://ic.pics.livejournal.com/petrushanov.blog/24556835/593276/593276_original.jpg" alt="Old Town Oasis Bukhara" loading="lazy">
+          <span class="gallery-label">Old Town Oasis · Bukhara</span>
+        </a>
+        <a class="gallery-small gallery-card-link" href="stays.html?tag=Traditional">
+          <img src="https://live.staticflickr.com/586/33283090542_794399d986_h.jpg" alt="Traditional Bazaar in Tashkent" loading="lazy">
+          <span class="gallery-label">Chorsu · Tashkent</span>
+        </a>
+      </div>
+      <div class="gallery-side">
+        <a class="gallery-small gallery-card-link" href="stays.html?tag=Mountain%20view">
+          <img src="https://travelata.ru/blog/wp-content/uploads/2025/04/Hiva.jpg" alt="Xorazm" loading="lazy">
+          <span class="gallery-label">Ichan Qa`la · Xorazm </span>
+        </a>
+        <a class="gallery-small gallery-card-link" href="stays.html?tag=Yurt%20stay">
+          <img src="https://static.tildacdn.com/tild3737-6637-4261-a164-313030666265/day3.jpg" alt="Mountain" loading="lazy">
+          <span class="gallery-label">Tovqsoy Mountains · Tashkent</span>
+        </a>
+      </div>
+      <div class="gallery-bottom">
+        <a class="gallery-med gallery-card-link" href="stays.html?tag=Historic">
+          <img src="https://i.pinimg.com/originals/af/1b/78/af1b78acddb29cec6f1f371fbe39c9d9.jpg" alt="Merchant House Khiva" loading="lazy">
+          <span class="gallery-label">Nest One · Tashkent</span>
+        </a>
+        <a class="gallery-med gallery-card-link" href="stays.html?city=Samarkand">
+          <img src="https://www.afisha.uz/uploads/media/2019/06/0136162.jpeg" alt="Rooftop Apt Samarkand" loading="lazy">
+          <span class="gallery-label">Teleminora · Tashkent</span>
+        </a>
+        <a class="gallery-med gallery-card-link" href="stays.html?tag=City%20Center">
+          <img src="http://duskrider.narod.ru/foto17-3/uzbekistan147.jpg" alt="City Apartment Tashkent" loading="lazy">
+          <span class="gallery-label">Amir Temur Garden · Tashkent</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============ SERVICES / MAHSULOTLAR SECTION ============ -->
+<section id="services-section" style="padding:70px 0; background:var(--sand);">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Xizmatlar va Mahsulotlar</span>
+        <h2 style="font-family:var(--font-display); font-size:clamp(26px, 3.5vw, 36px); color:var(--indigo); margin-top:6px;">
+          Safar bilan O'zbekistonning barcha imkoniyatlari
+        </h2>
+        <p style="margin-top:6px; color:rgba(28,26,23,0.7); max-width:620px;">
+          Turar joylardan tortib milliy kulolchilik durdonalarigacha ? sayohatingiz uchun barcha xizmatlar bir joyda.
+        </p>
+      </div>
+      <a href="services.html" class="view-all">To'liq xizmatlar sahifasi ?</a>
+    </div>
+
+    <div class="home-services-grid">
+      <!-- 1: Stays -->
+      <div class="home-service-card">
+        <div class="home-service-img">
+          <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&q=80" alt="Uylar va Stays" loading="lazy">
+          <span class="home-service-tag">Homes & Stays</span>
+        </div>
+        <div class="home-service-body">
+          <h3>Milliy Hovlilar & Mehmonxonalar</h3>
+          <p>Buxoro va Xivadagi qadimiy naqshinkor milliy uylar, tog' kottejlari va cho'ldagi o'tov lagerlari.</p>
+          <a href="stays.html" class="home-service-link">Uylarni ko'rish ?</a>
+        </div>
+      </div>
+
+      <!-- 2: Places -->
+      <div class="home-service-card">
+        <div class="home-service-img">
+          <img src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=500&q=80" alt="Qadamjolar" loading="lazy">
+          <span class="home-service-tag">Places & Culture</span>
+        </div>
+        <div class="home-service-body">
+          <h3>Tarixiy Obidalar va Maskanlar</h3>
+          <p>Registon, Ichan Qal'a, Shohi Zinda va 14 ta hududdagi afsonaviy maskanlar interaktiv xaritasi.</p>
+          <a href="places.html" class="home-service-link">Joylar xaritasi ?</a>
+        </div>
+      </div>
+
+      <!-- 3: Foods -->
+      <div class="home-service-card">
+        <div class="home-service-img">
+          <img src="https://images.unsplash.com/photo-1541832676-9b763b0239ab?w=500&q=80" alt="Milliy oshxona" loading="lazy">
+          <span class="home-service-tag">Traditional Foods</span>
+        </div>
+        <div class="home-service-body">
+          <h3>O'zbek Milliy Oshxonasi</h3>
+          <p>Samarqandcha ziq palov, Toshkent to'y oshi, Jizzax somsasi va eng mashhur milliy choyxonalar.</p>
+          <a href="foods.html" class="home-service-link">Taomlar ro'yxati ?</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ REVIEWS SECTION (Sharhlar - Bosh sahifa oxirida) ============ -->
+<section id="reviews-section" style="background:var(--sand-deep); padding:80px 0; border-top: 1px solid var(--line-soft);">
+  <div class="container">
+    <div class="section-head" style="margin-bottom:48px;">
+      <div>
+        <span class="eyebrow" data-i18n="rev_eyebrow">Sayohatchilar sharhlari</span>
+        <h2 data-i18n="rev_h2">Haqiqiy sayohatlardan haqiqiy hikoyalar</h2>
+      </div>
+      <button class="btn btn-primary" id="openReviewModal" data-i18n="rev_btn">Tajribangizni ulashing</button>
+    </div>
+    <!-- Reviews preview row (general reviews only) -->
+    <div class="reviews-row-wrap">
+      <div class="reviews-row" id="reviewsFeed">
+        <div class="review-skeleton-card"></div>
+        <div class="review-skeleton-card"></div>
+        <div class="review-skeleton-card"></div>
+      </div>
+    </div>
+    <!-- Show all button -->
+    <div id="reviewsShowAllWrap" style="display:none; text-align:center; margin-top:32px;">
+      <button class="btn btn-ghost" id="reviewsShowAllBtn">Barchasini ko'rish ↓</button>
+    </div>
+    <!-- All reviews expanded -->
+    <div class="reviews-grid" id="reviewsAllGrid" style="display:none; margin-top:32px;"></div>
+  </div>
+</section>
+
+<!-- ============ REVIEW MODAL ============ -->
+<div class="modal-overlay" id="reviewModal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="modalTitle" data-i18n="modal_title">Tajribangizni ulashing</h3>
+      <button class="modal-close" id="closeReviewModal" aria-label="Close modal">✕</button>
+    </div>
+    <div id="modalAuthGate" style="display:none; text-align:center; padding:24px 0;">
+      <p data-i18n="modal_signin_msg">Sharh qoldirish uchun tizimga kiring.</p>
+      <div style="display:flex; gap:12px; justify-content:center; margin-top:16px;">
+        <a href="login.html?redirect=reviews" class="btn btn-primary" data-i18n="modal_signin_btn">Kirish</a>
+        <a href="signup.html?redirect=reviews" class="btn btn-ghost" data-i18n="modal_signup_btn">Ro'yxatdan o'tish</a>
+      </div>
+    </div>
+    <form id="reviewForm" style="display:none;">
+      <div class="rev-form-row">
+        <div class="rev-field">
+          <label for="revLocation" data-i18n="modal_stay">Uy / Joylashuv</label>
+          <input type="text" id="revLocation" placeholder="e.g. Bukhara Courtyard House">
+        </div>
+        <div class="rev-field">
+          <label data-i18n="modal_rating">Baho</label>
+          <div class="star-picker" id="starPicker">
+            <span class="star active" data-v="1" role="button" aria-label="1 star">★</span>
+            <span class="star active" data-v="2" role="button" aria-label="2 stars">★</span>
+            <span class="star active" data-v="3" role="button" aria-label="3 stars">★</span>
+            <span class="star active" data-v="4" role="button" aria-label="4 stars">★</span>
+            <span class="star active" data-v="5" role="button" aria-label="5 stars">★</span>
+          </div>
+          <input type="hidden" id="revRating" value="5">
+        </div>
+      </div>
+      <div class="rev-field">
+        <label for="revText" data-i18n="modal_text">Sharhingiz</label>
+        <textarea id="revText" rows="4" placeholder="Boshqalarga tajribangiz haqida aytib bering…" data-i18n-placeholder="modal_text_ph"></textarea>
+      </div>
+      <!-- Media upload -->
+      <div class="rev-field">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <label data-i18n="modal_media">Rasmlar (Max 5MB / rasm)</label>
+          <button type="button" id="btnAddPhoto" class="btn btn-ghost" style="padding:4px 10px; font-size:12px; font-weight:700;">
+            + Add photo
+          </button>
+        </div>
+        <div class="media-drop" id="mediaDrop" tabindex="0" role="button" aria-label="Upload photos or video">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="1.7"/><polyline points="17 8 12 3 7 8" stroke="currentColor" stroke-width="1.7"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="1.7"/></svg>
+          <span data-i18n="modal_media_hint">Rasm/video yuklash uchun bosing yoki torting</span>
+          <input type="file" id="mediaInput" accept="image/*,video/*" multiple style="display:none;">
+        </div>
+        <div class="media-preview-list" id="mediaPreviewList" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;"></div>
+      </div>
+      <div class="form-alert" id="revAlert"></div>
+      <div class="form-success" id="revSuccessBox"></div>
+      <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;" id="revSubmitBtn" data-i18n="modal_submit">Sharh joylash</button>
+    </form>
+  </div>
+</div>
+
+<div id="site-footer"></div>
+
+<script src="js/partials.js"></script>
+<script src="js/i18n.js"></script>
+<script>
+const API = window.SAFAR_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
+
+function escapeHtml(str) {
+  if (!str) return "";
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// Search submit button
+const searchSubmitBtn = document.getElementById("searchSubmitBtn");
+if (searchSubmitBtn) {
+  searchSubmitBtn.onclick = () => {
+    const loc = encodeURIComponent(document.getElementById("searchLocation")?.value.trim() || "");
+    location.href = `stays.html?location=${loc}`;
+  };
+}
+
+// ====== REVIEWS SECTION ======
+// Only show general reviews (no targetType) on home page preview row
+function buildReviewCard(r) {
+  const session = window.SafarSession ? window.SafarSession.getSession() : null;
+  const isAdmin = session && (session.user.role === "admin" || (session.user.email || "").toLowerCase() === "abdulquddusxoshimov777@gmail.com");
+  const isOwner = session && r.id && (
+    isAdmin ||
+    (r.userId && String(r.userId) === String(session.user.id)) ||
+    (r.userEmail && r.userEmail.toLowerCase() === (session.user.email || "").toLowerCase())
+  );
+
+  const safeRevText = (r.text || "").replace(/\\/g, "\\\\").replace(/`/g, "\\`").replace(/\$/g, "\\$").replace(/"/g, "&quot;");
+  const editBtn = isOwner ? `<button type="button" class="btn-edit-review" onclick="editReviewItem('${r.id}', \`${safeRevText}\`, ${r.rating})" title="Sharhni tahrirlash" style="margin-left:6px; font-size:11px; background:rgba(20,32,56,0.08); color:var(--indigo); border:none; border-radius:6px; padding:2px 8px; cursor:pointer; font-weight:700;">✏️ Tahrirlash</button>` : '';
+  const deleteBtn = isOwner ? `<button type="button" class="btn-delete-review" onclick="deleteReview('${r.id}')" title="Sharhni o'chirish" style="margin-left:4px; font-size:11px; background:rgba(193,101,47,0.1); color:var(--clay); border:none; border-radius:6px; padding:2px 8px; cursor:pointer; font-weight:700;">🗑 O'chirish</button>` : '';
+
+  const stars = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
+  const date = new Date(r.createdAt).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
+  let mediaPart = "";
+  const allMedia = Array.isArray(r.mediaBase64List) && r.mediaBase64List.length > 0
+    ? r.mediaBase64List
+    : (r.mediaBase64 ? [r.mediaBase64] : []);
+
+  if (allMedia.length > 0) {
+    if (allMedia.length === 1) {
+      if (r.mediaType === "video") {
+        mediaPart = `<video class="review-media" src="${allMedia[0]}" controls muted></video>`;
+      } else {
+        mediaPart = `<img class="review-media" src="${allMedia[0]}" alt="Review photo" loading="lazy">`;
+      }
+    } else {
+      const imgsHtml = allMedia.map(src => `<img src="${src}" alt="Review photo" loading="lazy" style="width:110px; height:110px; object-fit:cover; border-radius:10px; flex-shrink:0;">`).join("");
+      mediaPart = `<div class="review-media-gallery" style="display:flex; gap:8px; overflow-x:auto; padding:4px 0; margin-bottom:12px;">${imgsHtml}</div>`;
+    }
+  }
+  return `
+    <div class="review-card">
+      <div class="review-header">
+        <a href="profile.html?id=${encodeURIComponent(r.userId || r.userEmail || '')}" class="review-avatar" aria-hidden="true" style="text-decoration:none;" title="${escapeHtml(r.userName)} profilini ko'rish">${escapeHtml((r.userName||"?")[0].toUpperCase())}</a>
+        <div class="review-meta">
+          <strong style="display:inline-flex; align-items:center; flex-wrap:wrap;">
+            <a href="profile.html?id=${encodeURIComponent(r.userId || r.userEmail || '')}" style="color:inherit; text-decoration:none;" title="${escapeHtml(r.userName)} profilini ko'rish">${escapeHtml(r.userName)}</a>
+            ${editBtn} ${deleteBtn}
+          </strong>
+          <span class="review-loc">${escapeHtml(r.location || r.stayTitle || "")}</span>
+        </div>
+        <div class="review-stars" aria-label="${r.rating} stars">${stars}</div>
+      </div>
+      ${mediaPart}
+      <p class="review-text">${escapeHtml(r.text)}</p>
+      <span class="review-date">${escapeHtml(date)}</span>
+    </div>`;
+}
+
+window.editReviewItem = function(id, currentText, currentRating) {
+  if (window.openEditReviewModal) {
+    window.openEditReviewModal(id, currentText, currentRating, () => {
+      loadReviews();
+    });
+  }
+};
+
+window.deleteReview = async function(id) {
+  const sessionObj = window.SafarSession ? window.SafarSession.getSession() : null;
+  if (!sessionObj) return alert("Avval tizimga kiring.");
+
+  const confirmed = window.safarConfirm ? await window.safarConfirm({
+    title: "Sharhni o'chirish",
+    message: "Ushbu sharhni o'chirishni tasdiqlaysizmi?",
+    icon: "🗑",
+    confirmText: "Ha, o'chirish",
+    cancelText: "Bekor qilish",
+    danger: true
+  }) : confirm("Ushbu sharhni o'chirishni tasdiqlaysizmi?");
+
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch(`${API}/api/reviews/${id}`, {
+      method: "DELETE",
+      headers: { "Authorization": `Bearer ${sessionObj.token}` }
+    });
+    const dData = await res.json();
+    if (dData.ok) {
+      if (window.safarAlert) {
+        await window.safarAlert({ title: "O'chirildi", message: "Sharh muvaffaqiyatli o'chirildi.", icon: "✅" });
+      } else {
+        alert("Sharh muvaffaqiyatli o'chirildi.");
+      }
+      loadReviews();
+    } else {
+      alert(dData.message || "Sharhni o'chirishda xatolik.");
+    }
+  } catch(err) {
+    alert("Server bilan bog'lanishda xatolik.");
+  }
+};
+
+let reviewsAutoScrollTimer = null;
+
+async function loadReviews() {
+  const feed = document.getElementById("reviewsFeed");
+  const showAllWrap = document.getElementById("reviewsShowAllWrap");
+  const allGrid = document.getElementById("reviewsAllGrid");
+  try {
+    const res = await fetch(`${API}/api/reviews`);
+    const data = await res.json();
+    // Filter: only show reviews WITHOUT a targetType (general/public reviews)
+    const generalReviews = (data.reviews || []).filter(r => !r.targetType);
+    if (generalReviews.length === 0) {
+      const emptyMsg = window.safar_t ? window.safar_t("rev_empty") : "Hozircha sharhlar yo'q. Birinchi bo'ling!";
+      feed.innerHTML = `<div class="review-empty" data-i18n="rev_empty">${escapeHtml(emptyMsg)}</div>`;
+      return;
+    }
+    // Sort general reviews: 5/5 stars FIRST
+    generalReviews.sort((a, b) => {
+      if (b.rating !== a.rating) return b.rating - a.rating;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+
+    // Render all general reviews in horizontal feed
+    feed.innerHTML = generalReviews.map(r => buildReviewCard(r)).join("");
+
+    // Show "Barchasini ko'rish" button if more than 3 reviews
+    if (generalReviews.length > 3) {
+      showAllWrap.style.display = "block";
+      allGrid.innerHTML = generalReviews.map(r => buildReviewCard(r)).join("");
+      const showAllBtn = document.getElementById("reviewsShowAllBtn");
+      if (showAllBtn) {
+        showAllBtn.onclick = () => {
+          if (allGrid.style.display === "none") {
+            allGrid.style.display = "grid";
+            showAllBtn.textContent = "Yig'ish ↑";
+          } else {
+            allGrid.style.display = "none";
+            showAllBtn.textContent = "Barchasini ko'rish ↓";
+          }
+        };
+      }
+    }
+
+    // Auto-scroll feed every 2 seconds
+    if (reviewsAutoScrollTimer) clearInterval(reviewsAutoScrollTimer);
+    reviewsAutoScrollTimer = setInterval(() => {
+      if (feed.matches(":hover")) return;
+      const step = 340;
+      const maxScroll = feed.scrollWidth - feed.clientWidth;
+      if (feed.scrollLeft >= maxScroll - 10) {
+        feed.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        feed.scrollBy({ left: step, behavior: "smooth" });
+      }
+    }, 2000);
+  } catch(e) {
+    console.error("Failed to load reviews:", e);
+    const errMsg = window.safar_t ? window.safar_t("msg_err_server") : "Server bilan bog'lanib bo'lmadi.";
+    feed.innerHTML = `<div class="review-empty">${escapeHtml(errMsg)}</div>`;
+  }
+}
+loadReviews();
+
+// Modal open/close & auto-open via query param
+const modal = document.getElementById("reviewModal");
+const reviewForm = document.getElementById("reviewForm");
+const authGate = document.getElementById("modalAuthGate");
+const openReviewBtn = document.getElementById("openReviewModal");
+const closeReviewBtn = document.getElementById("closeReviewModal");
+
+function openModal() {
+  modal.style.display = "flex";
+  const token = localStorage.getItem("safar_token");
+  if (token) {
+    reviewForm.style.display = "block";
+    authGate.style.display = "none";
+  } else {
+    reviewForm.style.display = "none";
+    authGate.style.display = "block";
+  }
+}
+
+if (openReviewBtn) openReviewBtn.onclick = openModal;
+if (closeReviewBtn) closeReviewBtn.onclick = () => { modal.style.display = "none"; };
+modal.addEventListener("click", e => { if(e.target === modal) modal.style.display = "none"; });
+
+// Check URL param ?open=reviews
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get("open") === "reviews") {
+  setTimeout(() => openModal(), 200);
+}
+
+// Star picker caching
+let selectedRating = 5;
+const starsList = document.querySelectorAll("#starPicker .star");
+starsList.forEach(s => {
+  s.onclick = () => {
+    selectedRating = parseInt(s.dataset.v);
+    document.getElementById("revRating").value = selectedRating;
+    starsList.forEach((x, i) => x.classList.toggle("active", i < selectedRating));
+  };
+});
+
+// Multi-photo media upload with 5MB validation limit
+let mediaItems = [];
+const btnAddPhoto = document.getElementById("btnAddPhoto");
+const mediaDrop = document.getElementById("mediaDrop");
+const mediaInput = document.getElementById("mediaInput");
+const mediaPreviewList = document.getElementById("mediaPreviewList");
+
+if (btnAddPhoto) btnAddPhoto.onclick = () => mediaInput.click();
+
+if (mediaDrop) {
+  mediaDrop.onclick = () => mediaInput.click();
+  mediaDrop.ondragover = e => { e.preventDefault(); mediaDrop.classList.add("drag-over"); };
+  mediaDrop.ondragleave = () => mediaDrop.classList.remove("drag-over");
+  mediaDrop.ondrop = e => {
+    e.preventDefault();
+    mediaDrop.classList.remove("drag-over");
+    if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+  };
+}
+if (mediaInput) {
+  mediaInput.onchange = () => { if (mediaInput.files.length) handleFiles(mediaInput.files); };
+}
+
+function handleFiles(files) {
+  Array.from(files).forEach(file => {
+    const isVideo = file.type.startsWith("video/");
+    const isImage = file.type.startsWith("image/");
+    if (!isVideo && !isImage) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Fayl hajmi 5MB dan oshmasligi kerak.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = ev => {
+      mediaItems.push({ data: ev.target.result, type: isVideo ? "video" : "image" });
+      renderMediaPreviews();
+    };
+    reader.readAsDataURL(file);
+  });
+  mediaInput.value = "";
+}
+
+function renderMediaPreviews() {
+  mediaPreviewList.innerHTML = "";
+  mediaItems.forEach((item, idx) => {
+    const itemWrap = document.createElement("div");
+    itemWrap.style.cssText = "position:relative; display:inline-block;";
+    if (item.type === "video") {
+      itemWrap.innerHTML = `<video src="${item.data}" controls muted style="width:85px; height:85px; object-fit:cover; border-radius:10px;"></video>`;
+    } else {
+      itemWrap.innerHTML = `<img src="${item.data}" style="width:85px; height:85px; object-fit:cover; border-radius:10px; border:1px solid var(--line-soft);">`;
+    }
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.innerHTML = "✕";
+    delBtn.style.cssText = "position:absolute; top:-6px; right:-6px; background:var(--clay); color:#fff; border:none; border-radius:50%; width:20px; height:20px; font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center;";
+    delBtn.onclick = () => {
+      mediaItems.splice(idx, 1);
+      renderMediaPreviews();
+    };
+    itemWrap.appendChild(delBtn);
+    mediaPreviewList.appendChild(itemWrap);
+  });
+}
+
+// Submit review form with reset & UX feedback
+reviewForm.addEventListener("submit", async e => {
+  e.preventDefault();
+  const token = localStorage.getItem("safar_token");
+  const text = document.getElementById("revText").value.trim();
+  const rating = parseInt(document.getElementById("revRating").value);
+  const locationName = document.getElementById("revLocation").value.trim();
+  const alertBox = document.getElementById("revAlert");
+  const successBox = document.getElementById("revSuccessBox");
+  
+  alertBox.classList.remove("show");
+  successBox.classList.remove("show");
+
+  if (!text) {
+    const writeMsg = window.safar_t ? window.safar_t("msg_rev_write") : "Iltimos, sharhingizni yozing.";
+    alertBox.textContent = writeMsg;
+    alertBox.classList.add("show");
+    return;
+  }
+
+  const btn = document.getElementById("revSubmitBtn");
+  btn.disabled = true;
+  btn.textContent = "Posting…";
+
+  const mediaBase64List = mediaItems.map(m => m.data);
+  const mediaBase64 = mediaItems[0] ? mediaItems[0].data : null;
+  const mediaType = mediaItems[0] ? mediaItems[0].type : null;
+
+  try {
+    const res = await fetch(`${API}/api/reviews`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+      body: JSON.stringify({ text, rating, location: locationName, mediaBase64, mediaType, mediaBase64List })
+    });
+    const data = await res.json();
+    if (!data.ok) {
+      alertBox.textContent = data.message || "Error submitting review.";
+      alertBox.classList.add("show");
+    } else {
+      const succMsg = window.safar_t ? window.safar_t("msg_rev_success") : "Sharhingiz muvaffaqiyatli joylandi!";
+      successBox.textContent = succMsg;
+      successBox.classList.add("show");
+
+      // Reset form & state
+      reviewForm.reset();
+      selectedRating = 5;
+      starsList.forEach(x => x.classList.add("active"));
+      mediaItems = [];
+      renderMediaPreviews();
+
+      setTimeout(() => {
+        modal.style.display = "none";
+        successBox.classList.remove("show");
+        loadReviews();
+        document.getElementById("reviews-section").scrollIntoView({ behavior: "smooth" });
+      }, 1200);
+    }
+  } catch(err) {
+    console.error("Submit review error:", err);
+    const servMsg = window.safar_t ? window.safar_t("msg_err_server") : "Server bilan bog'lanib bo'lmadi.";
+    alertBox.textContent = servMsg;
+    alertBox.classList.add("show");
+  }
+  btn.disabled = false;
+  btn.textContent = window.safar_t ? window.safar_t("modal_submit") : "Sharh joylash";
+});
+
+// ---- LIVE DEMOGRAPHIC POPULATION TICKER ----
+(function() {
+  let basePop = 37869795;
+  const popEl = document.getElementById("livePopNumber");
+  const maleEl = document.getElementById("popMaleCount");
+  const femaleEl = document.getElementById("popFemaleCount");
+
+  function updatePop() {
+    if (!popEl) return;
+    popEl.textContent = basePop.toLocaleString("en-US");
+    const males = Math.round(basePop * 0.504);
+    const females = basePop - males;
+    if (maleEl) maleEl.textContent = males.toLocaleString("en-US");
+    if (femaleEl) femaleEl.textContent = females.toLocaleString("en-US");
+  }
+
+  // Ticks by 1 every 47 seconds (realistic rate for ~670,000/yr)
+  setInterval(() => {
+    basePop += 1;
+    updatePop();
+  }, 47000);
+  updatePop();
+})();
+
+// ---- 14 REGIONS WEATHER WIDGET ----
+(function() {
+  const REGIONS_WEATHER_CONFIG = [
+    { id: "toshkent_sh", name: "Toshkent shahri", lat: 41.3113, lon: 69.2797, fallbackTemp: 24, fallbackCode: 0 },
+    { id: "samarqand", name: "Samarqand", lat: 39.6542, lon: 66.9597, fallbackTemp: 23, fallbackCode: 1 },
+    { id: "buxoro", name: "Buxoro", lat: 39.7747, lon: 64.4286, fallbackTemp: 26, fallbackCode: 0 },
+    { id: "xorazm", name: "Xorazm / Xiva", lat: 41.3783, lon: 60.3639, fallbackTemp: 22, fallbackCode: 2 },
+    { id: "andijon", name: "Andijon", lat: 40.7821, lon: 72.3442, fallbackTemp: 21, fallbackCode: 1 },
+    { id: "fargona", name: "Farg'ona", lat: 40.3864, lon: 71.7864, fallbackTemp: 22, fallbackCode: 0 },
+    { id: "namangan", name: "Namangan", lat: 41.0011, lon: 71.6683, fallbackTemp: 21, fallbackCode: 2 },
+    { id: "qashqadaryo", name: "Qashqadaryo (Qarshi)", lat: 38.8606, lon: 65.7891, fallbackTemp: 27, fallbackCode: 0 },
+    { id: "surxondaryo", name: "Surxondaryo (Termiz)", lat: 37.2242, lon: 67.2783, fallbackTemp: 29, fallbackCode: 0 },
+    { id: "jizzax", name: "Jizzax", lat: 40.1158, lon: 67.8422, fallbackTemp: 23, fallbackCode: 1 },
+    { id: "sirdaryo", name: "Sirdaryo (Guliston)", lat: 40.4897, lon: 68.7842, fallbackTemp: 24, fallbackCode: 0 },
+    { id: "navoiy", name: "Navoiy", lat: 40.0844, lon: 65.3792, fallbackTemp: 25, fallbackCode: 0 },
+    { id: "toshkent_vil", name: "Toshkent viloyati", lat: 41.4667, lon: 69.5833, fallbackTemp: 22, fallbackCode: 1 },
+    { id: "qoraqalpogiston", name: "Qoraqalpog'iston (Nukus)", lat: 42.4602, lon: 59.6166, fallbackTemp: 21, fallbackCode: 2 }
+  ];
+
+  function getWeatherDesc(code) {
+    if (code === 0) return { icon: "☀️", text: "Quyoshli / Musaffo" };
+    if (code <= 3) return { icon: "⛅", text: "Qisman bulutli" };
+    if (code <= 48) return { icon: "🌫️", text: "Tumanli" };
+    if (code <= 67) return { icon: "🌧️", text: "Yomg'irli" };
+    if (code <= 77) return { icon: "❄️", text: "Qorli" };
+    if (code <= 82) return { icon: "🌦️", text: "Jala / Yomg'ir" };
+    return { icon: "🌤️", text: "Iliq va ochiq" };
+  }
+
+  const grid = document.getElementById("weatherGrid");
+  const filterInput = document.getElementById("weatherRegionFilter");
+
+  function renderWeatherCards(dataList) {
+    if (!grid) return;
+    grid.innerHTML = dataList.map(item => {
+      const cond = getWeatherDesc(item.code);
+      return `
+        <div class="weather-card" style="background:#ffffff; border:1px solid var(--line); border-radius:16px; padding:18px 16px; box-shadow:var(--shadow-card); display:flex; flex-direction:column; transition:transform 0.2s ease;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+            <div style="font-size:14px; font-weight:700; color:var(--indigo); line-height:1.2;">${item.name}</div>
+            <div style="font-size:26px;">${cond.icon}</div>
+          </div>
+          <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:8px;">
+            <span style="font-family:var(--font-display); font-size:32px; font-weight:800; color:var(--ink);">${item.temp}°</span>
+            <span style="font-size:12px; font-weight:600; color:rgba(28,26,23,0.6);">C</span>
+          </div>
+          <div style="font-size:12.5px; font-weight:600; color:var(--clay); margin-bottom:10px;">${cond.text}</div>
+          <div style="display:flex; justify-content:space-between; font-size:11.5px; color:rgba(28,26,23,0.65); border-top:1px solid var(--line-soft); padding-top:8px; margin-top:auto;">
+            <span>💧 Namlik: ${item.humidity}%</span>
+            <span>💨 ${item.wind} km/soat</span>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  // Initial render with instant realistic fallbacks
+  let currentWeatherItems = REGIONS_WEATHER_CONFIG.map(r => ({
+    name: r.name,
+    temp: r.fallbackTemp,
+    code: r.fallbackCode,
+    humidity: 45,
+    wind: 12
+  }));
+  renderWeatherCards(currentWeatherItems);
+
+  // Filter input
+  if (filterInput) {
+    filterInput.addEventListener("input", () => {
+      const q = filterInput.value.toLowerCase().trim();
+      const filtered = currentWeatherItems.filter(i => i.name.toLowerCase().includes(q));
+      renderWeatherCards(filtered);
+    });
+  }
+
+  // Fetch live weather in background via Open-Meteo
+  async function fetchLiveWeather() {
+    try {
+      const promises = REGIONS_WEATHER_CONFIG.map(async (r) => {
+        try {
+          const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${r.lat}&longitude=${r.lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`);
+          const d = await res.json();
+          if (d && d.current) {
+            return {
+              name: r.name,
+              temp: Math.round(d.current.temperature_2m),
+              code: d.current.weather_code,
+              humidity: d.current.relative_humidity_2m,
+              wind: Math.round(d.current.wind_speed_10m)
+            };
+          }
+        } catch(e) {
+          // ignore individual fails
+        }
+        return {
+          name: r.name,
+          temp: r.fallbackTemp,
+          code: r.fallbackCode,
+          humidity: 45,
+          wind: 12
+        };
+      });
+
+      const results = await Promise.all(promises);
+      if (results && results.length) {
+        currentWeatherItems = results;
+        renderWeatherCards(currentWeatherItems);
+      }
+    } catch(err) {
+      console.warn("Weather fetch fallback in use:", err);
+    }
+  }
+
+  setTimeout(fetchLiveWeather, 300);
+})();
+
+</script>
+</body>
+</html>

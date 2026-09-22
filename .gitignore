@@ -1,0 +1,34 @@
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+backend/.env
+
+# Sensitive user data files (DO NOT commit these)
+backend/users.json
+backend/reviews.json
+backend/messages.json
+backend/server.log
+
+# listings.json IS committed (public data needed for the app to work)
+
+# Uploaded files (large binary files - use cloud storage in production)
+public/uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+*.code-workspace
+.vscode/
+.idea/
+
+# Temp files
+*.tmp
+*.log

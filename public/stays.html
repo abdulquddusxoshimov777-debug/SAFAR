@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stays in Uzbekistan — Safar</title>
+<meta name="description" content="Browse hand-picked homes, courtyards and mountain retreats across Uzbekistan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Leaflet.js -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<link rel="stylesheet" href="css/style.css?v=2.2">
+<style>
+  .filter-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(28,26,23,0.5);
+    margin-bottom: 6px;
+    margin-top: 12px;
+  }
+  .btn-detail {
+    display: inline-block;
+    padding: 8px 14px;
+    background: var(--sand-deep);
+    border: 1px solid var(--sand-dark);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--charcoal);
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .btn-detail:hover {
+    background: var(--sand-dark);
+  }
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<section style="padding-top:28px;">
+  <div class="container">
+    <div class="section-head" style="margin-bottom:20px;">
+      <div>
+        <span class="eyebrow" id="stayCountLabel">Homes along the Silk Road</span>
+        <h2>Stays in Uzbekistan</h2>
+      </div>
+    </div>
+
+    <!-- VILOYAT / CITY FILTERS -->
+    <div class="filter-section-title">📍 Viloyat / Shahar bo'yicha saralash:</div>
+    <div class="filters" id="cityFilterRow" style="margin-bottom:12px;">
+      <button type="button" class="pill active" data-city="All">🌐 Barcha viloyatlar</button>
+      <button type="button" class="pill" data-city="Tashkent">Toshkent</button>
+      <button type="button" class="pill" data-city="Andijan">Andijon</button>
+      <button type="button" class="pill" data-city="Bukhara">Buxoro</button>
+      <button type="button" class="pill" data-city="Jizzakh">Jizzax</button>
+      <button type="button" class="pill" data-city="Kashkadarya">Qashqadaryo</button>
+      <button type="button" class="pill" data-city="Navoiy">Navoiy</button>
+      <button type="button" class="pill" data-city="Namangan">Namangan</button>
+      <button type="button" class="pill" data-city="Samarkand">Samarqand</button>
+      <button type="button" class="pill" data-city="Surkhandarya">Surxondaryo</button>
+      <button type="button" class="pill" data-city="Sirdarya">Sirdaryo</button>
+      <button type="button" class="pill" data-city="Fergana">Farg`ona</button>
+      <button type="button" class="pill" data-city="Khorazm">Xorazm</button>
+    </div>
+
+    <!-- TYPE FILTERS -->
+    <div class="filter-section-title">🏡 Uy turi bo'yicha saralash:</div>
+    <div class="filters" id="filterRow">
+      <button type="button" class="pill active" data-tag="All">✨ <span data-i18n="filter_all">Barcha turlar</span></button>
+      <button type="button" class="pill" data-tag="Official Hotel"> <span data-i18n="filter_courtyard">Hotel </span></button>
+      <button type="button" class="pill" data-tag="Home Hotel"><span data-i18n="filter_city">UY Hotel</span></button>
+      <button type="button" class="pill" data-tag="Night Hotel"> <span data-i18n="filter_mountain">Hostel</span></button>
+      <button type="button" class="pill" data-tag="Mountain view"> <span data-i18n="filter_historic">Dacha</span></button>
+      <button type="button" class="pill" data-tag="Yurt stay"><span data-i18n="filter_yurt">Chodir</span></button>
+      <button type="button" class="pill" data-tag="Historical"> <span data-i18n="filter_trad">Tarixiy</span></button>
+    </div>
+
+    <div class="listing-layout">
+      <div class="stay-list" id="stayList">
+        <div class="review-skeleton-card"></div>
+        <div class="review-skeleton-card"></div>
+      </div>
+
+      <div class="map-panel" id="mapPanel">
+        <div id="mapMount" style="width:100%;height:100%;"></div>
+        <div class="map-pin-card" id="mapCard" style="display:none;">
+          <img id="mapCardImg" src="" alt="">
+          <h4 id="mapCardTitle"></h4>
+          <div class="row">
+            <span id="mapCardRating"></span>
+            <strong id="mapCardPrice"></strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="js/partials.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/favorites.js"></script>
+<script src="js/map.js"></script>
+<script>
+const API = window.SAFAR_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
+
+function escapeHtml(str) {
+  if (!str) return "";
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+let allStays = [];
+let activeCity = "All";
+let activeTag = "All";
+let mapController = null;
+
+// Parse URL Query Params
+const urlParams = new URLSearchParams(window.location.search);
+const queryLocation = (urlParams.get("location") || urlParams.get("city") || "").trim().toLowerCase();
+const queryGuests = parseInt(urlParams.get("guests")) || 1;
+const queryTag = (urlParams.get("tag") || "").trim();
+
+if (queryTag) {
+  activeTag = queryTag;
+}
+
+function getFilteredStays() {
+  return allStays.filter(s => {
+    // City filter
+    if (activeCity !== "All") {
+      const c = (s.city || "").toLowerCase();
+      const a = activeCity.toLowerCase();
+      const cityAliases = {
+        "tashkent": ["tashkent", "toshkent"],
+        "samarkand": ["samarkand", "samarqand"],
+        "bukhara": ["bukhara", "buxoro"],
+        "andijan": ["andijan", "andijon"],
+        "fergana": ["fergana", "farg'ona", "farg`ona", "fargona"],
+        "namangan": ["namangan"],
+        "khorazm": ["khorazm", "xorazm", "xiva", "khiva"],
+        "kashkadarya": ["kashkadarya", "qashqadaryo", "qarshi"],
+        "surkhandarya": ["surkhandarya", "surxondaryo", "termiz"],
+        "jizzakh": ["jizzakh", "jizzax"],
+        "navoiy": ["navoiy", "navoi"],
+        "sirdarya": ["sirdarya", "guliston"]
+      };
+      const allowed = cityAliases[a] || [a];
+      if (!allowed.some(name => c.includes(name))) return false;
+    }
+    // Tag match
+    if (activeTag !== "All") {
+      const t = (s.tag || "").toLowerCase();
+      const at = activeTag.toLowerCase();
+      if (!t.includes(at) && !at.includes(t)) return false;
+    }
+    // Location query match
+    if (queryLocation) {
+      const matchCity = (s.city || "").toLowerCase().includes(queryLocation);
+      const matchTitle = (s.title || "").toLowerCase().includes(queryLocation);
+      const matchTag = (s.tag || "").toLowerCase().includes(queryLocation);
+      if (!matchCity && !matchTitle && !matchTag) return false;
+    }
+    // Guests match
+    if (s.guests && s.guests < queryGuests) return false;
+    return true;
+  });
+}
+
+function renderList() {
+  const list = document.getElementById("stayList");
+  const filtered = getFilteredStays();
+  document.getElementById("stayCountLabel").textContent = `${filtered.length} homes along the Silk Road`;
+  
+  if (!filtered.length) {
+    const emptyMsg = window.safar_t ? window.safar_t("msg_empty_stays") : "No stays found matching your criteria.";
+    list.innerHTML = `
+      <div class="empty-stays-card">
+        <div class="empty-icon" aria-hidden="true">🏛</div>
+        <h3>${escapeHtml(emptyMsg)}</h3>
+        <p>Try searching for a different city or clearing your filters.</p>
+        <button type="button" class="btn btn-ghost" onclick="resetFilters()" style="margin-top:12px;">Clear filters</button>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map((s) => {
+    const session = window.SafarSession ? window.SafarSession.getSession() : null;
+    const isOwner = session && window.checkCanEditOrDelete && window.checkCanEditOrDelete(s, session.user);
+    const deleteListingBtn = isOwner ? `<button type="button" class="btn-delete-listing" onclick="event.stopPropagation(); deleteListing('stays', ${s.id})" title="E'lonni o'chirish">🗑 Ochirish</button>` : '';
+    const editListingBtn = isOwner ? `<button type="button" class="btn-edit-listing" onclick="event.stopPropagation(); openEditListingModal('stays', ${s.id})" title="E'lonni tahrirlash" style="background:rgba(20,32,56,0.08); color:var(--indigo); border:none; border-radius:8px; padding:6px 12px; font-size:12.5px; font-weight:700; cursor:pointer;">✏️ Tahrirlash</button>` : '';
+    const gMapUrl = s.googleMapsUrl || `https://maps.google.com/?q=${s.coordinates ? s.coordinates[0] : 41.3113},${s.coordinates ? s.coordinates[1] : 69.2797}`;
+    return `
+    <div class="stay-card" data-id="${s.id}" onclick="selectStay(${s.id}, true)">
+      <div class="stay-thumb">
+        <img src="${escapeHtml(s.image || "")}" alt="${escapeHtml(s.title)}" loading="lazy">
+        ${s.superhost ? '<span class="badge-super">Superhost</span>' : ""}
+        <button type="button" class="heart-btn ${window.SafarFav?.isFavorite('stay', s.id) ? 'active' : ''}" aria-label="Favorite stay" onclick="toggleFav(event, 'stay', ${s.id})">${window.SafarFav?.isFavorite('stay', s.id) ? '❤️' : '♡'}</button>
+      </div>
+      <div class="stay-body">
+        <div class="stay-top">
+          <div>
+            <div class="stay-loc">${escapeHtml(s.tag)} in ${escapeHtml(s.city)}</div>
+            <div class="stay-title">${escapeHtml(s.title)}</div>
+          </div>
+          <div class="rating"><span style="color:var(--gold)" aria-hidden="true">★</span> ${s.rating} <span style="font-weight:400;opacity:.6">(${s.reviews})</span></div>
+        </div>
+        <div class="stay-meta">${s.guests || 2} guests · ${s.beds || 1} beds · ${s.baths || 1} bath</div>
+        <div class="tag-row">${(s.amenities || []).map((a) => `<span class="tag">${escapeHtml(a)}</span>`).join("")}</div>
+        
+        <div class="stay-price-row" style="margin-top:12px; display:flex; gap:8px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+          <div class="stay-price">${s.price} <span>/ person</span></div>
+          <div style="display:flex; gap:6px; align-items:center;">
+            ${editListingBtn}
+            ${deleteListingBtn}
+          </div>
+        </div>
+        <div class="card-actions-row" style="margin-top:12px;">
+          <a class="btn-detail" href="detail.html?type=stay&id=${s.id}" onclick="event.stopPropagation()">🔍 Batafsil</a>
+          <a class="btn-book" href="${escapeHtml(gMapUrl)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">📍 Maps xarita</a>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+window.toggleFav = function(e, type, id) {
+  e.stopPropagation();
+  const item = allStays.find(x => x.id === id);
+  if (item && window.SafarFav) {
+    const isNowFav = window.SafarFav.toggleFavorite({ type: "stay", id: item.id, title: item.title, city: item.city, price: `${item.price}/night`, image: item.image });
+    const btn = e.currentTarget;
+    btn.classList.toggle("active", isNowFav);
+    btn.textContent = isNowFav ? "❤️" : "♡";
+  }
+};
+
+window.selectStay = function (id, syncMap) {
+  const stay = allStays.find((s) => s.id === id);
+  if (!stay) return;
+  document.querySelectorAll(".stay-card").forEach((c) => c.classList.remove("selected"));
+  const cardEl = document.querySelector(`.stay-card[data-id="${id}"]`);
+  if (cardEl) {
+    cardEl.classList.add("selected");
+    if (!syncMap) cardEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  if (syncMap && mapController) mapController.highlightStay(id);
+};
+
+window.resetFilters = function() {
+  activeCity = "All";
+  activeTag = "All";
+  document.querySelectorAll("#cityFilterRow .pill").forEach(p => p.classList.toggle("active", p.dataset.city === "All"));
+  document.querySelectorAll("#filterRow .pill").forEach(p => p.classList.toggle("active", p.dataset.tag === "All"));
+  history.replaceState(null, "", "stays.html");
+  renderList();
+  if (mapController) mapController.updateMarkers(allStays);
+};
+
+// City filter handler
+document.getElementById("cityFilterRow").addEventListener("click", (e) => {
+  const pill = e.target.closest(".pill");
+  if (!pill) return;
+  document.querySelectorAll("#cityFilterRow .pill").forEach((p) => p.classList.remove("active"));
+  pill.classList.add("active");
+  activeCity = pill.dataset.city;
+  renderList();
+  const filtered = getFilteredStays();
+  if (mapController) {
+    mapController.updateMarkers(filtered);
+    if (filtered.length > 0) selectStay(filtered[0].id, true);
+  }
+});
+
+// Tag filter handler
+document.getElementById("filterRow").addEventListener("click", (e) => {
+  const pill = e.target.closest(".pill");
+  if (!pill) return;
+  document.querySelectorAll("#filterRow .pill").forEach((p) => p.classList.remove("active"));
+  pill.classList.add("active");
+  activeTag = pill.dataset.tag;
+  renderList();
+  const filtered = getFilteredStays();
+  if (mapController) {
+    mapController.updateMarkers(filtered);
+    if (filtered.length > 0) selectStay(filtered[0].id, true);
+  }
+});
+
+async function load() {
+  try {
+    const res = await fetch(`${API}/api/stays`);
+    const data = await res.json();
+    allStays = data.stays || [];
+  } catch (err) {
+    console.error("Failed to load stays:", err);
+    document.getElementById("stayList").innerHTML =
+      `<p style="color:rgba(28,26,23,0.5);">Couldn't reach the Safar backend. Make sure the backend server is running.</p>`;
+    return;
+  }
+
+  // Highlight active tag pill if set in query
+  if (queryTag) {
+    document.querySelectorAll("#filterRow .pill").forEach(p => {
+      p.classList.toggle("active", p.dataset.tag === queryTag);
+    });
+  }
+
+  renderList();
+
+  const filtered = getFilteredStays();
+  mapController = window.initStaysMap("mapMount", filtered.length ? filtered : allStays, (clickedStay) => {
+    selectStay(clickedStay.id, false);
+  });
+  if (filtered[0]) setTimeout(() => { selectStay(filtered[0].id, true); }, 450);
+}
+load();
+</script>
+</body>
+</html>

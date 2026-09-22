@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your account — Safar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=2.2">
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<section class="account-hero" style="padding-bottom:0;">
+  <div class="container">
+    <span class="eyebrow">Your account</span>
+    <h1 id="greeting">Welcome</h1>
+  </div>
+</section>
+
+<section style="padding-top:0;">
+  <div class="container">
+    <div class="account-card">
+      <div style="position:relative; display:inline-block;">
+        <div class="account-avatar" id="avatar" style="position:relative; cursor:pointer; overflow:hidden;" title="Profil rasmini o'zgartirish">?</div>
+        <button type="button" id="btnUploadAvatar" style="position:absolute; bottom:0; right:0; background:var(--turquoise-deep); color:#fff; border:none; border-radius:50%; width:32px; height:32px; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.2);" title="Profil rasmini yuklash">📷</button>
+        <input type="file" id="avatarFileInput" accept="image/*" style="display:none;">
+      </div>
+      <div class="account-fields">
+        <div class="account-field">
+          <div class="label">Full name</div>
+          <div class="value" id="fieldName">—</div>
+        </div>
+        <div class="account-field">
+          <div class="label">Email</div>
+          <div class="value" id="fieldEmail">—</div>
+        </div>
+        <div class="account-field">
+          <div class="label">Akkaunt turi (Role)</div>
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <div class="value" id="fieldRole" style="font-weight:700; color:var(--turquoise-deep);">—</div>
+            <button type="button" id="btnToggleRole" class="btn btn-ghost" style="padding:4px 10px; font-size:12px; border-radius:8px;" title="Akkaunt turini almashtirish">
+              🔄 Rolni o'zgartirish (Mezbon ↔ Turist)
+            </button>
+          </div>
+        </div>
+        <div class="account-field">
+          <div class="label">Member since</div>
+          <div class="value" id="fieldSince">—</div>
+        </div>
+        <div class="account-field">
+          <div class="label">Account ID</div>
+          <div class="value" id="fieldId" style="font-family:var(--font-mono);font-weight:600;font-size:13.5px;">—</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost" id="signOutBtn">Sign out</button>
+      <button type="button" class="btn" id="deleteAccountBtn" style="margin-top:10px; background:rgba(193,101,47,0.12); color:var(--clay); border:1px solid rgba(193,101,47,0.3); width:100%; border-radius:12px; padding:10px 16px; font-weight:700; cursor:pointer;">🗑 Akkauntni o'chirish (Delete account)</button>
+    </div>
+
+    <!-- TEZKOR XIZMATLAR VA BOSHQARUV (Yangi e'lon, Sevimlilar, Til tanlash) -->
+    <div class="account-quick-card" style="margin-top:28px; background:var(--paper); border:1px solid var(--line); border-radius:18px; padding:24px; box-shadow:var(--shadow-card);">
+      <div style="margin-bottom:18px;">
+        <h3 style="font-family:var(--font-display); font-size:20px; color:var(--indigo); margin-bottom:4px; display:flex; align-items:center; gap:8px;">
+          <span>⚡</span> Qulayliklar va Tezkor Amallar
+        </h3>
+        <p style="color:rgba(28,26,23,0.7); font-size:13.5px; margin:0;">E'lon joylash, saqlangan sevimlilarni ko'rish va til sozlamalarini boshqaring.</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px;">
+        <!-- 1: Add Listing -->
+        <a href="#" class="trigger-add-listing" onclick="if(window.openAddListingModal){window.openAddListingModal();}else{const b=document.getElementById('openAddListingBtn');if(b)b.click();}return false;" style="display:flex; align-items:center; gap:14px; padding:16px 18px; background:var(--turquoise-deep); color:#fff; border-radius:14px; text-decoration:none; font-weight:700; box-shadow:0 3px 10px rgba(0,0,0,0.12); transition:transform 0.15s ease;">
+          <span style="font-size:24px; background:rgba(255,255,255,0.22); width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">➕</span>
+          <div>
+            <div style="font-size:15.5px; line-height:1.2;">Yangi e'lon joylash</div>
+            <div style="font-size:12px; opacity:0.88; font-weight:400; margin-top:3px;">Uy, joy, taom yoki buyum</div>
+          </div>
+        </a>
+
+        <!-- 2: Favorites / Saved Items -->
+        <a href="saved.html" style="display:flex; align-items:center; gap:14px; padding:16px 18px; background:rgba(217,83,79,0.08); border:1px solid rgba(217,83,79,0.25); color:var(--ink); border-radius:14px; text-decoration:none; font-weight:700; transition:transform 0.15s ease;">
+          <span style="font-size:24px; background:rgba(217,83,79,0.14); width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">❤️</span>
+          <div>
+            <div style="font-size:15.5px; color:#d9534f; line-height:1.2;">Sevimlilar ro'yxati</div>
+            <div style="font-size:12px; opacity:0.75; font-weight:400; margin-top:3px;">Saqlab qo'yilgan joylar</div>
+          </div>
+        </a>
+
+        <!-- 3: Language Selector -->
+        <div style="display:flex; flex-direction:column; justify-content:center; gap:8px; padding:14px 18px; background:var(--sand); border:1px solid var(--line); border-radius:14px;">
+          <div style="font-size:13px; font-weight:700; color:var(--ink); display:flex; align-items:center; gap:6px;">
+            <span>🌐</span> Tilni tanlash / Language
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="lang-option btn btn-ghost" data-lang="uz" style="flex:1; padding:7px 4px; font-size:12px; border-radius:8px; font-weight:700;">🇺🇿 UZ</button>
+            <button type="button" class="lang-option btn btn-ghost" data-lang="ru" style="flex:1; padding:7px 4px; font-size:12px; border-radius:8px; font-weight:700;">🇷🇺 RU</button>
+            <button type="button" class="lang-option btn btn-ghost" data-lang="en" style="flex:1; padding:7px 4px; border-radius:8px; border:1px solid var(--line); font-size:12px; font-weight:700;">🇬🇧 EN</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY POSTED LISTINGS SECTION -->
+    <div id="myListingsSection" style="margin-top:36px; background:var(--paper); border:1px solid var(--line); border-radius:18px; padding:28px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2 style="font-family:var(--font-display); font-size:24px; margin-bottom:4px;">📋 Mening joylagan e'lonlarim</h2>
+          <p style="color:rgba(28,26,23,0.7); font-size:14px;">Ushbu akkauntingiz orqali e'lon qilingan barcha joylar ro'yxati.</p>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="const b=document.getElementById('openAddListingBtn'); if(b)b.click();" style="padding:8px 18px; font-size:13.5px;">
+          + Yangi e'lon qo'shish
+        </button>
+      </div>
+
+      <div id="myListingsContainer" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px;">
+        <div class="review-skeleton-card"></div>
+      </div>
+    </div>
+
+    <div class="account-panels" style="margin-top:32px;">
+      <div class="account-panel">
+        <div class="icn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 12h16M4 12l5-5M4 12l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Upcoming trips</h3>
+        <p>You have no upcoming stays yet. Browse listings to plan your next journey.</p>
+      </div>
+      <a href="saved.html" class="account-panel" style="text-decoration:none; color:inherit; cursor:pointer;">
+        <div class="icn">♡</div>
+        <h3>Saved stays (Sevimlilar)</h3>
+        <p>Tap the heart on any listing to save it here. Click to view all saved items.</p>
+      </a>
+      <div class="account-panel">
+        <div class="icn">✎</div>
+        <h3>Account settings</h3>
+        <p>Name and email are managed here once you connect a full profile page.</p>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:36px;">
+      <a href="stays.html" class="btn btn-dark">Browse stays</a>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="js/partials.js"></script>
+<script src="js/i18n.js"></script>
+<script>
+const API = window.SAFAR_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
+const token = localStorage.getItem("safar_token");
+const cachedUser = localStorage.getItem("safar_user");
+
+if (!token || !cachedUser) {
+  location.href = "login.html";
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function paint(user) {
+  document.getElementById("greeting").textContent = `Welcome, ${user.name.split(" ")[0]}`;
+  
+  const avatarEl = document.getElementById("avatar");
+  if (user.avatarUrl) {
+    avatarEl.innerHTML = `<img src="${user.avatarUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+  } else {
+    avatarEl.textContent = window.SafarSession ? window.SafarSession.initials(user.name) : (user.name[0] || "?");
+  }
+
+  document.getElementById("fieldName").textContent = user.name;
+  document.getElementById("fieldEmail").textContent = user.email;
+  document.getElementById("fieldId").textContent = user.id;
+
+  const isAdmin = user.role === "admin" || user.email.toLowerCase() === "abdulquddusxoshimov777@gmail.com";
+  const isHost = user.role === "host";
+  
+  if (isAdmin) {
+    document.getElementById("fieldRole").textContent = "👑 Bosh Administrator (Admin)";
+  } else if (isHost) {
+    document.getElementById("fieldRole").textContent = "🏠 Joy beruvchi / Mezbon (Host)";
+  } else {
+    document.getElementById("fieldRole").textContent = "✈️ Sayohatchi / Turist (Tourist)";
+  }
+
+  document.getElementById("fieldSince").textContent = user.createdAt
+    ? new Date(user.createdAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })
+    : "—";
+}
+
+// Show cached data immediately, then confirm with the backend.
+if (cachedUser) paint(JSON.parse(cachedUser));
+
+async function refresh() {
+  try {
+    const res = await fetch(`${API}/api/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (data.ok) {
+      paint(data.user);
+      localStorage.setItem("safar_user", JSON.stringify(data.user));
+    } else {
+      localStorage.removeItem("safar_token");
+      localStorage.removeItem("safar_user");
+      location.href = "login.html";
+    }
+  } catch {
+    // Backend unreachable — keep showing cached data.
+  }
+}
+refresh();
+
+// AVATAR UPLOAD HANDLER
+const avatarFileInput = document.getElementById("avatarFileInput");
+const btnUploadAvatar = document.getElementById("btnUploadAvatar");
+const avatarBox = document.getElementById("avatar");
+
+if (btnUploadAvatar && avatarFileInput) {
+  btnUploadAvatar.onclick = () => avatarFileInput.click();
+  avatarBox.onclick = () => avatarFileInput.click();
+
+  avatarFileInput.onchange = () => {
+    const file = avatarFileInput.files[0];
+    if (!file || !file.type.startsWith("image/")) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const base64Src = e.target.result;
+      try {
+        const res = await fetch(`${API}/api/me/avatar`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ avatarUrl: base64Src })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          localStorage.setItem("safar_user", JSON.stringify(data.user));
+          paint(data.user);
+          if (window.renderHeader) window.renderHeader();
+          alert("Profil rasmingiz muvaffaqiyatli saqlandi!");
+        } else {
+          alert(data.message || "Rasm yuklashda xatolik.");
+        }
+      } catch(err) {
+        alert("Server bilan bog'lanishda xatolik.");
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+}
+
+// ROLE TOGGLE HANDLER (Mezbon ↔ Turist)
+const btnToggleRole = document.getElementById("btnToggleRole");
+if (btnToggleRole) {
+  btnToggleRole.onclick = async () => {
+    const current = JSON.parse(localStorage.getItem("safar_user") || "{}");
+    const targetRole = current.role === "host" ? "tourist" : "host";
+    const label = targetRole === "host" ? "Joy beruvchi / Mezbon (Host)" : "Sayohatchi / Turist (Tourist)";
+    
+    const confirmed = await window.safarConfirm({
+      title: "Akkaunt turini o'zgartirish",
+      message: `Akkauntingiz turini "${label}"ga o'zgartirishni tasdiqlaysizmi?`,
+      icon: "🔄",
+      confirmText: "Ha, o'zgartirish",
+      cancelText: "Bekor qilish"
+    });
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch(`${API}/api/me/role`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ role: targetRole })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        localStorage.setItem("safar_user", JSON.stringify(data.user));
+        paint(data.user);
+        if (window.renderHeader) window.renderHeader();
+        await window.safarAlert({ title: "Muvaffaqiyatli", message: data.message || "Akkaunt turi o'zgardi!", icon: "🎉" });
+      } else {
+        await window.safarAlert({ title: "Xatolik", message: data.message || "Xatolik yuz berdi.", icon: "⚠️" });
+      }
+    } catch(err) {
+      await window.safarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
+    }
+  };
+}
+
+async function loadMyListings() {
+  const container = document.getElementById("myListingsContainer");
+  if (!container) return;
+  try {
+    const res = await fetch(`${API}/api/me/listings`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.ok && data.listings && data.listings.length > 0) {
+      container.innerHTML = data.listings.map(item => {
+        const cat = item.categoryType || "stays";
+        const singleType = cat === "places" ? "place" : (cat === "foods" ? "food" : (cat === "crafts" ? "craft" : "stay"));
+        const detailUrl = `detail.html?type=${singleType}&id=${item.id}`;
+        const catBadge = cat === "places" ? "Diqqatga sazovor joy" : (cat === "foods" ? "Milliy taom" : (cat === "crafts" ? "Buyum" : "Uy / Turargoh"));
+        return `
+          <div class="stay-card" style="display:flex; flex-direction:column; padding:0; overflow:hidden; border:1px solid var(--line-soft);">
+            <div class="stay-thumb" style="height:170px; border-radius:0;">
+              <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}" loading="lazy">
+              <span class="badge-super" style="text-transform:uppercase;">${escapeHtml(item.tag || catBadge)}</span>
+            </div>
+            <div class="stay-body" style="padding:16px;">
+              <div class="stay-loc" style="text-transform:uppercase; font-size:11px;">${escapeHtml(item.city)}</div>
+              <h4 style="font-size:16px; margin:6px 0 10px; font-family:var(--font-display); line-height:1.3; color:var(--ink);">${escapeHtml(item.title)}</h4>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:10px; border-top:1px solid rgba(28,26,23,0.08);">
+                <strong style="font-size:15px; color:var(--ink);">${escapeHtml(String(item.price))}</strong>
+                <div style="display:flex; gap:6px;">
+                  <a href="${detailUrl}" class="btn-detail" style="padding:6px 12px; font-size:12px; border-radius:8px; text-decoration:none;">🔍 Batafsil</a>
+                  <button type="button" class="btn-edit-listing" onclick="openEditListingModal('${cat}', ${item.id})" style="padding:6px 10px; font-size:12px; background:rgba(20,32,56,0.08); color:var(--indigo); border:none; border-radius:8px; cursor:pointer; font-weight:700;" title="E'lonni tahrirlash">✏️</button>
+                  <button type="button" class="btn-delete-listing" onclick="deleteMyListing('${cat}', ${item.id})" style="padding:6px 10px; font-size:12px; background:rgba(193,101,47,0.1); color:var(--clay); border:none; border-radius:8px; cursor:pointer; font-weight:700;" title="E'lonni o'chirish">🗑</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    } else {
+      container.innerHTML = `
+        <div style="grid-column:1 / -1; text-align:center; padding:36px 16px; background:var(--sand-light); border-radius:12px;">
+          <div style="font-size:36px; margin-bottom:8px;">🏠</div>
+          <h4 style="font-size:17px; margin-bottom:6px;">Hozircha siz e'lon joylamagansiz</h4>
+          <p style="font-size:13.5px; color:rgba(28,26,23,0.6); margin-bottom:14px;">Yuqoridagi "+ Add" yoki "+ Yangi e'lon qo'shish" tugmasi orqali joy, taom yoki buyum e'loningizni joylang.</p>
+        </div>
+      `;
+    }
+  } catch (err) {
+    console.error("Failed to load user listings:", err);
+    container.innerHTML = `<div style="grid-column:1 / -1; color:rgba(0,0,0,0.5); text-align:center; padding:20px;">E'lonlarni yuklashda xatolik yuz berdi.</div>`;
+  }
+}
+
+window.deleteMyListing = async function(category, id) {
+  const confirmed = await window.safarConfirm({
+    title: "E'lonni o'chirish",
+    message: "Ushbu e'loningizni o'chirishni tasdiqlaysizmi? Bu amalni ortga qaytarib bo'lmaydi.",
+    icon: "🗑",
+    confirmText: "Ha, o'chirish",
+    cancelText: "Bekor qilish",
+    danger: true
+  });
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch(`${API}/api/listings/${category}/${id}`, {
+      method: "DELETE",
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.ok) {
+      await window.safarAlert({ title: "O'chirildi", message: "E'loningiz muvaffaqiyatli o'chirildi.", icon: "✅" });
+      loadMyListings();
+    } else {
+      await window.safarAlert({ title: "Xatolik", message: data.message || "Xatolik yuz berdi.", icon: "⚠️" });
+    }
+  } catch(err) {
+    await window.safarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
+  }
+};
+
+loadMyListings();
+
+document.getElementById("signOutBtn").addEventListener("click", () => {
+  localStorage.removeItem("safar_token");
+  localStorage.removeItem("safar_user");
+  location.href = "login.html";
+});
+
+// DELETE ACCOUNT HANDLER
+document.getElementById("deleteAccountBtn").addEventListener("click", async () => {
+  const confirmed = await window.safarConfirm({
+    title: "Akkauntni o'chirish",
+    message: "Haqiqatan ham akkauntingizni o'chirib tashlamoqchimisiz?\n\nUshbu amalni ortga qaytarib bo'lmaydi!",
+    icon: "⚠️",
+    confirmText: "Ha, akkauntni o'chirish",
+    cancelText: "Bekor qilish",
+    danger: true
+  });
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch(`${API}/api/me`, {
+      method: "DELETE",
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.ok) {
+      await window.safarAlert({ title: "Xayr!", message: data.message || "Akkauntingiz o'chirildi.", icon: "👋" });
+      localStorage.removeItem("safar_token");
+      localStorage.removeItem("safar_user");
+      location.href = "index.html";
+    } else {
+      await window.safarAlert({ title: "Xatolik", message: data.message || "Akkauntni o'chirishda xatolik.", icon: "⚠️" });
+    }
+  } catch(err) {
+    await window.safarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
+  }
+});
+</script>
+
+</body>
+</html>

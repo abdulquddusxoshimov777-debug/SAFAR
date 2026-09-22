@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Popular Places & Monuments — Safar</title>
+<meta name="description" content="Explore ancient cities, historic monuments and natural wonders across Uzbekistan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Leaflet.js -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<link rel="stylesheet" href="css/style.css?v=2.2">
+<style>
+  .btn-detail {
+    display: inline-block;
+    padding: 8px 14px;
+    background: var(--sand-deep);
+    border: 1px solid var(--sand-dark);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--charcoal);
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .btn-detail:hover {
+    background: var(--sand-dark);
+  }
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<section style="padding-top:28px;">
+  <div class="container">
+    <div class="section-head" style="margin-bottom:20px;">
+      <div>
+        <span class="eyebrow" id="placeCountLabel">5 Legendary Destinations</span>
+        <h2 data-i18n="dest_h2">Explore the legendary cities of the Silk Road, each with its own colour and character.</h2>
+        <p style="margin-top:6px; color:rgba(28,26,23,0.7);"></p>
+      </div>
+    </div>
+
+    <!-- VILOYAT / CITY FILTERS -->
+    <div class="filter-section-title" style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(28,26,23,0.5); margin-bottom: 6px;">📍 Viloyat / Shahar:</div>
+    <div class="filters" id="placeCityFilterRow" style="margin-bottom: 12px;">
+      <button type="button" class="pill active" data-city="All">🌐 Barcha viloyatlar</button>
+      <button type="button" class="pill" data-city="Tashkent">Toshkent</button>
+      <button type="button" class="pill" data-city="Andijan">Andijon</button>
+      <button type="button" class="pill" data-city="Bukhara">Buxoro</button>
+      <button type="button" class="pill" data-city="Jizzakh">Jizzax</button>
+      <button type="button" class="pill" data-city="Kashkadarya">Qashqadaryo</button>
+      <button type="button" class="pill" data-city="Navoiy">Navoiy</button>
+      <button type="button" class="pill" data-city="Namangan">Namangan</button>
+      <button type="button" class="pill" data-city="Samarkand">Samarqand</button>
+      <button type="button" class="pill" data-city="Surkhandarya">Surxondaryo</button>
+      <button type="button" class="pill" data-city="Sirdarya">Sirdaryo</button>
+      <button type="button" class="pill" data-city="Fergana">Farg`ona</button>
+      <button type="button" class="pill" data-city="Khorazm">Xorazm</button>
+    </div>
+
+    <!-- CATEGORY FILTERS -->
+    <div class="filter-section-title" style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(28,26,23,0.5); margin-bottom: 6px;">🎯 Joy turi:</div>
+    <div class="filters" id="placeCategoryFilterRow">
+      <button type="button" class="pill active" data-category="All">🌐 Barcha turlar</button>
+      <button type="button" class="pill" data-category="Monuments">🏛 Tarixiy obidalar</button>
+      <button type="button" class="pill" data-category="Parks">🌳 Bog'lar & Parklar</button>
+      <button type="button" class="pill" data-category="Bazaars">🛍 Bozorlar</button>
+      <button type="button" class="pill" data-category="Nature">⛰ Tabiat & Tog'lar</button>
+      <button type="button" class="pill" data-category="Museums">🎨 Muzey va San'at</button>
+      <button type="button" class="pill" data-category="Museums">🍇Restaurantlar</button>
+    </div>
+
+    <div class="listing-layout">
+      <div class="stay-list" id="placeList">
+        <div class="review-skeleton-card"></div>
+        <div class="review-skeleton-card"></div>
+      </div>
+
+      <div class="map-panel" id="mapPanel">
+        <div id="mapMount" style="width:100%;height:100%;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="js/partials.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/favorites.js"></script>
+<script src="js/map.js"></script>
+<script>
+const API = window.SAFAR_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
+
+function escapeHtml(str) {
+  if (!str) return "";
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+let allPlaces = [];
+let activeCity = "All";
+let activeCategory = "All";
+let placeMapController = null;
+
+function getFilteredPlaces() {
+  return allPlaces.filter(p => {
+    if (activeCity !== "All") {
+      const c = (p.city || "").toLowerCase();
+      const a = activeCity.toLowerCase();
+      const cityAliases = {
+        "tashkent": ["tashkent", "toshkent"],
+        "samarkand": ["samarkand", "samarqand"],
+        "bukhara": ["bukhara", "buxoro"],
+        "andijan": ["andijan", "andijon"],
+        "fergana": ["fergana", "farg'ona", "farg`ona", "fargona"],
+        "namangan": ["namangan"],
+        "khorazm": ["khorazm", "xorazm", "xiva", "khiva"],
+        "kashkadarya": ["kashkadarya", "qashqadaryo", "qarshi"],
+        "surkhandarya": ["surkhandarya", "surxondaryo", "termiz"],
+        "jizzakh": ["jizzakh", "jizzax"],
+        "navoiy": ["navoiy", "navoi"],
+        "sirdarya": ["sirdarya", "guliston"]
+      };
+      const allowed = cityAliases[a] || [a];
+      if (!allowed.some(name => c.includes(name))) return false;
+    }
+
+    if (activeCategory !== "All") {
+      const catMap = {
+        "monuments": ["monument", "tarixiy", "obida", "maqbara"],
+        "parks": ["park", "bog'", "xiyobon"],
+        "bazaars": ["bazaar", "bozor", "rasta"],
+        "nature": ["nature", "tabiat", "tog'", "ko'l", "sharshara"],
+        "museums": ["museum", "muzey", "san'at", "galereya"]
+      };
+      const pc = (p.category || p.tag || "").toLowerCase();
+      const ac = activeCategory.toLowerCase();
+      const allowedCats = catMap[ac] || [ac];
+      if (!allowedCats.some(t => pc.includes(t)) && !pc.includes(ac)) return false;
+    }
+    return true;
+  });
+}
+
+function renderPlaceList() {
+  const list = document.getElementById("placeList");
+  const filtered = getFilteredPlaces();
+  document.getElementById("placeCountLabel").textContent = `diqqatga sazovor joylar`;
+
+  if (!filtered.length) {
+    list.innerHTML = `
+      <div class="empty-stays-card">
+        <div class="empty-icon" aria-hidden="true">🏛</div>
+        <h3>Ushbu mezon bo'yicha joylar topilmadi</h3>
+        <button type="button" class="btn btn-ghost" onclick="resetPlaceFilters()" style="margin-top:12px;">Filtrlarni tozalash</button>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(p => {
+    const session = window.SafarSession ? window.SafarSession.getSession() : null;
+    const isOwner = session && window.checkCanEditOrDelete && window.checkCanEditOrDelete(p, session.user);
+    const deleteListingBtn = isOwner ? `<button type="button" class="btn-delete-listing" onclick="event.stopPropagation(); deleteListing('places', ${p.id})" title="E'lonni o'chirish">🗑 Ochirish</button>` : '';
+    const editListingBtn = isOwner ? `<button type="button" class="btn-edit-listing" onclick="event.stopPropagation(); openEditListingModal('places', ${p.id})" title="E'lonni tahrirlash" style="background:rgba(20,32,56,0.08); color:var(--indigo); border:none; border-radius:8px; padding:6px 12px; font-size:12.5px; font-weight:700; cursor:pointer; margin-right:6px;">✏️ Tahrirlash</button>` : '';
+    const isFav = window.SafarFav ? window.SafarFav.isFavorite("place", p.id) : false;
+    const gMapUrl = p.googleMapsUrl || `https://maps.google.com/?q=${p.coordinates[0]},${p.coordinates[1]}`;
+    return `
+    <div class="stay-card place-card-item" data-id="${p.id}" onclick="selectPlace(${p.id}, true)">
+      <div class="stay-thumb">
+        <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.title)}" loading="lazy">
+        <span class="badge-super">${escapeHtml(p.category || p.tag || "Joy")}</span>
+        <button type="button" class="heart-btn ${isFav ? 'active' : ''}" aria-label="Favorite place" onclick="toggleFav(event, 'place', ${p.id})">${isFav ? '❤️' : '♡'}</button>
+      </div>
+      <div class="stay-body">
+        <div class="stay-top">
+          <div>
+            <div class="stay-loc">${escapeHtml(p.city)}, O'zbekiston</div>
+            <div class="stay-title">${escapeHtml(p.title)}</div>
+          </div>
+          <div class="rating"><span style="color:var(--gold)" aria-hidden="true">★</span> ${p.rating || "5.0"}</div>
+        </div>
+        <p style="font-size:13.5px; color:rgba(28,26,23,0.7); margin:8px 0 14px; line-height:1.5;">${escapeHtml(p.desc)}</p>
+        ${isOwner ? `<div style="margin-bottom:10px; display:flex; gap:6px;">${editListingBtn}${deleteListingBtn}</div>` : ''}
+        <div class="card-actions-row">
+          <a class="btn-detail" href="detail.html?type=place&id=${p.id}" onclick="event.stopPropagation()">🔍 Batafsil</a>
+          <a class="btn-book" href="${escapeHtml(gMapUrl)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">📍 Maps xarita</a>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+window.toggleFav = function(e, type, id) {
+  e.stopPropagation();
+  const item = allPlaces.find(x => x.id === id);
+  if (item && window.SafarFav) {
+    const isNowFav = window.SafarFav.toggleFavorite({ type: "place", id: item.id, title: item.title, city: item.city, price: item.category || "Place", image: item.image });
+    const btn = e.currentTarget;
+    btn.classList.toggle("active", isNowFav);
+    btn.textContent = isNowFav ? "❤️" : "♡";
+  }
+};
+
+window.selectPlace = function (id, syncMap) {
+  const place = allPlaces.find((p) => p.id === id);
+  if (!place) return;
+  document.querySelectorAll(".place-card-item").forEach((c) => c.classList.remove("selected"));
+  const cardEl = document.querySelector(`.place-card-item[data-id="${id}"]`);
+  if (cardEl) {
+    cardEl.classList.add("selected");
+    if (!syncMap) cardEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  if (syncMap && placeMapController) placeMapController.highlightStay(id);
+};
+
+window.resetPlaceFilters = function() {
+  activeCity = "All";
+  activeCategory = "All";
+  document.querySelectorAll("#placeCityFilterRow .pill").forEach(p => p.classList.toggle("active", p.dataset.city === "All"));
+  document.querySelectorAll("#placeCategoryFilterRow .pill").forEach(p => p.classList.toggle("active", p.dataset.category === "All"));
+  renderPlaceList();
+  if (placeMapController) placeMapController.updateMarkers(allPlaces);
+};
+
+document.getElementById("placeCityFilterRow").addEventListener("click", (e) => {
+  const pill = e.target.closest(".pill");
+  if (!pill) return;
+  document.querySelectorAll("#placeCityFilterRow .pill").forEach((p) => p.classList.remove("active"));
+  pill.classList.add("active");
+  activeCity = pill.dataset.city;
+  renderPlaceList();
+  const filtered = getFilteredPlaces();
+  if (placeMapController) {
+    placeMapController.updateMarkers(filtered);
+    if (filtered.length > 0) selectPlace(filtered[0].id, true);
+  }
+});
+
+document.getElementById("placeCategoryFilterRow").addEventListener("click", (e) => {
+  const pill = e.target.closest(".pill");
+  if (!pill) return;
+  document.querySelectorAll("#placeCategoryFilterRow .pill").forEach((p) => p.classList.remove("active"));
+  pill.classList.add("active");
+  activeCategory = pill.dataset.category;
+  renderPlaceList();
+  const filtered = getFilteredPlaces();
+  if (placeMapController) {
+    placeMapController.updateMarkers(filtered);
+    if (filtered.length > 0) selectPlace(filtered[0].id, true);
+  }
+});
+
+async function loadPlaces() {
+  try {
+    const res = await fetch(`${API}/api/places`);
+    const data = await res.json();
+    allPlaces = data.places || [];
+  } catch (err) {
+    console.error("Failed to load places:", err);
+    document.getElementById("placeList").innerHTML =
+      `<p style="color:rgba(28,26,23,0.5);">Could not load places map. Make sure backend server is running.</p>`;
+    return;
+  }
+
+  renderPlaceList();
+
+  // Initialize Leaflet Map for Places
+  placeMapController = window.initStaysMap("mapMount", allPlaces, (clickedPlace) => {
+    selectPlace(clickedPlace.id, false);
+  });
+
+  if (allPlaces[0]) setTimeout(() => { selectPlace(allPlaces[0].id, true); }, 450);
+}
+
+loadPlaces();
+</script>
+</body>
+</html>

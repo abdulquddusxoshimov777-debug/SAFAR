@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="uz" data-lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biz haqimizda ? Safar</title>
+<meta name="description" content="Safar ? O'zbekiston bo'ylab sayohat, milliy uylar, tarixiy obidalar, taomlar va hunarmandchilik platformasi haqida.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=2.2">
+<style>
+  .about-hero {
+    position: relative;
+    padding: 70px 0 50px;
+    text-align: center;
+    background: radial-gradient(circle at 50% 30%, rgba(200, 93, 40, 0.08) 0%, transparent 70%);
+  }
+  .about-hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(34px, 5vw, 54px);
+    line-height: 1.15;
+    color: var(--indigo);
+    margin: 14px 0 20px;
+    letter-spacing: -0.02em;
+  }
+  .about-hero p {
+    font-size: 18px;
+    max-width: 780px;
+    margin: 0 auto 30px;
+    line-height: 1.65;
+    color: rgba(28, 26, 23, 0.78);
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin: 40px 0 60px;
+  }
+  @media (max-width: 800px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .stat-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 28px 20px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.2s ease;
+  }
+  .stat-card:hover {
+    transform: translateY(-3px);
+  }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 38px;
+    font-weight: 700;
+    color: var(--clay);
+    margin-bottom: 6px;
+  }
+  .stat-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(28, 26, 23, 0.7);
+  }
+  .story-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+    margin-bottom: 70px;
+  }
+  @media (max-width: 860px) {
+    .story-section { grid-template-columns: 1fr; }
+  }
+  .story-img-wrap {
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow-pop);
+    position: relative;
+  }
+  .story-img-wrap img {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    display: block;
+  }
+  .story-content h2 {
+    font-family: var(--font-display);
+    font-size: 32px;
+    color: var(--indigo);
+    margin: 12px 0 16px;
+    line-height: 1.25;
+  }
+  .story-content p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: rgba(28, 26, 23, 0.78);
+    margin-bottom: 16px;
+  }
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 70px;
+  }
+  @media (max-width: 860px) {
+    .pillars-grid { grid-template-columns: 1fr; }
+  }
+  .pillar-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 32px 24px;
+    box-shadow: var(--shadow-card);
+  }
+  .pillar-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: rgba(200, 93, 40, 0.12);
+    color: var(--clay);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 18px;
+  }
+  .pillar-card h3 {
+    font-family: var(--font-display);
+    font-size: 20px;
+    color: var(--indigo);
+    margin-bottom: 10px;
+  }
+  .pillar-card p {
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: rgba(28, 26, 23, 0.72);
+  }
+  .cta-banner {
+    background: var(--indigo);
+    color: var(--paper);
+    border-radius: 24px;
+    padding: 56px 40px;
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  .cta-banner h2 {
+    font-family: var(--font-display);
+    font-size: 34px;
+    margin-bottom: 14px;
+    color: var(--paper);
+  }
+  .cta-banner p {
+    font-size: 16px;
+    max-width: 600px;
+    margin: 0 auto 28px;
+    color: rgba(251, 247, 238, 0.85);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<main>
+  <section class="about-hero">
+    <div class="container">
+      <span class="eyebrow" data-i18n="about_eyebrow">Bizning missiyamiz</span>
+      <h1 data-i18n="about_title">O'zbekistonning haqiqiy ruhi va mehmondo'stligini kashf eting</h1>
+      <p data-i18n="about_subtitle">
+        Safar ? qadimiy Ipak yo'li bo'ylab sayohat qiluvchilar, mahalliy samimiy mezbonlar, milliy hunarmandlar va betakror oshpazlarni birlashtiruvchi zamonaviy ochiq sayyohlik platformasi.
+      </p>
+      <div>
+        <a href="places.html" class="btn btn-primary" style="margin-right: 12px;" data-i18n="about_btn_explore">Sayohatni boshlash</a>
+        <a href="contact.html" class="btn btn-ghost" data-i18n="about_btn_contact">Biz bilan bog'lanish</a>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-num">14</div>
+          <div class="stat-label">Viloyat va Hududlar</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">500+</div>
+          <div class="stat-label">Tarixiy va Tabiiy Maskonlar</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">10,000+</div>
+          <div class="stat-label">Mamnun Sayyohlar</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">100%</div>
+          <div class="stat-label">Haqiqiy Milliy Tajriba</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <section class="story-section">
+      <div class="story-img-wrap">
+        <img src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1000&q=80" alt="Registon Samarqand">
+      </div>
+      <div class="story-content">
+        <span class="eyebrow">Qanday boshlangan?</span>
+        <h2>Oddiy algoritmlar emas, balki qalb bilan tanlangan sayohat</h2>
+        <p>
+          O'zbekiston ? ming yillik madaniyat, moviy gumbazlar, qadimiy devorlar va eng asosiysi samimiy insonlar yurti. Biz Safar loyihasini oddiy bron qilish sayti sifatida emas, balki har bir mehmonga o'zbek xalqining mehmondo'stligini his qildirish niyatida yaratdik.
+        </p>
+        <p>
+          Samarqandning Registon maydonidan Buxoroning qadimiy ko'chalarigacha, Xivaning Ichan Qal'asidan Zomin tog'larigacha bo'lgan har bir burchakda sizni kutilmagan mo''jizalar kutmoqda.
+        </p>
+      </div>
+    </section>
+
+    <section style="margin-bottom: 50px;">
+      <div style="text-align:center; max-width: 650px; margin: 0 auto 40px;">
+        <span class="eyebrow">Bizning qadriyatlarimiz</span>
+        <h2 style="font-family:var(--font-display); font-size:32px; color:var(--indigo); margin-top:8px;">
+          Nima uchun minglab sayyohlar aynan Safar platformasini tanlaydi?
+        </h2>
+      </div>
+
+      <div class="pillars-grid">
+        <div class="pillar-card">
+          <div class="pillar-icon">??</div>
+          <h3>Tasdiqlangan Mezbonlar</h3>
+          <p>
+            Har bir e'lon va joy mezboni tekshiriladi. Siz ko'rgan sharoit va rasmlar aynan haqiqiy hayotdagi kabi bo'lishiga kafolat beramiz.
+          </p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-icon">??</div>
+          <h3>Asl Milliy Oshxona</h3>
+          <p>
+            Faqat sayyohlik restoranlari emas, balki mahalliy aholi sevib iste'mol qiladigan eng mazali o'choq palovlari va tandir somsalar tavsiya etiladi.
+          </p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-icon">??</div>
+          <h3>Asl Hunarmandlar</h3>
+          <p>
+            Rishton kulollari, Marg'ilon atlas to'quvchilari va Buxoro zardo'zlari bilan bevosita aloqa o'rnatib, asl san'at asarlarini xarid qiling.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="cta-banner">
+      <h2>O'zbekiston bo'ylab o'z safaringizni boshlang</h2>
+      <p>Yuzlab qulay xonadonlar, mashhur tarixiy obidalar va betakror taomlar sizni kutmoqda.</p>
+      <a href="services.html" class="btn btn-primary" style="background:var(--clay); border:none; padding:14px 28px;">Barcha xizmatlarni ko'rish ?</a>
+    </div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/auth.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/partials.js"></script>
+</body>
+</html>

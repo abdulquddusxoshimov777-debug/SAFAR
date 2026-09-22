@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toshkent Metropoliteni Interaktiv Xaritasi — Safar</title>
+  <meta name="description" content="Toshkent metrosining interaktiv xaritasi, bekatlar bo'yicha yo'nalish va sayohat vaqtini hisoblagich.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=2.2">
+  <style>
+    .metro-card-container {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 24px;
+      margin-top: 24px;
+      box-shadow: var(--shadow-card);
+    }
+    .metro-top-hint {
+      text-align: center;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--indigo);
+      margin-bottom: 18px;
+      padding: 8px 16px;
+      background: var(--sand-light);
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .metro-svg-wrap {
+      width: 100%;
+      overflow-x: auto;
+      background: #ffffff;
+      border-radius: 18px;
+      border: 1px solid var(--line-soft);
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      position: relative;
+    }
+    .metro-svg {
+      max-width: 1000px;
+      width: 100%;
+      height: auto;
+      min-width: 720px;
+    }
+    .station-node {
+      cursor: pointer;
+      transition: transform 0.2s ease, r 0.2s ease;
+    }
+    .station-node:hover {
+      r: 8;
+      stroke-width: 3.5;
+    }
+    .station-node.selected-from {
+      fill: #2e7d32 !important;
+      stroke: #ffffff !important;
+      stroke-width: 4 !important;
+      r: 9 !important;
+    }
+    .station-node.selected-to {
+      fill: #d32f2f !important;
+      stroke: #ffffff !important;
+      stroke-width: 4 !important;
+      r: 9 !important;
+    }
+    .station-node.in-route {
+      r: 7.5;
+      stroke: #ffffff;
+      stroke-width: 2.5;
+    }
+    .station-label {
+      font-family: var(--font-body);
+      font-size: 10.5px;
+      font-weight: 600;
+      fill: #1c1a17;
+      cursor: pointer;
+      user-select: none;
+      transition: fill 0.15s ease;
+    }
+    .station-label:hover {
+      fill: var(--clay);
+      font-weight: 800;
+    }
+    .station-label.in-route {
+      font-weight: 800;
+      fill: var(--indigo);
+    }
+    .metro-line-path {
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: opacity 0.3s ease, stroke-width 0.2s ease;
+    }
+    .metro-legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .metro-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .legend-line-bar {
+      width: 28px;
+      height: 6px;
+      border-radius: 999px;
+    }
+    .metro-controls-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .metro-pill-btn {
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .metro-pill-btn:hover, .metro-pill-btn.active {
+      background: var(--indigo);
+      color: #ffffff;
+      border-color: var(--indigo);
+    }
+    .route-planner-box {
+      margin-top: 28px;
+      background: var(--sand-light);
+      border-radius: 18px;
+      padding: 22px;
+      border: 1px solid var(--line-soft);
+    }
+    .route-inputs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 14px;
+      align-items: flex-end;
+    }
+    @media (max-width: 768px) {
+      .route-inputs-grid { grid-template-columns: 1fr; }
+    }
+    .route-result-card {
+      margin-top: 18px;
+      padding: 18px;
+      background: var(--paper);
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      display: none;
+    }
+    .route-step-badge {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<main style="padding-bottom:80px;">
+  <div class="container">
+    <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <a href="index.html" style="display:inline-flex; align-items:center; gap:6px; color:var(--clay); text-decoration:none; font-weight:700; font-size:14px;">
+        ← Bosh sahifaga qaytish
+      </a>
+      <span style="font-size:12.5px; color:rgba(28,26,23,0.6);">Yangilangan: Toshkent Yerusti va Yerosti Halqa Metrosi bilan</span>
+    </div>
+
+    <div class="section-head" style="margin-top:16px; margin-bottom:16px;">
+      <div>
+        <span class="eyebrow">Toshkent Metropoliteni</span>
+        <h1 style="font-family:var(--font-display); font-size:clamp(26px, 4vw, 36px); color:var(--indigo); margin-top:4px;">
+          Interaktiv Metro Xaritasi & Yo'nalish Rejalashtirgich
+        </h1>
+      </div>
+    </div>
+
+    <div class="metro-card-container">
+      <div style="text-align:center;">
+        <div class="metro-top-hint">
+          <span>👉</span> Xaritadan istalgan bekatni tanlang (Qayerdan ➔ Qayerga) yoki quyidan qidiring
+        </div>
+      </div>
+
+      <!-- INTERACTIVE METRO SVG MAP -->
+      <div class="metro-svg-wrap">
+        <svg class="metro-svg" viewBox="0 0 960 760" id="metroSvg" xmlns="http://www.w3.org/2000/svg">
+          <!-- Metro lines background tracks -->
+          <g id="metroTracks">
+            <!-- 1. Chilonzor yo'li (Red) -->
+            <path id="track-chilonzor" class="metro-line-path" d="M 330 630 L 330 460 L 380 410 L 490 350 L 610 240 L 630 220" stroke="#d32f2f" stroke-width="6" fill="none" />
+            <!-- 2. O'zbekiston yo'li (Blue) -->
+            <path id="track-ozbekiston" class="metro-line-path" d="M 260 220 L 260 350 L 380 370 L 380 430 L 460 430 L 680 430" stroke="#1976d2" stroke-width="6" fill="none" />
+            <!-- 3. Yunusobod yo'li (Green) -->
+            <path id="track-yunusobod" class="metro-line-path" d="M 460 190 L 460 430" stroke="#2e7d32" stroke-width="6" fill="none" />
+            <!-- 4. Halqa yo'li (Yellow) -->
+            <path id="track-halqa" class="metro-line-path" d="M 330 630 L 620 630 L 680 570 L 680 430" stroke="#fbc02d" stroke-width="6" fill="none" />
+          </g>
+
+          <!-- Transfer connectors (O'tish tugunlari) -->
+          <g id="transferNodes">
+            <!-- Paxtakor (Red) <-> Alisher Navoiy (Blue) -->
+            <line x1="380" y1="410" x2="380" y2="430" stroke="#555" stroke-width="3" stroke-dasharray="3,3" />
+            <circle cx="380" cy="410" r="8" fill="#fff" stroke="#d32f2f" stroke-width="3" />
+            <circle cx="380" cy="430" r="8" fill="#fff" stroke="#1976d2" stroke-width="3" />
+            <!-- Amir Temur (Red) <-> Yunus Rajabiy (Green) -->
+            <line x1="490" y1="350" x2="460" y2="350" stroke="#555" stroke-width="3" stroke-dasharray="3,3" />
+            <circle cx="490" cy="350" r="8" fill="#fff" stroke="#d32f2f" stroke-width="3" />
+            <circle cx="460" cy="350" r="8" fill="#fff" stroke="#2e7d32" stroke-width="3" />
+            <!-- Oybek (Blue) <-> Ming O'rik (Green) -->
+            <circle cx="460" cy="430" r="10" fill="#fff" stroke="#1976d2" stroke-width="3" />
+            <circle cx="460" cy="430" r="5" fill="#2e7d32" />
+            <!-- Do'stlik (Blue) <-> Texnopark (Yellow) -->
+            <circle cx="680" cy="430" r="9" fill="#fff" stroke="#1976d2" stroke-width="3" />
+            <circle cx="680" cy="430" r="4" fill="#fbc02d" />
+            <!-- Chinor (Red) <-> Qipchoq (Yellow) -->
+            <circle cx="330" cy="630" r="9" fill="#fff" stroke="#d32f2f" stroke-width="3" />
+            <circle cx="330" cy="630" r="4" fill="#fbc02d" />
+          </g>
+
+          <!-- Stations & Labels Group (dynamically populated & interactive) -->
+          <g id="metroStationsContainer"></g>
+        </svg>
+      </div>
+
+      <!-- LEGEND FROM IMAGE 3 -->
+      <div class="metro-legend">
+        <div class="metro-legend-item">
+          <div class="legend-line-bar" style="background:#d32f2f;"></div>
+          <span>Chilonzor yo'li</span>
+        </div>
+        <div class="metro-legend-item">
+          <div class="legend-line-bar" style="background:#1976d2;"></div>
+          <span>O'zbekiston yo'li</span>
+        </div>
+        <div class="metro-legend-item">
+          <div class="legend-line-bar" style="background:#2e7d32;"></div>
+          <span>Yunusobod yo'li</span>
+        </div>
+        <div class="metro-legend-item">
+          <div class="legend-line-bar" style="background:#fbc02d;"></div>
+          <span>Halqa yo'li</span>
+        </div>
+      </div>
+
+      <!-- BOTTOM FILTER PILLS MATCHING IMAGE 3 -->
+      <div class="metro-controls-row">
+        <button type="button" class="metro-pill-btn active" data-line="all">Barcha liniyalar</button>
+        <button type="button" class="metro-pill-btn" data-line="chilonzor"><span style="color:#d32f2f;">●</span> Chilonzor Line</button>
+        <button type="button" class="metro-pill-btn" data-line="ozbekiston"><span style="color:#1976d2;">●</span> O'zbekiston Line</button>
+        <button type="button" class="metro-pill-btn" data-line="yunusobod"><span style="color:#2e7d32;">●</span> Yunusobod Line</button>
+        <button type="button" class="metro-pill-btn" data-line="halqa"><span style="color:#fbc02d;">●</span> Circle Line</button>
+      </div>
+
+      <!-- ROUTE PLANNER BOX -->
+      <div class="route-planner-box">
+        <h3 style="font-family:var(--font-display); font-size:19px; color:var(--indigo); margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+          <span>🗺️</span> Bekatdan bekatgacha yo'nalish hisoblash
+        </h3>
+        <div class="route-inputs-grid">
+          <div>
+            <label style="font-size:12.5px; font-weight:700; text-transform:uppercase; color:rgba(28,26,23,0.6); display:block; margin-bottom:6px;">Qayerdan (Boshlang'ich bekat):</label>
+            <select id="selectFromStation" style="width:100%; border-radius:12px; padding:10px 14px; border:1px solid var(--line); font-family:inherit; font-weight:600; background:#fff;">
+              <option value="">Bekatni tanlang...</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:12.5px; font-weight:700; text-transform:uppercase; color:rgba(28,26,23,0.6); display:block; margin-bottom:6px;">Qayerga (Borish bekati):</label>
+            <select id="selectToStation" style="width:100%; border-radius:12px; padding:10px 14px; border:1px solid var(--line); font-family:inherit; font-weight:600; background:#fff;">
+              <option value="">Bekatni tanlang...</option>
+            </select>
+          </div>
+          <div>
+            <button type="button" class="btn btn-primary" id="btnCalculateRoute" style="width:100%; height:44px; padding:0 22px;">
+              Yo'nalishni topish
+            </button>
+          </div>
+        </div>
+
+        <!-- ROUTE RESULT -->
+        <div class="route-result-card" id="routeResultCard">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px; border-bottom:1px solid var(--line-soft); padding-bottom:12px;">
+            <div>
+              <div style="font-size:18px; font-weight:800; color:var(--indigo);" id="routeSummaryTitle">Marshrut</div>
+              <div style="font-size:13px; color:rgba(28,26,23,0.7); margin-top:2px;" id="routeSummarySub"></div>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <div style="background:var(--sand-light); padding:6px 14px; border-radius:10px; text-align:center;">
+                <div style="font-size:11px; text-transform:uppercase; font-weight:700; color:rgba(28,26,23,0.6);">Vaqt</div>
+                <div style="font-size:16px; font-weight:800; color:var(--clay);" id="routeTimeVal">~0 daqiqa</div>
+              </div>
+              <div style="background:var(--sand-light); padding:6px 14px; border-radius:10px; text-align:center;">
+                <div style="font-size:11px; text-transform:uppercase; font-weight:700; color:rgba(28,26,23,0.6);">Bekatlar</div>
+                <div style="font-size:16px; font-weight:800; color:var(--indigo);" id="routeStopsVal">0 ta</div>
+              </div>
+            </div>
+          </div>
+          <div id="routeStepsList" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/partials.js"></script>
+<script src="js/i18n.js"></script>
+<script>
+(function() {
+  // Tashkent Metro Stations database matching Image 3
+  const METRO_STATIONS = [
+    // 1. Chilonzor yo'li (Red)
+    { id: "chinor", name: "Chinor", line: "chilonzor", color: "#d32f2f", x: 330, y: 630, align: "left" },
+    { id: "yangihayot", name: "Yangihayot", line: "chilonzor", color: "#d32f2f", x: 330, y: 600, align: "left" },
+    { id: "sergeli", name: "Sergeli", line: "chilonzor", color: "#d32f2f", x: 330, y: 570, align: "left" },
+    { id: "ozgarish", name: "O'zgarish", line: "chilonzor", color: "#d32f2f", x: 330, y: 540, align: "left" },
+    { id: "choshtepa", name: "Cho'shtepa", line: "chilonzor", color: "#d32f2f", x: 330, y: 510, align: "left" },
+    { id: "olmazor", name: "Olmazor", line: "chilonzor", color: "#d32f2f", x: 330, y: 480, align: "left" },
+    { id: "chilonzor_st", name: "Chilonzor", line: "chilonzor", color: "#d32f2f", x: 330, y: 450, align: "left" },
+    { id: "mirzoulugbek", name: "Mirzo Ulug'bek", line: "chilonzor", color: "#d32f2f", x: 330, y: 420, align: "left" },
+    { id: "novza", name: "Novza", line: "chilonzor", color: "#d32f2f", x: 330, y: 390, align: "left" },
+    { id: "milliybog", name: "Milliy Bog'", line: "chilonzor", color: "#d32f2f", x: 330, y: 360, align: "left" },
+    { id: "xalqlardostligi", name: "Xalqlar Do'stligi", line: "chilonzor", color: "#d32f2f", x: 350, y: 335, align: "left" },
+    { id: "paxtakor", name: "Paxtakor", line: "chilonzor", color: "#d32f2f", x: 380, y: 410, align: "left", transfer: "alisher_navoiy" },
+    { id: "mustaqillik", name: "Mustaqillik Maydoni", line: "chilonzor", color: "#d32f2f", x: 440, y: 380, align: "top" },
+    { id: "amir_temur", name: "Amir Temur Xiyoboni", line: "chilonzor", color: "#d32f2f", x: 490, y: 350, align: "right", transfer: "yunus_rajabiy" },
+    { id: "hamid_olimjon", name: "Hamid Olimjon", line: "chilonzor", color: "#d32f2f", x: 530, y: 310, align: "right" },
+    { id: "pushkin", name: "Pushkin", line: "chilonzor", color: "#d32f2f", x: 570, y: 270, align: "right" },
+    { id: "buyuk_ipak_yoli", name: "Buyuk Ipak Yo'li", line: "chilonzor", color: "#d32f2f", x: 610, y: 230, align: "right" },
+
+    // 2. O'zbekiston yo'li (Blue)
+    { id: "beruniy", name: "Beruniy", line: "ozbekiston", color: "#1976d2", x: 260, y: 220, align: "left" },
+    { id: "tinchlik", name: "Tinchlik", line: "ozbekiston", color: "#1976d2", x: 260, y: 260, align: "left" },
+    { id: "chorsu", name: "Chorsu", line: "ozbekiston", color: "#1976d2", x: 260, y: 300, align: "left" },
+    { id: "gafur_gulom", name: "G'afur G'ulom", line: "ozbekiston", color: "#1976d2", x: 260, y: 340, align: "left" },
+    { id: "alisher_navoiy", name: "Alisher Navoiy", line: "ozbekiston", color: "#1976d2", x: 380, y: 430, align: "bottom", transfer: "paxtakor" },
+    { id: "ozbekiston_st", name: "O'zbekiston", line: "ozbekiston", color: "#1976d2", x: 390, y: 460, align: "right" },
+    { id: "kosmonavtlar", name: "Kosmonavtlar", line: "ozbekiston", color: "#1976d2", x: 420, y: 470, align: "bottom" },
+    { id: "oybek", name: "Oybek", line: "ozbekiston", color: "#1976d2", x: 460, y: 430, align: "bottom", transfer: "ming_orik" },
+    { id: "toshkent_vokzal", name: "Toshkent", line: "ozbekiston", color: "#1976d2", x: 500, y: 430, align: "bottom" },
+    { id: "mashinasozlar", name: "Mashinasozlar", line: "ozbekiston", color: "#1976d2", x: 590, y: 430, align: "bottom" },
+    { id: "dostlik", name: "Do'stlik", line: "ozbekiston", color: "#1976d2", x: 680, y: 430, align: "top", transfer: "texnopark" },
+
+    // 3. Yunusobod yo'li (Green)
+    { id: "turkiston", name: "Turkiston", line: "yunusobod", color: "#2e7d32", x: 460, y: 200, align: "right" },
+    { id: "yunusobod_st", name: "Yunusobod", line: "yunusobod", color: "#2e7d32", x: 460, y: 235, align: "right" },
+    { id: "shahriston", name: "Shahriston", line: "yunusobod", color: "#2e7d32", x: 460, y: 270, align: "right" },
+    { id: "bodomzor", name: "Bodomzor", line: "yunusobod", color: "#2e7d32", x: 460, y: 305, align: "right" },
+    { id: "minor", name: "Minor", line: "yunusobod", color: "#2e7d32", x: 460, y: 340, align: "right" },
+    { id: "abdulla_qodiriy", name: "Abdulla Qodiriy", line: "yunusobod", color: "#2e7d32", x: 460, y: 375, align: "right" },
+    { id: "yunus_rajabiy", name: "Yunus Rajabiy", line: "yunusobod", color: "#2e7d32", x: 460, y: 350, align: "left", transfer: "amir_temur" },
+    { id: "ming_orik", name: "Ming O'rik", line: "yunusobod", color: "#2e7d32", x: 460, y: 410, align: "left", transfer: "oybek" },
+
+    // 4. Halqa yo'li (Yellow)
+    { id: "texnopark", name: "Texnopark", line: "halqa", color: "#fbc02d", x: 680, y: 460, align: "right", transfer: "dostlik" },
+    { id: "yashnobod", name: "Yashnobod", line: "halqa", color: "#fbc02d", x: 680, y: 490, align: "right" },
+    { id: "tuzel", name: "Tuzel", line: "halqa", color: "#fbc02d", x: 680, y: 520, align: "right" },
+    { id: "olmos", name: "Olmos", line: "halqa", color: "#fbc02d", x: 680, y: 550, align: "right" },
+    { id: "rohat", name: "Rohat", line: "halqa", color: "#fbc02d", x: 680, y: 580, align: "right" },
+    { id: "yangiobod", name: "Yangiobod", line: "halqa", color: "#fbc02d", x: 680, y: 610, align: "right" },
+    { id: "qoyliq", name: "Qo'yliq", line: "halqa", color: "#fbc02d", x: 660, y: 630, align: "bottom" },
+    { id: "matonat", name: "Matonat", line: "halqa", color: "#fbc02d", x: 610, y: 630, align: "bottom" },
+    { id: "qiyot", name: "Qiyot", line: "halqa", color: "#fbc02d", x: 570, y: 630, align: "bottom" },
+    { id: "tolariq", name: "Tolariq", line: "halqa", color: "#fbc02d", x: 530, y: 630, align: "bottom" },
+    { id: "xonobod", name: "Xonobod", line: "halqa", color: "#fbc02d", x: 490, y: 630, align: "bottom" },
+    { id: "quruvchilar", name: "Quruvchilar", line: "halqa", color: "#fbc02d", x: 450, y: 630, align: "bottom" },
+    { id: "turon", name: "Turon", line: "halqa", color: "#fbc02d", x: 410, y: 630, align: "bottom" },
+    { id: "qipchoq", name: "Qipchoq", line: "halqa", color: "#fbc02d", x: 370, y: 630, align: "bottom", transfer: "chinor" }
+  ];
+
+  // Adjacency connections
+  const CONNECTIONS = [
+    // Chilonzor line
+    ["chinor", "yangihayot"], ["yangihayot", "sergeli"], ["sergeli", "ozgarish"], ["ozgarish", "choshtepa"],
+    ["choshtepa", "olmazor"], ["olmazor", "chilonzor_st"], ["chilonzor_st", "mirzoulugbek"], ["mirzoulugbek", "novza"],
+    ["novza", "milliybog"], ["milliybog", "xalqlardostligi"], ["xalqlardostligi", "paxtakor"], ["paxtakor", "mustaqillik"],
+    ["mustaqillik", "amir_temur"], ["amir_temur", "hamid_olimjon"], ["hamid_olimjon", "pushkin"], ["pushkin", "buyuk_ipak_yoli"],
+
+    // O'zbekiston line
+    ["beruniy", "tinchlik"], ["tinchlik", "chorsu"], ["chorsu", "gafur_gulom"], ["gafur_gulom", "alisher_navoiy"],
+    ["alisher_navoiy", "ozbekiston_st"], ["ozbekiston_st", "kosmonavtlar"], ["kosmonavtlar", "oybek"], ["oybek", "toshkent_vokzal"],
+    ["toshkent_vokzal", "mashinasozlar"], ["mashinasozlar", "dostlik"],
+
+    // Yunusobod line
+    ["turkiston", "yunusobod_st"], ["yunusobod_st", "shahriston"], ["shahriston", "bodomzor"], ["bodomzor", "minor"],
+    ["minor", "abdulla_qodiriy"], ["abdulla_qodiriy", "yunus_rajabiy"], ["yunus_rajabiy", "ming_orik"],
+
+    // Halqa line
+    ["dostlik", "texnopark"], ["texnopark", "yashnobod"], ["yashnobod", "tuzel"], ["tuzel", "olmos"], ["olmos", "rohat"],
+    ["rohat", "yangiobod"], ["yangiobod", "qoyliq"], ["qoyliq", "matonat"], ["matonat", "qiyot"], ["qiyot", "tolariq"],
+    ["tolariq", "xonobod"], ["xonobod", "quruvchilar"], ["quruvchilar", "turon"], ["turon", "qipchoq"], ["qipchoq", "chinor"],
+
+    // Transfers
+    ["paxtakor", "alisher_navoiy"],
+    ["amir_temur", "yunus_rajabiy"],
+    ["oybek", "ming_orik"]
+  ];
+
+  let selectedFrom = null;
+  let selectedTo = null;
+
+  // Render SVG nodes
+  const container = document.getElementById("metroStationsContainer");
+  const selectFrom = document.getElementById("selectFromStation");
+  const selectTo = document.getElementById("selectToStation");
+
+  METRO_STATIONS.forEach(st => {
+    // Dropdown options
+    const optF = document.createElement("option");
+    optF.value = st.id;
+    optF.textContent = `${st.name} (${st.line === 'chilonzor' ? 'Chilonzor' : (st.line === 'ozbekiston' ? 'O\'zbekiston' : (st.line === 'yunusobod' ? 'Yunusobod' : 'Halqa'))})`;
+    selectFrom.appendChild(optF);
+
+    const optT = document.createElement("option");
+    optT.value = st.id;
+    optT.textContent = optF.textContent;
+    selectTo.appendChild(optT);
+
+    // SVG station group
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    g.setAttribute("class", "station-group");
+    g.setAttribute("data-station", st.id);
+    g.setAttribute("data-line", st.line);
+
+    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circle.setAttribute("cx", st.x);
+    circle.setAttribute("cy", st.y);
+    circle.setAttribute("r", "5.5");
+    circle.setAttribute("fill", "#ffffff");
+    circle.setAttribute("stroke", st.color);
+    circle.setAttribute("stroke-width", "2.8");
+    circle.setAttribute("class", "station-node");
+    circle.setAttribute("id", `node-${st.id}`);
+
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    let tx = st.x + 10;
+    let ty = st.y + 4;
+    let anchor = "start";
+    if (st.align === "left") { tx = st.x - 10; anchor = "end"; }
+    else if (st.align === "top") { tx = st.x; ty = st.y - 10; anchor = "middle"; }
+    else if (st.align === "bottom") { tx = st.x; ty = st.y + 16; anchor = "middle"; }
+
+    text.setAttribute("x", tx);
+    text.setAttribute("y", ty);
+    text.setAttribute("text-anchor", anchor);
+    text.setAttribute("class", "station-label");
+    text.setAttribute("id", `label-${st.id}`);
+    text.textContent = st.name;
+
+    g.appendChild(circle);
+    g.appendChild(text);
+    container.appendChild(g);
+
+    g.addEventListener("click", () => handleStationClick(st.id));
+  });
+
+  function handleStationClick(id) {
+    if (!selectedFrom || (selectedFrom && selectedTo)) {
+      selectedFrom = id;
+      selectedTo = null;
+      selectFrom.value = id;
+      selectTo.value = "";
+    } else if (selectedFrom && !selectedTo) {
+      if (selectedFrom === id) {
+        selectedFrom = null;
+        selectFrom.value = "";
+      } else {
+        selectedTo = id;
+        selectTo.value = id;
+        calculateRoute();
+      }
+    }
+    updateMapVisuals();
+  }
+
+  selectFrom.addEventListener("change", () => {
+    selectedFrom = selectFrom.value || null;
+    updateMapVisuals();
+    if (selectedFrom && selectedTo) calculateRoute();
+  });
+
+  selectTo.addEventListener("change", () => {
+    selectedTo = selectTo.value || null;
+    updateMapVisuals();
+    if (selectedFrom && selectedTo) calculateRoute();
+  });
+
+  document.getElementById("btnCalculateRoute").addEventListener("click", () => {
+    if (!selectedFrom || !selectedTo) {
+      alert("Iltimos, Qayerdan va Qayerga bekatlarini tanlang.");
+      return;
+    }
+    calculateRoute();
+  });
+
+  function updateMapVisuals(route = []) {
+    document.querySelectorAll(".station-node").forEach(n => {
+      n.classList.remove("selected-from", "selected-to", "in-route");
+    });
+    document.querySelectorAll(".station-label").forEach(l => l.classList.remove("in-route"));
+
+    if (selectedFrom) {
+      const el = document.getElementById(`node-${selectedFrom}`);
+      if (el) el.classList.add("selected-from");
+    }
+    if (selectedTo) {
+      const el = document.getElementById(`node-${selectedTo}`);
+      if (el) el.classList.add("selected-to");
+    }
+
+    if (route && route.length) {
+      route.forEach(id => {
+        if (id !== selectedFrom && id !== selectedTo) {
+          const el = document.getElementById(`node-${id}`);
+          if (el) el.classList.add("in-route");
+        }
+        const lbl = document.getElementById(`label-${id}`);
+        if (lbl) lbl.classList.add("in-route");
+      });
+    }
+  }
+
+  // Shortest Path Finding (BFS)
+  function findShortestPath(startId, endId) {
+    const queue = [[startId]];
+    const visited = new Set([startId]);
+
+    // Build adjacency list
+    const adj = {};
+    METRO_STATIONS.forEach(s => adj[s.id] = []);
+    CONNECTIONS.forEach(([a, b]) => {
+      if (adj[a] && adj[b]) {
+        adj[a].push(b);
+        adj[b].push(a);
+      }
+    });
+
+    while (queue.length > 0) {
+      const path = queue.shift();
+      const node = path[path.length - 1];
+
+      if (node === endId) return path;
+
+      for (const neighbor of adj[node] || []) {
+        if (!visited.has(neighbor)) {
+          visited.add(neighbor);
+          queue.push([...path, neighbor]);
+        }
+      }
+    }
+    return null;
+  }
+
+  function calculateRoute() {
+    if (!selectedFrom || !selectedTo) return;
+    const path = findShortestPath(selectedFrom, selectedTo);
+    const card = document.getElementById("routeResultCard");
+    const stepsList = document.getElementById("routeStepsList");
+
+    if (!path || !path.length) {
+      card.style.display = "block";
+      document.getElementById("routeSummaryTitle").textContent = "Marshrut topilmadi";
+      stepsList.innerHTML = '<div style="color:red;">Ushbu bekatlar orasida to\\'g\\'ridan-to\\'g\\'ri yo\\'nalish topilmadi.</div>';
+      return;
+    }
+
+    updateMapVisuals(path);
+
+    const stMap = {};
+    METRO_STATIONS.forEach(s => stMap[s.id] = s);
+
+    const fromSt = stMap[selectedFrom];
+    const toSt = stMap[selectedTo];
+
+    // Estimate time: ~2.5 min per stop + 4 min for transfers
+    let transfersCount = 0;
+    for (let i = 0; i < path.length - 1; i++) {
+      if (stMap[path[i]].line !== stMap[path[i+1]].line) {
+        transfersCount++;
+      }
+    }
+    const totalMinutes = Math.round((path.length - 1) * 2.5 + transfersCount * 4);
+
+    card.style.display = "block";
+    document.getElementById("routeSummaryTitle").textContent = `${fromSt.name} ➔ ${toSt.name}`;
+    document.getElementById("routeSummarySub").textContent = transfersCount > 0 ? `${transfersCount} ta liniya almashtirish (transfer) bilan` : "To'g'ridan-to'g'ri bir liniyada";
+    document.getElementById("routeTimeVal").textContent = `~${totalMinutes} daqiqa`;
+    document.getElementById("routeStopsVal").textContent = `${path.length} ta bekat`;
+
+    stepsList.innerHTML = path.map((id, index) => {
+      const st = stMap[id];
+      const isStart = index === 0;
+      const isEnd = index === path.length - 1;
+      const lineNames = { chilonzor: "Chilonzor yo'li", ozbekiston: "O'zbekiston yo'li", yunusobod: "Yunusobod yo'li", halqa: "Halqa yo'li" };
+
+      let extraBadge = "";
+      if (isStart) extraBadge = `<span style="background:#2e7d32; color:#fff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px; margin-left:8px;">Boshlanish</span>`;
+      else if (isEnd) extraBadge = `<span style="background:#d32f2f; color:#fff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px; margin-left:8px;">Yakuniy bekat</span>`;
+      else if (index > 0 && stMap[path[index-1]].line !== st.line) {
+        extraBadge = `<span style="background:var(--indigo); color:#fff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px; margin-left:8px;">🔄 O'tish bekati (${lineNames[st.line]})</span>`;
+      }
+
+      return `
+        <div style="display:flex; align-items:center; padding:6px 10px; background:${isStart||isEnd ? 'rgba(22,35,63,0.06)' : 'transparent'}; border-radius:8px;">
+          <span class="route-step-badge" style="background:${st.color};"></span>
+          <span style="font-weight:${isStart||isEnd ? '800' : '600'}; font-size:14px; color:var(--ink);">${st.name}</span>
+          ${extraBadge}
+        </div>
+      `;
+    }).join("");
+
+    card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  // Filter line buttons
+  document.querySelectorAll(".metro-pill-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".metro-pill-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const line = btn.dataset.line;
+
+      document.querySelectorAll(".metro-line-path").forEach(path => {
+        if (line === "all") path.style.opacity = "1";
+        else path.style.opacity = path.id === `track-${line}` ? "1" : "0.15";
+      });
+
+      document.querySelectorAll(".station-group").forEach(grp => {
+        if (line === "all") grp.style.opacity = "1";
+        else grp.style.opacity = grp.dataset.line === line ? "1" : "0.2";
+      });
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
