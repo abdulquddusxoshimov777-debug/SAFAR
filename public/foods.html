@@ -188,7 +188,11 @@ function renderFoodList() {
       <div class="stay-body">
         <div class="stay-top">
           <div>
-            <div class="stay-loc">O'zbekiston, ${escapeHtml(f.city)}</div>
+            <div class="stay-loc">O'zbekiston, ${escapeHtml(f.city || 'Milliy')}</div>
+            <div style="font-size:12px; color:rgba(28,26,23,0.75); margin:2px 0 4px; display:flex; align-items:center; gap:5px;">
+              <span>👤 Joyladi:</span>
+              <a href="profile.html?id=${encodeURIComponent(f.ownerId || f.userId || f.ownerEmail || f.ownerName || '')}" onclick="event.stopPropagation()" style="font-weight:700; color:var(--indigo); text-decoration:underline;">${escapeHtml(f.ownerName || 'Muallif')}</a>
+            </div>
             <div class="stay-title">${escapeHtml(f.title)}</div>
           </div>
           <div class="rating"><span style="color:var(--gold)" aria-hidden="true">★</span> ${f.rating || "5.0"} <span style="font-weight:400;opacity:.6">(${f.reviews || 0})</span></div>

@@ -141,6 +141,9 @@
             <span>A'zo bo'lgan: <strong id="profileSince">—</strong></span>
           </div>
         </div>
+        <div id="profileBioBox" style="margin-top:12px; font-size:14.5px; color:rgba(28,26,23,0.85); line-height:1.6; background:rgba(255,255,255,0.7); padding:10px 14px; border-radius:10px; border-left:3px solid var(--clay); display:none;">
+          <span style="font-weight:700; color:var(--indigo); margin-right:6px;">✍️ Bio:</span><span id="profileBioText"></span>
+        </div>
         <div class="profile-stats-row">
           <div class="profile-stat-box">
             <span>📋</span>
@@ -204,7 +207,7 @@
   async function loadProfile() {
     if (!userId) {
       document.getElementById("profileName").textContent = "Foydalanuvchi topilmadi";
-      document.getElementById("userListingsContainer").innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px;">Foydalanuvchi ID parametri ko\\'rsatilmagan.</div>';
+      document.getElementById("userListingsContainer").innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px;">Foydalanuvchi ID parametri ko`rsatilmagan.</div>';
       return;
     }
 
@@ -250,6 +253,15 @@
         ? new Date(u.createdAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })
         : "Platforma a'zosi";
 
+      const bioBox = document.getElementById("profileBioBox");
+      const bioText = document.getElementById("profileBioText");
+      if (u.bio && u.bio.trim()) {
+        bioText.textContent = u.bio.trim();
+        bioBox.style.display = "block";
+      } else {
+        bioBox.style.display = "none";
+      }
+
       document.getElementById("statListingsCount").textContent = listings.length;
       document.getElementById("statReviewsCount").textContent = reviewsCount;
       document.getElementById("listingsSectionTitle").textContent = `${u.name} tomonidan qo'shilgan e'lonlar (${listings.length})`;
@@ -292,7 +304,7 @@
 
     } catch(err) {
       console.error("Profile load error:", err);
-      document.getElementById("userListingsContainer").innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px;">Server bilan bog\\'lanishda xatolik yuz berdi.</div>';
+      document.getElementById("userListingsContainer").innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px;">Server bilan boglanishda xatolik yuz berdi.</div>';
     }
   }
 

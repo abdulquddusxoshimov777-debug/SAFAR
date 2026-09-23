@@ -180,7 +180,11 @@ function renderCraftList() {
       <div class="stay-body">
         <div class="stay-top">
           <div>
-            <div class="stay-loc">Usta: ${escapeHtml(c.masterName || c.ownerName || 'Usta')} · ${escapeHtml(c.city)}</div>
+            <div class="stay-loc" style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+              <span>👤 Usta:</span>
+              <a href="profile.html?id=${encodeURIComponent(c.ownerId || c.userId || c.ownerEmail || c.masterName || c.ownerName || '')}" onclick="event.stopPropagation()" style="font-weight:700; color:var(--indigo); text-decoration:underline;">${escapeHtml(c.masterName || c.ownerName || 'Usta')}</a>
+              <span>· ${escapeHtml(c.city || 'O\'zbekiston')}</span>
+            </div>
             <div class="stay-title">${escapeHtml(c.title)}</div>
           </div>
           <div class="rating"><span style="color:var(--gold)" aria-hidden="true">★</span> ${c.rating || "5.0"} <span style="font-weight:400;opacity:.6">(${c.reviews || 0})</span></div>
