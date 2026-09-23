@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>O'zbekiston Turizm Statistikasi — Safar</title>
+  <link rel="stylesheet" href="css/style.css?v=2.4">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <style>
+    .stats-page-wrap {
+      padding: 30px 0 80px;
+    }
+    .stats-hero-banner {
+      background: linear-gradient(135deg, #16233f 0%, #1e3a6a 100%);
+      color: #ffffff;
+      border-radius: 24px;
+      padding: 36px 30px;
+      margin-bottom: 32px;
+      box-shadow: 0 12px 35px rgba(22, 35, 63, 0.2);
+    }
+    .stats-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .stats-kpi-card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 16px;
+      padding: 18px 20px;
+      backdrop-filter: blur(8px);
+    }
+    .stats-kpi-card .val {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 800;
+      color: #ffd54f;
+      line-height: 1.1;
+      margin-top: 4px;
+    }
+    .stats-kpi-card .lbl {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 600;
+    }
+    .stats-kpi-card .sub {
+      font-size: 11.5px;
+      color: rgba(255, 255, 255, 0.65);
+      margin-top: 4px;
+    }
+
+    .table-section-card {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 26px 24px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-card);
+    }
+    .table-section-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      color: var(--indigo);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .table-section-desc {
+      font-size: 13.5px;
+      color: rgba(28, 26, 23, 0.65);
+      margin-bottom: 18px;
+    }
+
+    .custom-stats-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 14px;
+      border: 1px solid var(--line-soft);
+    }
+    .custom-stats-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+      min-width: 580px;
+    }
+    .custom-stats-table th {
+      background: #f7f6f2;
+      color: var(--indigo);
+      font-weight: 700;
+      padding: 13px 16px;
+      border-bottom: 2px solid var(--line);
+      white-space: nowrap;
+    }
+    .custom-stats-table td {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--line-soft);
+      color: var(--ink);
+    }
+    .custom-stats-table tr:last-child td {
+      border-bottom: none;
+    }
+    .custom-stats-table tr:hover td {
+      background: rgba(22, 35, 63, 0.02);
+    }
+    .badge-trend-up {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(46, 125, 50, 0.1);
+      color: #2e7d32;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .badge-trend-hot {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(200, 93, 40, 0.12);
+      color: var(--clay);
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    @media (max-width: 600px) {
+      .stats-hero-banner { padding: 24px 18px; }
+      .table-section-card { padding: 20px 14px; }
+      .table-section-title { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<main class="stats-page-wrap">
+  <div class="container">
+    <div style="margin-bottom: 20px;">
+      <a href="index.html" style="display:inline-flex; align-items:center; gap:6px; color:var(--clay); text-decoration:none; font-weight:700; font-size:14px;">
+        ← Bosh sahifaga qaytish
+      </a>
+    </div>
+
+    <!-- HERO BANNER -->
+    <div class="stats-hero-banner">
+      <div style="display:inline-block; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; background:rgba(255,255,255,0.15); padding:4px 12px; border-radius:999px; margin-bottom:10px;">
+        Rasmiy Statistika & Tahlillar
+      </div>
+      <h1 style="font-family:var(--font-display); font-size:clamp(26px, 4.5vw, 38px); margin:0 0 10px; line-height:1.2;">
+        O'zbekiston Turizm va Sayyohlar Statistikasi
+      </h1>
+      <p style="font-size:15px; opacity:0.85; max-width:680px; margin:0; line-height:1.5;">
+        O'zbekiston Respublikasi Turizm Qo'mitasi, Statistika Agentligi va Jahon Turizm Tashkiloti (UN Tourism) ma'lumotlari asosidagi eng so'nggi jadvallar.
+      </p>
+
+      <div class="stats-kpi-grid">
+        <div class="stats-kpi-card">
+          <div class="lbl">2024-yilgi Turistlar</div>
+          <div class="val">6,626,300+</div>
+          <div class="sub">↗ +26.8% o'sish</div>
+        </div>
+        <div class="stats-kpi-card">
+          <div class="lbl">Turizm Eksporti</div>
+          <div class="val">$2.14 Mlrd</div>
+          <div class="sub">Yillik xizmatlar tushumi</div>
+        </div>
+        <div class="stats-kpi-card">
+          <div class="lbl">Mehmonxonalar soni</div>
+          <div class="val">5,520+ ta</div>
+          <div class="sub">Mehmonxona & mehmon uylari</div>
+        </div>
+        <div class="stats-kpi-card">
+          <div class="lbl">O'rtacha qolish vaqti</div>
+          <div class="val">4.5 kun</div>
+          <div class="sub">Sayyohning o'rtacha muddati</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLE 1: YILLAR KESIMIDA TURISTLAR OQIMI -->
+    <div class="table-section-card">
+      <h2 class="table-section-title">
+        <span>📈</span> 1. Yillar kesimida O'zbekistonga kelgan sayyohlar soni
+      </h2>
+      <p class="table-section-desc">
+        2017-yildan 2024-yilgacha bo'lgan davrda O'zbekistonga tashrif buyurgan xorijiy fuqarolar soni va turizm sohasi ko'rsatkichlari.
+      </p>
+
+      <div class="custom-stats-table-wrap">
+        <table class="custom-stats-table">
+          <thead>
+            <tr>
+              <th>Yil</th>
+              <th>Xorijiy turistlar soni</th>
+              <th>O'sish sur'ati</th>
+              <th>Turizm xizmatlari eksporti ($ AQSH dollari)</th>
+              <th>Mehmonxonalar & turargohlar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background:rgba(200,93,40,0.04); font-weight:700;">
+              <td>2024 (Kutilayotgan)</td>
+              <td>6,626,300 kishi</td>
+              <td><span class="badge-trend-up">↗ +26.8%</span></td>
+              <td>$2,140,000,000</td>
+              <td>5,520 ta</td>
+            </tr>
+            <tr>
+              <td>2023</td>
+              <td>5,225,500 kishi</td>
+              <td><span class="badge-trend-up">↗ +32.4%</span></td>
+              <td>$1,620,000,000</td>
+              <td>4,980 ta</td>
+            </tr>
+            <tr>
+              <td>2022</td>
+              <td>3,946,800 kishi</td>
+              <td><span class="badge-trend-up">↗ +110.2%</span></td>
+              <td>$950,000,000</td>
+              <td>3,840 ta</td>
+            </tr>
+            <tr>
+              <td>2021 (Pandemiya davri)</td>
+              <td>1,881,300 kishi</td>
+              <td><span class="badge-trend-up">↗ +25.1%</span></td>
+              <td>$422,000,000</td>
+              <td>2,950 ta</td>
+            </tr>
+            <tr>
+              <td>2020 (Global cheklovlar)</td>
+              <td>1,504,100 kishi</td>
+              <td><span style="color:#d32f2f; font-weight:700;">↘ -77.7%</span></td>
+              <td>$261,000,000</td>
+              <td>2,100 ta</td>
+            </tr>
+            <tr>
+              <td>2019</td>
+              <td>6,748,500 kishi</td>
+              <td><span class="badge-trend-up">↗ +26.2%</span></td>
+              <td>$1,313,000,000</td>
+              <td>1,850 ta</td>
+            </tr>
+            <tr>
+              <td>2018</td>
+              <td>5,346,200 kishi</td>
+              <td><span class="badge-trend-up">↗ +99.1%</span></td>
+              <td>$1,041,000,000</td>
+              <td>1,280 ta</td>
+            </tr>
+            <tr>
+              <td>2017</td>
+              <td>2,690,000 kishi</td>
+              <td><span>Boshlang'ich</span></td>
+              <td>$546,000,000</td>
+              <td>910 ta</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TABLE 2: DAVLATLAR KESIMIDA TURISTLAR OQIMI -->
+    <div class="table-section-card">
+      <h2 class="table-section-title">
+        <span>🌍</span> 2. Qaysi davlatlardan eng ko'p turistlar kelmoqda? (Top 12)
+      </h2>
+      <p class="table-section-desc">
+        O'zbekistonga eng ko'p sayyoh yuboruvchi mamlakatlar reytingi va har bir sayyohning o'rtacha xarajatlari.
+      </p>
+
+      <div class="custom-stats-table-wrap">
+        <table class="custom-stats-table">
+          <thead>
+            <tr>
+              <th>№</th>
+              <th>Davlat nomi</th>
+              <th>Sayyohlar soni (yiliga)</th>
+              <th>Umumiy oqimdagi ulushi</th>
+              <th>O'rtacha sarflaydigan mablag'i</th>
+              <th>Asosiy maqsadi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1</strong></td>
+              <td>🇰🇿 Qozog'iston</td>
+              <td>1,940,000 kishi</td>
+              <td><strong>29.3%</strong></td>
+              <td>$280 – $450</td>
+              <td>Qarindoshlik, madaniy ziyorat, savdo</td>
+            </tr>
+            <tr>
+              <td><strong>2</strong></td>
+              <td>🇹🇯 Tojikiston</td>
+              <td>1,720,000 kishi</td>
+              <td><strong>26.0%</strong></td>
+              <td>$220 – $380</td>
+              <td>Ziyorat, tibbiyot, savdo</td>
+            </tr>
+            <tr>
+              <td><strong>3</strong></td>
+              <td>🇰🇬 Qirg'iziston</td>
+              <td>1,350,000 kishi</td>
+              <td><strong>20.4%</strong></td>
+              <td>$250 – $400</td>
+              <td>Dam olish, savdo, qarindoshlik</td>
+            </tr>
+            <tr>
+              <td><strong>4</strong></td>
+              <td>🇷🇺 Rossiya Federatsiyasi</td>
+              <td>714,000 kishi</td>
+              <td><strong>10.8%</strong></td>
+              <td>$750 – $1,200</td>
+              <td>Tarixiy turizm, gastro-turizm, biznes</td>
+            </tr>
+            <tr>
+              <td><strong>5</strong></td>
+              <td>🇹🇷 Turkiya</td>
+              <td>106,500 kishi</td>
+              <td><strong>1.6%</strong></td>
+              <td>$850 – $1,400</td>
+              <td>Ziyorat turizmi, madaniy meros, biznes</td>
+            </tr>
+            <tr>
+              <td><strong>6</strong></td>
+              <td>🇨🇳 Xitoy Xalq Respublikasi</td>
+              <td>42,500 kishi</td>
+              <td><strong>0.6%</strong> <span class="badge-trend-hot">🔥 Eng tez o'suvchi</span></td>
+              <td>$1,200 – $2,100</td>
+              <td>Ipak yo'li turizmi, biznes, arxeologiya</td>
+            </tr>
+            <tr>
+              <td><strong>7</strong></td>
+              <td>🇮🇳 Hindiston</td>
+              <td>35,800 kishi</td>
+              <td><strong>0.5%</strong></td>
+              <td>$650 – $1,100</td>
+              <td>Toshkent, Samarqand, kino va dam olish</td>
+            </tr>
+            <tr>
+              <td><strong>8</strong></td>
+              <td>🇩🇪 Germaniya</td>
+              <td>29,400 kishi</td>
+              <td><strong>0.4%</strong></td>
+              <td>$1,400 – $2,300</td>
+              <td>Madaniy-tarixiy, ekoturizm, arxitektura</td>
+            </tr>
+            <tr>
+              <td><strong>9</strong></td>
+              <td>🇺🇸 AQSH</td>
+              <td>23,700 kishi</td>
+              <td><strong>0.4%</strong></td>
+              <td>$1,600 – $2,800</td>
+              <td>Buyuk Ipak yo'li sayohati, ta'lim</td>
+            </tr>
+            <tr>
+              <td><strong>10</strong></td>
+              <td>🇫🇷 Fransiya</td>
+              <td>19,200 kishi</td>
+              <td><strong>0.3%</strong></td>
+              <td>$1,500 – $2,400</td>
+              <td>San'at, muzeylar, Sharq me'morchiligi</td>
+            </tr>
+            <tr>
+              <td><strong>11</strong></td>
+              <td>🇮🇹 Italiya</td>
+              <td>17,800 kishi</td>
+              <td><strong>0.3%</strong></td>
+              <td>$1,400 – $2,200</td>
+              <td>Markaziy Osiyo durdonalari, fototurizm</td>
+            </tr>
+            <tr>
+              <td><strong>12</strong></td>
+              <td>🇯🇵 Yaponiya & 🇰🇷 Janubiy Koreya</td>
+              <td>28,100 kishi</td>
+              <td><strong>0.4%</strong></td>
+              <td>$1,700 – $2,900</td>
+              <td>Ipak yo'li sivilizatsiyasi, milliy hunarmandchilik</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TABLE 3: SHAHARLAR VA VILOYATLAR KESIMIDA SAYYOHLAR TASHRIFI -->
+    <div class="table-section-card">
+      <h2 class="table-section-title">
+        <span>🏛️</span> 3. Shaharlar va hududlar kesimida sayyohlar tashrifi
+      </h2>
+      <p class="table-section-desc">
+        O'zbekistonning eng ko'p sayyoh qabul qiluvchi markazlari va o'rtacha tashrif davomiyligi.
+      </p>
+
+      <div class="custom-stats-table-wrap">
+        <table class="custom-stats-table">
+          <thead>
+            <tr>
+              <th>Shahar / Viloyat</th>
+              <th>Mashhur obidalar</th>
+              <th>Yillik xorijiy sayyohlar</th>
+              <th>Ichki sayyohlar tashrifi</th>
+              <th>O'rtacha qolish vaqti</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Samarqand</strong></td>
+              <td>Registon, Go'ri Amir, Shohi Zinda, Bibixonim</td>
+              <td><strong>1,850,000+</strong></td>
+              <td>3,200,000+</td>
+              <td>2.8 kun</td>
+            </tr>
+            <tr>
+              <td><strong>Buxoro</strong></td>
+              <td>Ark qal'asi, Minorai Kalon, Labi Hovuz, Somoniylar</td>
+              <td><strong>1,420,000+</strong></td>
+              <td>2,400,000+</td>
+              <td>2.5 kun</td>
+            </tr>
+            <tr>
+              <td><strong>Toshkent shahri</strong></td>
+              <td>Chorsu bozori, Hazrati Imom, Magic City, Metropoliten</td>
+              <td><strong>2,100,000+</strong></td>
+              <td>4,100,000+</td>
+              <td>3.2 kun</td>
+            </tr>
+            <tr>
+              <td><strong>Xiva (Xorazm)</strong></td>
+              <td>Ichan Qal'a (Ochiq osmon ostidagi muzey), Kalta Minor</td>
+              <td><strong>980,000+</strong></td>
+              <td>1,650,000+</td>
+              <td>2.1 kun</td>
+            </tr>
+            <tr>
+              <td><strong>Farg'ona vodiysi (Rishton, Marg'ilon)</strong></td>
+              <td>Yodgorlik ipak fabrikasi, Rishton kulolchilik markazlari</td>
+              <td><strong>420,000+</strong></td>
+              <td>1,800,000+</td>
+              <td>1.8 kun</td>
+            </tr>
+            <tr>
+              <td><strong>Qashqadaryo (Shahrisabz)</strong></td>
+              <td>Oqsaroy, Dorut Tilovat, Miraki dam olish hududi</td>
+              <td><strong>380,000+</strong></td>
+              <td>1,250,000+</td>
+              <td>1.5 kun</td>
+            </tr>
+            <tr>
+              <td><strong>Surxondaryo (Termiz)</strong></td>
+              <td>Fayoztepa, Qoratepa (Budda ibodatxonalari), Hakim at-Termiziy</td>
+              <td><strong>210,000+</strong></td>
+              <td>890,000+</td>
+              <td>1.9 kun</td>
+            </tr>
+            <tr>
+              <td><strong>Jizzax (Zomin)</strong></td>
+              <td>Zomin Milliy bog'i, Osma ko'prik, tog' kurortlari</td>
+              <td><strong>190,000+</strong></td>
+              <td>1,450,000+</td>
+              <td>2.0 kun</td>
+            </tr>
+            <tr>
+              <td><strong>Qoraqalpog'iston (Mo'ynoq, Nukus)</strong></td>
+              <td>Savitskiy muzeyi, Orol dengizi Kemalar qabristoni</td>
+              <td><strong>145,000+</strong></td>
+              <td>520,000+</td>
+              <td>2.2 kun</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TABLE 4: TURIZM INFRATUZILMASI -->
+    <div class="table-section-card">
+      <h2 class="table-section-title">
+        <span>🏨</span> 4. Turizm infratuzilmasi ko'rsatkichlari
+      </h2>
+      <p class="table-section-desc">
+        Sayyohlarga xizmat ko'rsatuvchi vositalar, mehmonxonalar, turoperatorlar va gidlar soni.
+      </p>
+
+      <div class="custom-stats-table-wrap">
+        <table class="custom-stats-table">
+          <thead>
+            <tr>
+              <th>Ko'rsatkich yo'nalishi</th>
+              <th>Mavjud miqdor</th>
+              <th>2017-yilga nisbatan o'sish</th>
+              <th>Holat va tavsif</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Mehmonxonalar (Hotels 1★ - 5★)</td>
+              <td><strong>1,320 ta</strong></td>
+              <td>+185%</td>
+              <td>Xalqaro brendlar: Hilton, Marriott, Wyndham, Radisson</td>
+            </tr>
+            <tr>
+              <td>Oilaviy mehmon uylari (Guesthouses)</td>
+              <td><strong>3,650 ta</strong></td>
+              <td>+3,200%</td>
+              <td>Milliy muhit va mehmondo'stlikni his qilish uchun</td>
+            </tr>
+            <tr>
+              <td>Xostellar (Hostels)</td>
+              <td><strong>550 ta</strong></td>
+              <td>+510%</td>
+              <td>Hamyonbop yoshlar va backpackerlar uchun</td>
+            </tr>
+            <tr>
+              <td>Turoperatorlar va sayyohlik agentliklari</td>
+              <td><strong>1,890 ta</strong></td>
+              <td>+190%</td>
+              <td>Ichki va tashqi yo'nalishlar bo'yicha litsenziyaga ega</td>
+            </tr>
+            <tr>
+              <td>Sertifikatlangan Gid-ekskursovodlar</td>
+              <td><strong>3,240 nafar</strong></td>
+              <td>+240%</td>
+              <td>32 dan ortiq xorijiy tillarda so'zlashuvchi mutaxassislar</td>
+            </tr>
+            <tr>
+              <td>Vizasiz rejim amal qiladigan davlatlar</td>
+              <td><strong>93 ta davlat</strong></td>
+              <td>+930%</td>
+              <td>Dunyoning 93 ta davlati fuqarolari uchun vizasiz kirish</td>
+            </tr>
+            <tr>
+              <td>Elektron viza (E-Visa) beriladigan davlatlar</td>
+              <td><strong>56 ta davlat</strong></td>
+              <td>Yangi tizim</td>
+              <td>Tezkor onlayn ruxsatnoma olish tizimi</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TABLE 5: AHOLI VA DEMOGRAFIYA JADVALI -->
+    <div class="table-section-card">
+      <h2 class="table-section-title">
+        <span>👥</span> 5. O'zbekiston viloyatlari bo'yicha doimiy aholi taqsimoti
+      </h2>
+      <p class="table-section-desc">
+        14 ta ma'muriy hudud bo'yicha aholi soni, urbanizatsiya ko'rsatkichi va zichligi (Statistika Agentligi).
+      </p>
+
+      <div class="custom-stats-table-wrap">
+        <table class="custom-stats-table">
+          <thead>
+            <tr>
+              <th>№</th>
+              <th>Hudud nomi</th>
+              <th>Doimiy aholi soni</th>
+              <th>Respublika bo'yicha ulushi</th>
+              <th>Shahar aholisi %</th>
+              <th>Maydoni (ming km²)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><strong>Samarqand viloyati</strong></td><td>4,220,000 kishi</td><td>11.1%</td><td>37.4%</td><td>16.8</td></tr>
+            <tr><td>2</td><td><strong>Farg'ona viloyati</strong></td><td>4,060,000 kishi</td><td>10.7%</td><td>56.3%</td><td>6.8</td></tr>
+            <tr><td>3</td><td><strong>Qashqadaryo viloyati</strong></td><td>3,560,000 kishi</td><td>9.4%</td><td>43.1%</td><td>28.6</td></tr>
+            <tr><td>4</td><td><strong>Andijon viloyati</strong></td><td>3,390,000 kishi</td><td>9.0%</td><td>52.7%</td><td>4.2</td></tr>
+            <tr><td>5</td><td><strong>Toshkent shahri</strong></td><td>3,040,000 kishi</td><td>8.0%</td><td>100%</td><td>0.4</td></tr>
+            <tr><td>6</td><td><strong>Namangan viloyati</strong></td><td>3,060,000 kishi</td><td>8.1%</td><td>64.8%</td><td>7.9</td></tr>
+            <tr><td>7</td><td><strong>Toshkent viloyati</strong></td><td>3,050,000 kishi</td><td>8.1%</td><td>49.2%</td><td>15.3</td></tr>
+            <tr><td>8</td><td><strong>Surxondaryo viloyati</strong></td><td>2,870,000 kishi</td><td>7.6%</td><td>36.5%</td><td>20.1</td></tr>
+            <tr><td>9</td><td><strong>Buxoro viloyati</strong></td><td>2,040,000 kishi</td><td>5.4%</td><td>37.1%</td><td>40.3</td></tr>
+            <tr><td>10</td><td><strong>Qoraqalpog'iston Respublikasi</strong></td><td>2,000,000 kishi</td><td>5.3%</td><td>49.0%</td><td>166.6</td></tr>
+            <tr><td>11</td><td><strong>Xorazm viloyati</strong></td><td>1,990,000 kishi</td><td>5.3%</td><td>33.5%</td><td>6.3</td></tr>
+            <tr><td>12</td><td><strong>Jizzax viloyati</strong></td><td>1,500,000 kishi</td><td>4.0%</td><td>47.0%</td><td>21.2</td></tr>
+            <tr><td>13</td><td><strong>Navoiy viloyati</strong></td><td>1,070,000 kishi</td><td>2.8%</td><td>48.8%</td><td>110.8</td></tr>
+            <tr><td>14</td><td><strong>Sirdaryo viloyati</strong></td><td>910,000 kishi</td><td>2.4%</td><td>42.9%</td><td>4.3</td></tr>
+            <tr style="background:#f7f6f2; font-weight:800;">
+              <td>Σ</td>
+              <td><strong>JAMI RESPUBLIKA</strong></td>
+              <td><strong>37,869,795+ kishi</strong></td>
+              <td><strong>100%</strong></td>
+              <td><strong>51.0%</strong></td>
+              <td><strong>448.978</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/partials.js"></script>
+<script src="js/i18n.js"></script>
+</body>
+</html>

@@ -27,6 +27,7 @@
   }
 
   const UZ_REGIONS = [
+    { value: "O'zbekiston", label: "🌐 Hamma viloyatlar / Butun O'zbekiston" },
     { value: "Toshkent", label: "Toshkent shahri va viloyati" },
     { value: "Samarqand", label: "Samarqand" },
     { value: "Buxoro", label: "Buxoro" },
@@ -1750,14 +1751,27 @@
 
     // Auto-listen to clicks on listing images across the entire website
     document.addEventListener("click", (e) => {
-      if (e.target.closest("button") || e.target.closest(".btn") || e.target.closest(".liked-btn") || e.target.closest(".nav-tab")) return;
+      if (e.target.closest("button, .btn, .heart-btn, .liked-btn, .nav-tab, a, input, select, textarea")) return;
       
-      const targetImg = e.target.closest(".detail-slider img, .slider-slide img, .stay-thumb img, .review-photo img, .review-media img, .detail-thumb img, .home-service-img img, [data-lightbox]");
-      if (targetImg && targetImg.src && !targetImg.src.includes("data:image/svg")) {
+      let targetImg = null;
+      if (e.target.tagName === "IMG") {
+        targetImg = e.target;
+      } else {
+        const thumb = e.target.closest(".stay-thumb, .slider-container, .detail-slider, .curated-gallery-img, .photo-card, .review-photo, .review-media");
+        if (thumb) targetImg = thumb.querySelector("img");
+      }
+
+      if (targetImg && targetImg.src && !targetImg.src.includes("data:image/svg") && !targetImg.classList.contains("brand-mark-img")) {
         e.preventDefault();
         e.stopPropagation();
 
-        const parentGallery = targetImg.closest(".detail-slider, .slider-track, #detailThumbs, .review-media-gallery, .gallery-mosaic");
+        // If inside detail page slider:
+        if (typeof slideImages !== "undefined" && Array.isArray(slideImages) && slideImages.length) {
+          const idx = typeof currentSlide !== "undefined" ? currentSlide : 0;
+          return window.openLightbox(slideImages, idx);
+        }
+
+        const parentGallery = targetImg.closest(".slider-container, .detail-slider, .slider-track, #detailThumbs, .review-media-gallery, .gallery-mosaic, .curated-gallery-grid, .curated-photos-grid");
         if (parentGallery) {
           const allImgs = Array.from(parentGallery.querySelectorAll("img")).map(img => img.src).filter(s => s && !s.includes("data:image/svg"));
           const currentIdx = allImgs.indexOf(targetImg.src);

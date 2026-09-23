@@ -20,6 +20,7 @@
       nav_logout: "Chiqish",
 
       // Hero
+      hero_title: 'O\'zbekistonni <span style="color:var(--clay);">kashf</span> eting',
       hero_tag: "Qadimiy Ipak yo'lida",
       hero_h1a: "O'zbekistonning",
       hero_h1b: "buyuk",
@@ -88,6 +89,7 @@
       nav_logout: "Выйти",
 
       // Hero
+      hero_title: '<span style="color:var(--clay);">Откройте</span> для себя Узбекистан',
       hero_tag: "По древнему Шёлковому пути",
       hero_h1a: "Почувствуйте",
       hero_h1b: "великую",
@@ -156,6 +158,7 @@
       nav_logout: "Sign out",
 
       // Hero
+      hero_title: '<span style="color:var(--clay);">Discover</span> Uzbekistan',
       hero_tag: "Along the ancient Silk Road",
       hero_h1a: "Experience the",
       hero_h1b: "great",
@@ -244,13 +247,17 @@
       }
     });
 
-    // Translate all [data-i18n] text nodes
+    // Translate all [data-i18n] text nodes (supports HTML spans)
     document.querySelectorAll("[data-i18n]").forEach(el => {
       const key = el.getAttribute("data-i18n");
       if (!key) return;
       const val = t(key);
       if (val && val !== key) {
-        el.textContent = val;
+        if (val.includes("<")) {
+          el.innerHTML = val;
+        } else {
+          el.textContent = val;
+        }
       }
     });
 

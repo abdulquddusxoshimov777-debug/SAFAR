@@ -125,6 +125,8 @@ const postActionLimiter = rateLimit({
 app.use("/api/", generalApiLimiter);
 app.use(express.static(path.join(__dirname, "..", "public")));
 
+const db = require("./db");
+
 function readUsers() {
   if (!fs.existsSync(USERS_FILE)) return [];
   try {
@@ -141,7 +143,7 @@ function readUsers() {
   }
 }
 function writeUsers(users) {
-  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+  db.saveUsers(users);
 }
 
 // Automatically ensure default Admin user exists with correct password and role
@@ -192,6 +194,7 @@ function readReviews() {
 }
 function writeReviews(reviews) {
   fs.writeFileSync(REVIEWS_FILE, JSON.stringify(reviews, null, 2));
+  db.saveReviews(reviews);
 }
 
 function readMessages() {
@@ -229,6 +232,7 @@ function readListings() {
 function writeListings(listings) {
   try {
     fs.writeFileSync(LISTINGS_FILE, JSON.stringify(listings, null, 2), "utf-8");
+    db.saveListings(listings);
   } catch (err) {
     console.error("Failed to write listings.json:", err);
   }
@@ -1142,7 +1146,12 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(publicDir, "index.html"));
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Safar backend running on http://localhost:${PORT}`);
+  try {
+    await db.initDatabase();
+  } catch (err) {
+    console.error("Database initialization error:", err.message);
+  }
 });
 

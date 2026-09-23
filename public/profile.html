@@ -283,11 +283,11 @@
         const cat = item.categoryType || "stays";
         const singleType = cat === "places" ? "place" : (cat === "foods" ? "food" : (cat === "crafts" ? "craft" : "stay"));
         const detailUrl = `detail.html?type=${singleType}&id=${item.id}`;
-        const catBadge = cat === "places" ? "Diqqatga sazovor joy" : (cat === "foods" ? "Milliy taom" : (cat === "crafts" ? "Buyum" : "Turar joy"));
+        const itemImg = item.image || (Array.isArray(item.images) && item.images[0]) || "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80";
         return `
           <div class="stay-card" style="display:flex; flex-direction:column; padding:0; overflow:hidden; border:1px solid var(--line-soft);">
             <div class="stay-thumb" style="height:180px; border-radius:0;">
-              <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}" loading="lazy">
+              <img src="${escapeHtml(itemImg)}" alt="${escapeHtml(item.title)}" loading="lazy">
               <span class="badge-super" style="text-transform:uppercase;">${escapeHtml(item.tag || catBadge)}</span>
             </div>
             <div class="stay-body" style="padding:16px; flex:1; display:flex; flex-direction:column;">
