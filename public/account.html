@@ -117,26 +117,21 @@
       </div>
     </div>
 
-    <div class="account-panels" style="margin-top:32px;">
-      <div class="account-panel">
-        <div class="icn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 12h16M4 12l5-5M4 12l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <h3>Upcoming trips</h3>
-        <p>You have no upcoming stays yet. Browse listings to plan your next journey.</p>
+    <!-- BIO (MEN HAQIMDA) SECTION -->
+    <div id="bioSection" style="margin-top:32px; background:var(--paper); border:1px solid var(--line); border-radius:18px; padding:24px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+        <div>
+          <h3 style="font-family:var(--font-display); font-size:20px; color:var(--indigo); margin-bottom:4px;">✍️ Men haqimda (Bio)</h3>
+          <p style="color:rgba(28,26,23,0.7); font-size:13.5px;">Ushbu ma'lumot saytdagi ochiq profilingizda boshqa foydalanuvchilarga ko'rinadi.</p>
+        </div>
       </div>
-      <a href="saved.html" class="account-panel" style="text-decoration:none; color:inherit; cursor:pointer;">
-        <div class="icn">♡</div>
-        <h3>Saved stays (Sevimlilar)</h3>
-        <p>Tap the heart on any listing to save it here. Click to view all saved items.</p>
-      </a>
-      <div class="account-panel">
-        <div class="icn">✎</div>
-        <h3>Account settings</h3>
-        <p>Name and email are managed here once you connect a full profile page.</p>
+      <textarea id="userBioText" rows="3" placeholder="O'zingiz haqingizda qisqacha ma'lumot yozing (masalan: Samarqandlik gidlardan biriman, sayohatlarni va milliy oshxonani yaxshi ko'raman)..." style="width:100%; border-radius:12px; border:1px solid var(--line); padding:12px 14px; font-family:inherit; font-size:14px; line-height:1.5; box-sizing:border-box; resize:vertical;"></textarea>
+      <div style="display:flex; justify-content:flex-end; margin-top:12px; gap:10px; align-items:center;">
+        <span id="bioSaveStatus" style="font-size:13px; font-weight:700; color:#2e7d32; display:none;"></span>
+        <button type="button" class="btn btn-primary" id="btnSaveBio" style="padding:8px 20px; font-size:13.5px;">
+          💾 Bio'ni saqlash
+        </button>
       </div>
-    </div>
-
-    <div style="text-align:center;margin-top:36px;">
-      <a href="stays.html" class="btn btn-dark">Browse stays</a>
     </div>
   </div>
 </section>
@@ -366,7 +361,49 @@ window.deleteMyListing = async function(category, id) {
     const data = await res.json();
     if (data.ok) {
       await window.safarAlert({ title: "O'chirildi", message: "E'loningiz muvaffaqiyatli o'chirildi.", icon: "✅" });
-      loadMyListings();
+      
+// BIO SAVE HANDLER
+const btnSaveBio = document.getElementById("btnSaveBio");
+const bioText = document.getElementById("userBioText");
+const bioStatus = document.getElementById("bioSaveStatus");
+
+if (btnSaveBio && bioText) {
+  btnSaveBio.onclick = async () => {
+    btnSaveBio.disabled = true;
+    btnSaveBio.textContent = "Saqlanmoqda...";
+    try {
+      const res = await fetch(`${API}/api/me/bio`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ bio: bioText.value.trim() })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        localStorage.setItem("safar_user", JSON.stringify(data.user));
+        if (bioStatus) {
+          bioStatus.textContent = "✅ Bio muvaffaqiyatli saqlandi!";
+          bioStatus.style.display = "inline";
+          setTimeout(() => { bioStatus.style.display = "none"; }, 3500);
+        }
+        if (window.safarAlert) {
+          await window.safarAlert({ title: "Muvaffaqiyatli", message: "Bio ma'lumotlaringiz saqlandi!", icon: "✅" });
+        }
+      } else {
+        alert(data.message || "Xatolik yuz berdi.");
+      }
+    } catch(err) {
+      alert("Server bilan bog'lanishda xatolik.");
+    } finally {
+      btnSaveBio.disabled = false;
+      btnSaveBio.textContent = "💾 Bio'ni saqlash";
+    }
+  };
+}
+
+loadMyListings();
     } else {
       await window.safarAlert({ title: "Xatolik", message: data.message || "Xatolik yuz berdi.", icon: "⚠️" });
     }

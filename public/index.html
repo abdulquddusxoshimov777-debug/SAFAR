@@ -275,9 +275,7 @@
   <div class="hero-overlay"></div>
   <div class="container hero-inner">
     <h1>
-      <span data-i18n="hero_h1a">O'zbekistonning</span><br>
-      <em data-i18n="hero_h1b">buyuk</em>
-      <span data-i18n="hero_h1c"> tarixini his qiling</span>
+      <span data-i18n="hero_title">O'zbekistonni kashf eting</span>
     </h1>
     <p data-i18n=""></p>
 
@@ -331,71 +329,101 @@
 
 
 <!-- ============ UZBEKISTAN POPULATION / DEMOGRAPHICS (2-rasmdagi ko'rinish) ============ -->
+<!-- ============ UZBEKISTAN POPULATION & NATIONAL STATS ============ -->
 <section id="population-section" style="padding:48px 0; background:var(--sand-light); border-top:1px solid var(--line);">
   <div class="container">
-    <div style="max-width:860px; margin:0 auto; background:#ffffff; border:1px solid var(--line); border-radius:24px; padding:clamp(20px, 4vw, 36px); box-shadow:var(--shadow-card);">
+    <div style="max-width:920px; margin:0 auto; background:#ffffff; border:1px solid var(--line); border-radius:24px; padding:clamp(20px, 4vw, 36px); box-shadow:var(--shadow-card);">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; flex-wrap:wrap; gap:10px;">
         <div>
           <div style="display:flex; align-items:center; gap:8px; font-size:20px; font-weight:800; color:var(--indigo);">
-            <span>🌐</span> <span data-i18n="pop_title">Uzbekistan Population</span>
+            <span>📊</span> <span data-i18n="pop_title">O'zbekiston Statistikasi va Demografiyasi</span>
           </div>
           <div style="font-size:13px; color:rgba(28,26,23,0.6); margin-top:3px;">
-            Source: Worldometer (UN data)
+            Manba: O'zbekiston Respublikasi Statistika Agentligi & Worldometer (UN data)
           </div>
         </div>
         <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(46,125,50,0.1); border:1px solid rgba(46,125,50,0.25); color:#2e7d32; font-size:12px; font-weight:700; padding:4px 12px; border-radius:999px;">
-          <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#2e7d32; animation:pulseDot 1.5s infinite;"></span>
-          LIVE
+          <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#2e7d32;"></span>
+          JONLI / LIVE
         </div>
       </div>
 
-      <div style="text-align:center; margin:28px 0 32px;">
-        <div id="livePopNumber" style="font-family:var(--font-display); font-size:clamp(38px, 6vw, 62px); font-weight:800; color:var(--indigo); letter-spacing:-0.02em; line-height:1;">
+      <div style="text-align:center; margin:24px 0 28px;">
+        <div style="font-size:13px; text-transform:uppercase; font-weight:700; color:rgba(28,26,23,0.6); letter-spacing:0.04em;">JAMI AHOLI SONI</div>
+        <div id="livePopNumber" style="font-family:var(--font-display); font-size:clamp(38px, 6vw, 62px); font-weight:800; color:var(--indigo); letter-spacing:-0.02em; line-height:1; margin-top:4px;">
           37,869,795
         </div>
-        <div style="margin-top:10px; font-size:14.5px; font-weight:700; color:#2e7d32; display:flex; align-items:center; justify-content:center; gap:6px;">
-          <span>↗</span> +1.81% / year (~670,795)
+        <div style="margin-top:8px; font-size:14.5px; font-weight:700; color:#2e7d32; display:flex; align-items:center; justify-content:center; gap:6px;">
+          <span>↗</span> +1.81% / yiliga (~670,795 kishi)
         </div>
       </div>
 
+      <!-- Male and Female breakdown -->
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:18px; margin-bottom:24px;">
         <!-- Male Card (Blue) -->
-        <div style="background:#eef3fc; border:1px solid rgba(25,118,210,0.18); border-radius:18px; padding:22px 20px; text-align:center;">
+        <div style="background:#eef3fc; border:1px solid rgba(25,118,210,0.18); border-radius:18px; padding:20px; text-align:center;">
           <div style="font-size:32px; margin-bottom:6px;">👱‍♂️</div>
-          <div style="font-size:14px; font-weight:700; color:rgba(28,26,23,0.7); margin-bottom:6px;"><span data-i18n="pop_male">Male</span> (50.4%)</div>
+          <div style="font-size:14px; font-weight:700; color:rgba(28,26,23,0.7); margin-bottom:4px;">Erkaklar / Male (50.4%)</div>
           <div style="font-family:var(--font-display); font-size:26px; font-weight:800; color:var(--indigo);" id="popMaleCount">19,086,377</div>
         </div>
 
         <!-- Female Card (Pink) -->
-        <div style="background:#fdeef2; border:1px solid rgba(233,30,99,0.18); border-radius:18px; padding:22px 20px; text-align:center;">
+        <div style="background:#fdeef2; border:1px solid rgba(233,30,99,0.18); border-radius:18px; padding:20px; text-align:center;">
           <div style="font-size:32px; margin-bottom:6px;">👱‍♀️</div>
-          <div style="font-size:14px; font-weight:700; color:rgba(28,26,23,0.7); margin-bottom:6px;"><span data-i18n="pop_female">Female</span> (49.6%)</div>
+          <div style="font-size:14px; font-weight:700; color:rgba(28,26,23,0.7); margin-bottom:4px;">Ayollar / Female (49.6%)</div>
           <div style="font-family:var(--font-display); font-size:26px; font-weight:800; color:var(--indigo);" id="popFemaleCount">18,783,418</div>
         </div>
       </div>
 
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px; margin-bottom:20px;">
+      <!-- Key National Indicators: GDP, Area, Median Age, Urban -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(135px, 1fr)); gap:12px; margin-bottom:24px;">
         <div style="background:#f7f7f9; border-radius:14px; padding:12px 10px; text-align:center; border:1px solid var(--line-soft);">
-          <div style="font-size:12px; color:rgba(28,26,23,0.6); font-weight:600;" data-i18n="pop_median_age">Median Age</div>
-          <div style="font-size:17px; font-weight:800; color:var(--indigo); margin-top:2px;">27 yrs</div>
+          <div style="font-size:11.5px; color:rgba(28,26,23,0.6); font-weight:700;">YaIM / GDP (Nominal)</div>
+          <div style="font-size:16px; font-weight:800; color:var(--indigo); margin-top:3px;">$107.5 mlrd</div>
+          <div style="font-size:11px; color:#2e7d32; font-weight:700;">+6.2% o'sish</div>
         </div>
         <div style="background:#f7f7f9; border-radius:14px; padding:12px 10px; text-align:center; border:1px solid var(--line-soft);">
-          <div style="font-size:12px; color:rgba(28,26,23,0.6); font-weight:600;" data-i18n="pop_density">Density</div>
-          <div style="font-size:17px; font-weight:800; color:var(--indigo); margin-top:2px;">89/km²</div>
+          <div style="font-size:11.5px; color:rgba(28,26,23,0.6); font-weight:700;">Jon boshiga YaIM</div>
+          <div style="font-size:16px; font-weight:800; color:var(--indigo); margin-top:3px;">$2,850+</div>
+          <div style="font-size:11px; color:rgba(28,26,23,0.6);">USD / yiliga</div>
         </div>
         <div style="background:#f7f7f9; border-radius:14px; padding:12px 10px; text-align:center; border:1px solid var(--line-soft);">
-          <div style="font-size:12px; color:rgba(28,26,23,0.6); font-weight:600;" data-i18n="pop_urban">Urban</div>
-          <div style="font-size:17px; font-weight:800; color:var(--indigo); margin-top:2px;">47.9%</div>
+          <div style="font-size:11.5px; color:rgba(28,26,23,0.6); font-weight:700;">Hudud maydoni</div>
+          <div style="font-size:16px; font-weight:800; color:var(--indigo); margin-top:3px;">448,978 km²</div>
+          <div style="font-size:11px; color:rgba(28,26,23,0.6);">56-o'rin</div>
         </div>
         <div style="background:#f7f7f9; border-radius:14px; padding:12px 10px; text-align:center; border:1px solid var(--line-soft);">
-          <div style="font-size:12px; color:rgba(28,26,23,0.6); font-weight:600;" data-i18n="pop_rank">World Rank</div>
-          <div style="font-size:17px; font-weight:800; color:var(--indigo); margin-top:2px;">#43</div>
+          <div style="font-size:11.5px; color:rgba(28,26,23,0.6); font-weight:700;">O'rtacha yosh</div>
+          <div style="font-size:16px; font-weight:800; color:var(--indigo); margin-top:3px;">29 yosh</div>
+          <div style="font-size:11px; color:rgba(28,26,23,0.6);">Yosh millat</div>
+        </div>
+        <div style="background:#f7f7f9; border-radius:14px; padding:12px 10px; text-align:center; border:1px solid var(--line-soft);">
+          <div style="font-size:11.5px; color:rgba(28,26,23,0.6); font-weight:700;">Shahar aholisi</div>
+          <div style="font-size:16px; font-weight:800; color:var(--indigo); margin-top:3px;">51.0%</div>
+          <div style="font-size:11px; color:rgba(28,26,23,0.6);">Urbanizatsiya</div>
+        </div>
+        <div style="background:#f7f7f9; border-radius:14px; padding:12px 10px; text-align:center; border:1px solid var(--line-soft);">
+          <div style="font-size:11.5px; color:rgba(28,26,23,0.6); font-weight:700;">Aholi zichligi</div>
+          <div style="font-size:16px; font-weight:800; color:var(--indigo); margin-top:3px;">89 / km²</div>
+          <div style="font-size:11px; color:rgba(28,26,23,0.6);">Kishi / km²</div>
         </div>
       </div>
 
-      <div style="text-align:center; margin-top:16px;">
-        <a href="https://www.worldometers.info/world-population/uzbekistan-population/" target="_blank" rel="noopener noreferrer" style="font-size:13.5px; font-weight:700; color:var(--clay); text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
-          View on Worldometer ↗
+      <!-- Regional Population Distribution Toggle & Container -->
+      <div style="text-align:center; margin-bottom:12px;">
+        <button type="button" id="btnToggleRegionStats" class="btn btn-ghost" style="padding:10px 22px; font-weight:700; border-radius:12px; background:#f7f7f9; border:1px solid var(--line); font-size:13.5px; cursor:pointer;">
+          🏙️ Viloyatlar bo'yicha aholi taqsimotini ko'rish (14 ta hudud) ↓
+        </button>
+      </div>
+
+      <div id="regionStatsContainer" style="display:none; margin-top:16px; border-top:1px solid var(--line-soft); padding-top:16px;">
+        <div style="font-size:13px; font-weight:700; color:var(--indigo); margin-bottom:12px;">O'zbekiston viloyatlari bo'yicha doimiy aholi soni:</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:10px;" id="regionStatsList"></div>
+      </div>
+
+      <div style="text-align:center; margin-top:20px;">
+        <a href="https://www.worldometers.info/world-population/uzbekistan-population/" target="_blank" rel="noopener noreferrer" style="font-size:13px; font-weight:700; color:var(--clay); text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+          Worldometer rasmiy sahifasida ochish ↗
         </a>
       </div>
     </div>
@@ -510,65 +538,7 @@
 
 
 
-<!-- ============ SERVICES / MAHSULOTLAR SECTION ============ -->
-<section id="services-section" style="padding:70px 0; background:var(--sand);">
-  <div class="container">
-    <div class="section-head">
-      <div>
-        <span class="eyebrow">Xizmatlar va Mahsulotlar</span>
-        <h2 style="font-family:var(--font-display); font-size:clamp(26px, 3.5vw, 36px); color:var(--indigo); margin-top:6px;">
-          Safar bilan O'zbekistonning barcha imkoniyatlari
-        </h2>
-        <p style="margin-top:6px; color:rgba(28,26,23,0.7); max-width:620px;">
-          Turar joylardan tortib milliy kulolchilik durdonalarigacha ? sayohatingiz uchun barcha xizmatlar bir joyda.
-        </p>
-      </div>
-      <a href="services.html" class="view-all">To'liq xizmatlar sahifasi ?</a>
-    </div>
 
-    <div class="home-services-grid">
-      <!-- 1: Stays -->
-      <div class="home-service-card">
-        <div class="home-service-img">
-          <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&q=80" alt="Uylar va Stays" loading="lazy">
-          <span class="home-service-tag">Homes & Stays</span>
-        </div>
-        <div class="home-service-body">
-          <h3>Milliy Hovlilar & Mehmonxonalar</h3>
-          <p>Buxoro va Xivadagi qadimiy naqshinkor milliy uylar, tog' kottejlari va cho'ldagi o'tov lagerlari.</p>
-          <a href="stays.html" class="home-service-link">Uylarni ko'rish ?</a>
-        </div>
-      </div>
-
-      <!-- 2: Places -->
-      <div class="home-service-card">
-        <div class="home-service-img">
-          <img src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=500&q=80" alt="Qadamjolar" loading="lazy">
-          <span class="home-service-tag">Places & Culture</span>
-        </div>
-        <div class="home-service-body">
-          <h3>Tarixiy Obidalar va Maskanlar</h3>
-          <p>Registon, Ichan Qal'a, Shohi Zinda va 14 ta hududdagi afsonaviy maskanlar interaktiv xaritasi.</p>
-          <a href="places.html" class="home-service-link">Joylar xaritasi ?</a>
-        </div>
-      </div>
-
-      <!-- 3: Foods -->
-      <div class="home-service-card">
-        <div class="home-service-img">
-          <img src="https://images.unsplash.com/photo-1541832676-9b763b0239ab?w=500&q=80" alt="Milliy oshxona" loading="lazy">
-          <span class="home-service-tag">Traditional Foods</span>
-        </div>
-        <div class="home-service-body">
-          <h3>O'zbek Milliy Oshxonasi</h3>
-          <p>Samarqandcha ziq palov, Toshkent to'y oshi, Jizzax somsasi va eng mashhur milliy choyxonalar.</p>
-          <a href="foods.html" class="home-service-link">Taomlar ro'yxati ?</a>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
 
 <!-- ============ REVIEWS SECTION (Sharhlar - Bosh sahifa oxirida) ============ -->
 <section id="reviews-section" style="background:var(--sand-deep); padding:80px 0; border-top: 1px solid var(--line-soft);">
@@ -1039,6 +1009,7 @@ reviewForm.addEventListener("submit", async e => {
   const REGIONS_WEATHER_CONFIG = [
     { id: "toshkent_sh", name: "Toshkent shahri", lat: 41.3113, lon: 69.2797, fallbackTemp: 24, fallbackCode: 0 },
     { id: "samarqand", name: "Samarqand", lat: 39.6542, lon: 66.9597, fallbackTemp: 23, fallbackCode: 1 },
+    { id: "qoraqalpogiston", name: "Qoraqalpog'iston (Nukus)", lat: 42.4602, lon: 59.6166, fallbackTemp: 21, fallbackCode: 2 },
     { id: "buxoro", name: "Buxoro", lat: 39.7747, lon: 64.4286, fallbackTemp: 26, fallbackCode: 0 },
     { id: "xorazm", name: "Xorazm / Xiva", lat: 41.3783, lon: 60.3639, fallbackTemp: 22, fallbackCode: 2 },
     { id: "andijon", name: "Andijon", lat: 40.7821, lon: 72.3442, fallbackTemp: 21, fallbackCode: 1 },
@@ -1049,8 +1020,7 @@ reviewForm.addEventListener("submit", async e => {
     { id: "jizzax", name: "Jizzax", lat: 40.1158, lon: 67.8422, fallbackTemp: 23, fallbackCode: 1 },
     { id: "sirdaryo", name: "Sirdaryo (Guliston)", lat: 40.4897, lon: 68.7842, fallbackTemp: 24, fallbackCode: 0 },
     { id: "navoiy", name: "Navoiy", lat: 40.0844, lon: 65.3792, fallbackTemp: 25, fallbackCode: 0 },
-    { id: "toshkent_vil", name: "Toshkent viloyati", lat: 41.4667, lon: 69.5833, fallbackTemp: 22, fallbackCode: 1 },
-    { id: "qoraqalpogiston", name: "Qoraqalpog'iston (Nukus)", lat: 42.4602, lon: 59.6166, fallbackTemp: 21, fallbackCode: 2 }
+    { id: "toshkent_vil", name: "Toshkent viloyati", lat: 41.4667, lon: 69.5833, fallbackTemp: 22, fallbackCode: 1 }
   ];
 
   function getWeatherDesc(code) {
@@ -1066,9 +1036,15 @@ reviewForm.addEventListener("submit", async e => {
   const grid = document.getElementById("weatherGrid");
   const filterInput = document.getElementById("weatherRegionFilter");
 
+  let showAllWeather = false;
+  const toggleBtn = document.getElementById("btnToggleAllWeather");
+
   function renderWeatherCards(dataList) {
     if (!grid) return;
-    grid.innerHTML = dataList.map(item => {
+    const filterVal = filterInput ? filterInput.value.trim() : "";
+    const listToRender = (showAllWeather || filterVal) ? dataList : dataList.slice(0, 3);
+
+    grid.innerHTML = listToRender.map(item => {
       const cond = getWeatherDesc(item.code);
       return `
         <div class="weather-card" style="background:#ffffff; border:1px solid var(--line); border-radius:16px; padding:18px 16px; box-shadow:var(--shadow-card); display:flex; flex-direction:column; transition:transform 0.2s ease;">
@@ -1145,6 +1121,58 @@ reviewForm.addEventListener("submit", async e => {
     } catch(err) {
       console.warn("Weather fetch fallback in use:", err);
     }
+  }
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      showAllWeather = !showAllWeather;
+      toggleBtn.textContent = showAllWeather ? "Qisqartirish (Faqat 3 ta viloyat) ↑" : "Batafsil barchasi (14 ta viloyat) ↓";
+      renderWeatherCards(currentWeatherItems);
+    });
+  }
+
+  // Populate regional population breakdown
+  const REGION_POPULATION_DATA = [
+    { name: "Samarqand viloyati", pop: "4,220,000", pct: 11.1 },
+    { name: "Farg'ona viloyati", pop: "4,060,000", pct: 10.7 },
+    { name: "Qashqadaryo viloyati", pop: "3,560,000", pct: 9.4 },
+    { name: "Andijon viloyati", pop: "3,390,000", pct: 9.0 },
+    { name: "Toshkent shahri", pop: "3,040,000", pct: 8.0 },
+    { name: "Namangan viloyati", pop: "3,060,000", pct: 8.1 },
+    { name: "Toshkent viloyati", pop: "3,050,000", pct: 8.1 },
+    { name: "Surxondaryo viloyati", pop: "2,870,000", pct: 7.6 },
+    { name: "Buxoro viloyati", pop: "2,040,000", pct: 5.4 },
+    { name: "Xorazm viloyati", pop: "1,990,000", pct: 5.3 },
+    { name: "Qoraqalpog'iston Res.", pop: "2,000,000", pct: 5.3 },
+    { name: "Jizzax viloyati", pop: "1,500,000", pct: 4.0 },
+    { name: "Navoiy viloyati", pop: "1,070,000", pct: 2.8 },
+    { name: "Sirdaryo viloyati", pop: "910,000", pct: 2.4 }
+  ];
+
+  const regContainer = document.getElementById("regionStatsContainer");
+  const regList = document.getElementById("regionStatsList");
+  const regBtn = document.getElementById("btnToggleRegionStats");
+
+  if (regList) {
+    regList.innerHTML = REGION_POPULATION_DATA.map(r => `
+      <div style="background:#f7f7f9; border-radius:10px; padding:10px 14px; border:1px solid var(--line-soft);">
+        <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; color:var(--indigo); margin-bottom:4px;">
+          <span>${r.name}</span>
+          <span style="color:var(--clay);">${r.pop} (${r.pct}%)</span>
+        </div>
+        <div style="width:100%; height:6px; background:#e0e0e0; border-radius:999px; overflow:hidden;">
+          <div style="width:${r.pct * 7.5}%; height:100%; background:var(--clay); border-radius:999px;"></div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  if (regBtn && regContainer) {
+    regBtn.addEventListener("click", () => {
+      const isHidden = regContainer.style.display === "none";
+      regContainer.style.display = isHidden ? "block" : "none";
+      regBtn.textContent = isHidden ? "Viloyatlar ro'yxatini yashirish ↑" : "🏙️ Viloyatlar bo'yicha aholi taqsimotini ko'rish (14 ta hudud) ↓";
+    });
   }
 
   setTimeout(fetchLiveWeather, 300);

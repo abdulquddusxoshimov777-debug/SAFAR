@@ -1907,6 +1907,74 @@ footer ul a:hover { color: var(--paper); }
     cursor: pointer !important;
   }
 
+  /* Task 2: Hide interactive map on mobile */
+  .map-panel,
+  #mapPanel,
+  #mapMount,
+  .map-container {
+    display: none !important;
+  }
+  .listing-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Task 10: Mobile card full-width vertical layout - no clipping/half-buttons */
+  .stay-card,
+  .craft-card-item,
+  .place-card-item,
+  .food-card-item {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+  .stay-thumb {
+    width: 100% !important;
+    height: 220px !important;
+    border-radius: 16px 16px 0 0 !important;
+  }
+  .stay-thumb img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+  .stay-body {
+    width: 100% !important;
+    padding: 16px 14px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .stay-price-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .card-actions-row {
+    display: flex !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin-top: 12px !important;
+  }
+  .card-actions-row .btn-detail,
+  .card-actions-row .btn-book,
+  .card-actions-row a {
+    flex: 1 !important;
+    min-width: 0 !important;
+    text-align: center !important;
+    padding: 9px 12px !important;
+    font-size: 13px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    box-sizing: border-box !important;
+  }
+
   /* Barcha kartochkalar va gridlarni 1 ustunga keltirish */
   .foods-grid,
   .dest-grid,

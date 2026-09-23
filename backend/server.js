@@ -389,6 +389,28 @@ app.post("/api/login", authLimiter, (req, res) => {
 });
 
 // Current signed-in user
+// Update user bio
+app.put("/api/me/bio", requireAuth, (req, res) => {
+  const { bio } = req.body || {};
+  const users = readUsers();
+  const user = users.find(u => u.id === req.user.id);
+  if (!user) return res.status(404).json({ ok: false, message: "Foydalanuvchi topilmadi." });
+  
+  user.bio = typeof bio === "string" ? bio.trim().slice(0, 500) : "";
+  writeUsers(users);
+  
+  const publicUser = {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: isUserAdmin(user) ? "admin" : (user.role || "tourist"),
+    avatarUrl: user.avatarUrl || null,
+    bio: user.bio || "",
+    createdAt: user.createdAt
+  };
+  res.json({ ok: true, message: "Bio muvaffaqiyatli saqlandi!", user: publicUser });
+});
+
 app.get("/api/me", requireAuth, (req, res) => {
   const users = readUsers();
   const user = users.find((u) => u.id === req.user.id);
@@ -725,10 +747,7 @@ app.post("/api/listings/add", requireAuth, postActionLimiter, (req, res) => {
   }
 
   const { category, title, city, price, tag, desc, images, image, address, phone, googleMapsUrl, amenities, priceCurrency, coordinates } = req.body || {};
-  if (!title || !title.trim() || !city || !price) {
-    return badRequest(res, "Sarlavha, shahar va narxni kiritishingiz shart.");
-  }
-
+  
   const targetCategory = (category || "homes").toLowerCase();
   let normCat = "homes";
   let catLabel = "Uylar (Homes)";
@@ -737,9 +756,20 @@ app.post("/api/listings/add", requireAuth, postActionLimiter, (req, res) => {
   else if (targetCategory.includes("craft")) { normCat = "crafts"; catLabel = "Buyumlar va Hunarmandchilik (Crafts)"; }
   else { normCat = "homes"; catLabel = "Uylar (Homes)"; }
 
-  // MANDATORY LOCATION CHECK (crafts bo'limida joy/lokatsiya talab etilmaydi)
-  const isCraft = normCat === "crafts";
-  if (!isCraft && (!googleMapsUrl || !googleMapsUrl.trim())) {
+  const isFoodOrCraft = normCat === "foods" || normCat === "crafts";
+  const finalCity = (city || "").trim() || (isFoodOrCraft ? "O'zbekiston" : "");
+
+  if (!title || !title.trim()) {
+    return badRequest(res, "Sarlavha (Nomi) kiritilishi shart.");
+  }
+
+  // Viloyat faqat Uylar va Joylar uchun majburiy (Foods va Crafts uchun ixtiyoriy)
+  if (!isFoodOrCraft && !finalCity) {
+    return badRequest(res, "Viloyat / Shaharni tanlashingiz shart.");
+  }
+
+  // Location faqat Uylar va Joylar uchun majburiy (Foods va Crafts uchun ixtiyoriy)
+  if (!isFoodOrCraft && (!googleMapsUrl || !googleMapsUrl.trim())) {
     return badRequest(res, "Google Maps / Yandex Maps havola yoki lokatsiyani kiritish majburiy!");
   }
 
@@ -764,11 +794,9 @@ app.post("/api/listings/add", requireAuth, postActionLimiter, (req, res) => {
     }
   }
 
-  // Validate description word count >= 10 words
+  // Description check: flexible
   const words = (desc || "").trim().split(/\s+/).filter(Boolean);
-  if (words.length < 10) {
-    return badRequest(res, `Tavsif kamida 10 ta so'zdan iborat bo'lishi kerak. (Hozircha ${words.length} ta so'z).`);
-  }
+  const finalDesc = (desc || "").trim() || "Ma'lumot berilmagan.";
 
   // Validate at least 2 images provided
   let imgList = Array.isArray(images) ? images.filter(Boolean) : [];
@@ -785,12 +813,14 @@ app.post("/api/listings/add", requireAuth, postActionLimiter, (req, res) => {
     extractedCoords = extractCoordinates(googleMapsUrl);
   }
 
-  // Format price with currency
-  let formattedPrice = String(price).trim();
-  if (priceCurrency === "so'm" || priceCurrency === "UZS" || formattedPrice.toLowerCase().includes("so'm")) {
+  // Format price with currency (supports Free / Bepul)
+  let formattedPrice = String(price || "").trim();
+  if (priceCurrency === "free" || formattedPrice.toLowerCase() === "free" || formattedPrice.toLowerCase() === "bepul" || formattedPrice === "0") {
+    formattedPrice = "Bepul (Free)";
+  } else if (priceCurrency === "so'm" || priceCurrency === "UZS" || formattedPrice.toLowerCase().includes("so'm")) {
     if (!formattedPrice.toLowerCase().includes("so'm")) formattedPrice = `${formattedPrice} so'm`;
   } else {
-    if (!formattedPrice.startsWith("$") && !formattedPrice.toLowerCase().includes("so'm")) formattedPrice = `$${formattedPrice}`;
+    if (!formattedPrice.startsWith("$") && !formattedPrice.toLowerCase().includes("so'm")) formattedPrice = `${formattedPrice}`;
   }
 
   // Format amenities array
@@ -807,10 +837,12 @@ app.post("/api/listings/add", requireAuth, postActionLimiter, (req, res) => {
   const newItem = {
     id: Date.now(),
     ownerId: user.id,
+    userId: user.id,
     ownerEmail: (user.email || req.user.email || "").trim().toLowerCase(),
+    userEmail: (user.email || req.user.email || "").trim().toLowerCase(),
     ownerName: user.name || req.user.name || "Mezbon",
     title: title.trim(),
-    city: city.trim(),
+    city: finalCity,
     tag: tag || "Yangi Joy",
     price: formattedPrice,
     rating: 5.0,
@@ -900,6 +932,7 @@ app.put("/api/listings/:category/:id", requireAuth, (req, res) => {
 
   const isAdmin = isUserAdmin(req.user);
   const isAuthor = (item.ownerId && String(item.ownerId) === String(req.user.id)) ||
+                   (item.userId && String(item.userId) === String(req.user.id)) ||
                    (itemOwnerEmail && itemOwnerEmail === userEmail) ||
                    (itemOwnerName && itemOwnerName === userName);
 
@@ -909,19 +942,16 @@ app.put("/api/listings/:category/:id", requireAuth, (req, res) => {
 
   const { title, city, price, priceCurrency, tag, desc, images, image, address, phone, googleMapsUrl, amenities } = req.body || {};
 
-  // Word count check
-  if (desc) {
-    const words = desc.trim().split(/\s+/).filter(Boolean);
-    if (words.length < 10) {
-      return badRequest(res, `Tavsif kamida 10 ta so'zdan iborat bo'lishi kerak. (Hozircha ${words.length} ta so'z).`);
-    }
-  }
+  // Word count check (flexible)
+  // No strict 10 words limit required
 
   // Format price
   let formattedPrice = item.price;
   if (price) {
     formattedPrice = String(price).trim();
-    if (priceCurrency === "so'm" || priceCurrency === "UZS" || formattedPrice.toLowerCase().includes("so'm")) {
+    if (priceCurrency === "free" || formattedPrice.toLowerCase() === "free" || formattedPrice.toLowerCase() === "bepul" || formattedPrice === "0") {
+      formattedPrice = "Bepul (Free)";
+    } else if (priceCurrency === "so'm" || priceCurrency === "UZS" || formattedPrice.toLowerCase().includes("so'm")) {
       if (!formattedPrice.toLowerCase().includes("so'm")) formattedPrice = `${formattedPrice} so'm`;
     } else if (priceCurrency === "$") {
       if (!formattedPrice.startsWith("$")) formattedPrice = `$${formattedPrice}`;

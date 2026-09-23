@@ -264,11 +264,40 @@
     if (openBtn) openBtn.onclick = openMobileMenu;
     if (closeBtn) closeBtn.onclick = closeMobileMenu;
     if (backdrop) backdrop.onclick = closeMobileMenu;
+
+    // Delegated click listener so hamburger NEVER fails even after dynamic re-renders
+    document.addEventListener("click", (e) => {
+      const toggle = e.target.closest("#openMobileMenuBtn, .mobile-menu-toggle");
+      if (toggle) {
+        e.preventDefault();
+        e.stopPropagation();
+        openMobileMenu();
+        return;
+      }
+      const close = e.target.closest("#closeMobileDrawerBtn, .mobile-drawer-close");
+      if (close) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeMobileMenu();
+        return;
+      }
+      if (e.target.id === "mobileDrawerBackdrop" || e.target.classList.contains("mobile-drawer-backdrop")) {
+        closeMobileMenu();
+      }
+    });
   }
 
   function renderFooter() {
     const mount = document.getElementById("site-footer");
     if (!mount) return;
+    const page = currentPage();
+    // Only show footer on the main (Home) page as requested
+    if (page !== "index.html" && page !== "") {
+      mount.style.display = "none";
+      mount.innerHTML = "";
+      return;
+    }
+    mount.style.display = "block";
     mount.innerHTML = `
       <footer role="contentinfo">
         <div class="container">
@@ -416,6 +445,7 @@
                 <select id="addPriceCurrency" style="width:110px; border-radius:12px; padding:10px 8px; font-weight:600;">
                   <option value="$">$ (USD)</option>
                   <option value="so'm">so'm (UZS)</option>
+                  <option value="free">Bepul (Free)</option>
                 </select>
               </div>
             </div>
@@ -532,26 +562,59 @@
     updateTagSelectOptions(categorySelect.value, tagSelect, customTagInput);
     checkCooldown(categorySelect.value);
 
-    function updateLocationVisibility() {
-      const isCraft = categorySelect.value === "crafts";
-      const mapsWrap = document.getElementById("wrapAddMapsUrl");
-      const mapsInput = document.getElementById("addMapsUrl");
-      if (mapsWrap && mapsInput) {
-        if (isCraft) {
-          mapsWrap.style.display = "none";
-          mapsInput.required = false;
+    const priceInput = document.getElementById("addPrice");
+    const currencySelect = document.getElementById("addPriceCurrency");
+    const cityInput = document.getElementById("addCity");
+    const mapsWrap = document.getElementById("wrapAddMapsUrl");
+    const mapsInput = document.getElementById("addMapsUrl");
+    const descWordCounter = document.getElementById("wordCounter");
+
+    if (currencySelect && priceInput) {
+      currencySelect.addEventListener("change", () => {
+        if (currencySelect.value === "free") {
+          priceInput.value = "Bepul (Free)";
+          priceInput.disabled = true;
         } else {
-          mapsWrap.style.display = "block";
-          mapsInput.required = true;
+          if (priceInput.value === "Bepul (Free)") priceInput.value = "";
+          priceInput.disabled = false;
+        }
+      });
+    }
+
+    function updateCategoryFields() {
+      const cat = categorySelect.value;
+      const isFoodOrCraft = (cat === "foods" || cat === "crafts");
+      
+      // Location / Google Maps is visible for all, but optional for foods and crafts
+      if (mapsWrap && mapsInput) {
+        mapsWrap.style.display = "block";
+        mapsInput.required = !isFoodOrCraft;
+        const mapsLabel = mapsWrap.querySelector("label");
+        if (mapsLabel) {
+          mapsLabel.textContent = isFoodOrCraft ? "Google / Yandex Maps havola (Ixtiyoriy)" : "Google Maps / Yandex Maps havola yoki Lokatsiya *";
         }
       }
+
+      // City is optional for foods and crafts
+      if (cityInput) {
+        cityInput.required = !isFoodOrCraft;
+        const cityLabel = cityInput.closest(".rev-field")?.querySelector("label");
+        if (cityLabel) {
+          cityLabel.textContent = isFoodOrCraft ? "Viloyat / Shahar (Ixtiyoriy)" : "Viloyat / Shahar *";
+        }
+      }
+
+      // Description is flexible
+      if (descWordCounter) {
+        descWordCounter.textContent = isFoodOrCraft ? "Ixtiyoriy tavsif" : "Kamida 1 ta so'z";
+      }
     }
-    updateLocationVisibility();
+    updateCategoryFields();
 
     categorySelect.addEventListener("change", () => {
       updateTagSelectOptions(categorySelect.value, tagSelect, customTagInput);
       checkCooldown(categorySelect.value);
-      updateLocationVisibility();
+      updateCategoryFields();
     });
 
     tagSelect.addEventListener("change", () => {
@@ -710,18 +773,23 @@
         return;
       }
 
-      const isCraft = category === "crafts";
-      if (!isCraft && !googleMapsUrl) {
+      const isFoodOrCraft = (category === "foods" || category === "crafts");
+      if (!isFoodOrCraft && !city) {
+        alertBox.textContent = "Viloyat / Shaharni tanlash majburiy!";
+        alertBox.classList.add("show");
+        return;
+      }
+
+      if (!isFoodOrCraft && !googleMapsUrl) {
         alertBox.textContent = "Google Maps / Yandex Maps havola yoki lokatsiyani kiritish majburiy!";
         alertBox.classList.add("show");
         return;
       }
 
-      const wordsCount = desc.split(/\s+/).filter(Boolean).length;
-      if (wordsCount < 10) {
-        alertBox.textContent = `Tavsif kamida 10 ta so'zdan iborat bo'lishi kerak. (Hozirda ${wordsCount} ta so'z).`;
-        alertBox.classList.add("show");
-        return;
+      // Price handling for Free
+      let finalPrice = priceVal;
+      if (priceCurrency === "free" || !finalPrice) {
+        finalPrice = "Bepul (Free)";
       }
 
       if (allImgs.length < 2) {
@@ -745,7 +813,7 @@
             category,
             title,
             city,
-            price: priceVal,
+            price: finalPrice,
             priceCurrency,
             tag: tagVal,
             phone,
@@ -1209,9 +1277,9 @@
   // Global permission checkers for all pages
   window.checkUserIsAdmin = function(user) {
     if (!user) return false;
-    if (user.role === "admin") return true;
     const email = (user.email || "").trim().toLowerCase();
-    return email === "abdulquddusxoshimov777@gmail.com";
+    if (email === "abdulquddusxoshimov777@gmail.com") return true;
+    return user.role === "admin";
   };
 
   window.checkCanEditOrDelete = function(item, user) {
@@ -1646,6 +1714,31 @@
     document.querySelector(".safar-lightbox-backdrop").onclick = window.closeLightbox;
     document.getElementById("lightboxPrevBtn").onclick = (e) => { e.stopPropagation(); showImage(currentIndex - 1); };
     document.getElementById("lightboxNextBtn").onclick = (e) => { e.stopPropagation(); showImage(currentIndex + 1); };
+
+    // Touch swipe gesture support for mobile
+    let touchStartX = 0;
+    let touchStartY = 0;
+    modal.addEventListener("touchstart", (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    modal.addEventListener("touchend", (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      const touchEndY = e.changedTouches[0].screenY;
+      const diffX = touchEndX - touchStartX;
+      const diffY = touchEndY - touchStartY;
+      // If horizontal swipe is more significant than vertical
+      if (Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY)) {
+        if (diffX < 0) {
+          // Swiped left -> Next image
+          showImage(currentIndex + 1);
+        } else {
+          // Swiped right -> Previous image
+          showImage(currentIndex - 1);
+        }
+      }
+    }, { passive: true });
 
     document.addEventListener("keydown", (e) => {
       if (modal.style.display === "flex") {
