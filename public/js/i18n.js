@@ -1,5 +1,5 @@
 /**
- * saffar i18n — Multi-language Engine (UZ, RU, EN)
+ * Saffar i18n — Multi-language Engine (UZ, RU, EN)
  * Complete, unified and robust translations across all pages and widgets.
  */
 (function () {
@@ -50,7 +50,7 @@
       homes_viewall: "Barchasini ko'rish →",
 
       // Services / Products
-      services_eyebrow: "saffar xizmatlari",
+      services_eyebrow: "Saffar xizmatlari",
       services_h2: "O'zbekiston bo'ylab eng yaxshi sayohat xizmatlari",
 
       // Reviews
@@ -119,7 +119,7 @@
       homes_viewall: "Смотреть все →",
 
       // Services / Products
-      services_eyebrow: "Сервисы saffar",
+      services_eyebrow: "Сервисы Saffar",
       services_h2: "Лучшие туристические услуги по всему Узбекистану",
 
       // Reviews
@@ -188,7 +188,7 @@
       homes_viewall: "View all →",
 
       // Services / Products
-      services_eyebrow: "saffar Services",
+      services_eyebrow: "Saffar Services",
       services_h2: "Best travel services across Uzbekistan",
 
       // Reviews
@@ -213,7 +213,7 @@
     }
   };
 
-  const LANG_KEY = "saffar_lang";
+  const LANG_KEY = "Saffar_lang";
 
   function getCurrentLang() {
     let l = localStorage.getItem(LANG_KEY);
@@ -272,10 +272,10 @@
     });
 
     // Dispatch event so custom widgets can respond if needed
-    window.dispatchEvent(new CustomEvent("saffar_lang_changed", { detail: { lang } }));
+    window.dispatchEvent(new CustomEvent("Saffar_lang_changed", { detail: { lang } }));
   }
 
-  window.saffar_t = t;
+  window.Saffar_t = t;
   window.applyI18n = applyI18n;
 
   // Run on page load

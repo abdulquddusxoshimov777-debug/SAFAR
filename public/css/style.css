@@ -1,5 +1,5 @@
 /* ============================================================
-   saffar — design tokens
+   Saffar — design tokens
    Palette born from Silk Road majolica tilework and desert clay.
    ============================================================ */
 :root {
@@ -2127,9 +2127,9 @@ footer ul a:hover { color: var(--paper); }
 
 
 /* ============================================================
-   saffar LIGHTBOX FULLSCREEN IMAGE VIEWER
+   Saffar LIGHTBOX FULLSCREEN IMAGE VIEWER
    ============================================================ */
-.saffar-lightbox-overlay {
+.Saffar-lightbox-overlay {
   position: fixed;
   inset: 0;
   z-index: 100000;
@@ -2137,14 +2137,14 @@ footer ul a:hover { color: var(--paper); }
   align-items: center;
   justify-content: center;
 }
-.saffar-lightbox-backdrop {
+.Saffar-lightbox-backdrop {
   position: absolute;
   inset: 0;
   background: rgba(10, 18, 32, 0.94);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
-.saffar-lightbox-close {
+.Saffar-lightbox-close {
   position: absolute;
   top: 20px;
   right: 24px;
@@ -2162,11 +2162,11 @@ footer ul a:hover { color: var(--paper); }
   z-index: 100002;
   transition: all 0.2s ease;
 }
-.saffar-lightbox-close:hover {
+.Saffar-lightbox-close:hover {
   background: rgba(255, 255, 255, 0.3);
   transform: scale(1.1);
 }
-.saffar-lightbox-arrow {
+.Saffar-lightbox-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -2185,13 +2185,13 @@ footer ul a:hover { color: var(--paper); }
   transition: all 0.2s ease;
   user-select: none;
 }
-.saffar-lightbox-arrow:hover {
+.Saffar-lightbox-arrow:hover {
   background: rgba(255, 255, 255, 0.3);
   transform: translateY(-50%) scale(1.1);
 }
-.saffar-lightbox-arrow.prev { left: 24px; }
-.saffar-lightbox-arrow.next { right: 24px; }
-.saffar-lightbox-content {
+.Saffar-lightbox-arrow.prev { left: 24px; }
+.Saffar-lightbox-arrow.next { right: 24px; }
+.Saffar-lightbox-content {
   position: relative;
   z-index: 100001;
   max-width: 92vw;
@@ -2201,7 +2201,7 @@ footer ul a:hover { color: var(--paper); }
   align-items: center;
   justify-content: center;
 }
-.saffar-lightbox-content img {
+.Saffar-lightbox-content img {
   max-width: 90vw;
   max-height: 82vh;
   object-fit: contain;
@@ -2210,7 +2210,7 @@ footer ul a:hover { color: var(--paper); }
   animation: zoomLightboxIn 0.25s ease-out;
   cursor: pointer;
 }
-.saffar-lightbox-caption {
+.Saffar-lightbox-caption {
   margin-top: 12px;
   color: rgba(255, 255, 255, 0.85);
   font-size: 14px;
@@ -2222,8 +2222,8 @@ footer ul a:hover { color: var(--paper); }
   to { opacity: 1; transform: scale(1); }
 }
 @media (max-width: 600px) {
-  .saffar-lightbox-arrow { width: 40px; height: 40px; font-size: 26px; }
-  .saffar-lightbox-arrow.prev { left: 10px; }
-  .saffar-lightbox-arrow.next { right: 10px; }
-  .saffar-lightbox-close { top: 12px; right: 14px; width: 38px; height: 38px; font-size: 18px; }
+  .Saffar-lightbox-arrow { width: 40px; height: 40px; font-size: 26px; }
+  .Saffar-lightbox-arrow.prev { left: 10px; }
+  .Saffar-lightbox-arrow.next { right: 10px; }
+  .Saffar-lightbox-close { top: 12px; right: 14px; width: 38px; height: 38px; font-size: 18px; }
 }

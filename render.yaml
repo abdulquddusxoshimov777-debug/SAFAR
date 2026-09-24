@@ -3,7 +3,7 @@
 
 services:
   - type: web
-    name: saffar-app
+    name: Saffar-app
     env: node
     region: frankfurt  # Closest to Uzbekistan
     plan: free         # Free tier (change to 'starter' for always-on)
@@ -28,6 +28,6 @@ services:
 
     # Persistent disk for JSON data files (keeps data on redeploy)
     disk:
-      name: saffar-data
+      name: Saffar-data
       mountPath: /app/data
       sizeGB: 1  # 1GB free on paid plan; use filesystem workaround on free tier

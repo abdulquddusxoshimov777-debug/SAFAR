@@ -1,7 +1,7 @@
 {
-  "name": "saffar-backend",
+  "name": "Saffar-backend",
   "version": "1.0.0",
-  "description": "saffar - Uzbekistan Silk Road stays. Auth + API backend.",
+  "description": "Saffar - Uzbekistan Silk Road stays. Auth + API backend.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

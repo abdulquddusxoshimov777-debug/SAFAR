@@ -1,5 +1,5 @@
 /**
- * saffar Platform - Unified Cloud Database Adapter
+ * Saffar Platform - Unified Cloud Database Adapter
  * Supports MongoDB Atlas (via MONGODB_URI) and local JSON storage fallback.
  */
 

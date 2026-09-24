@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>An'anaviy Hunarmandchilik va Buyumlar — saffar</title>
+<title>An'anaviy Hunarmandchilik va Buyumlar — Saffar</title>
 <meta name="description" content="O'zbekistonning milliy buyumlari, Rishton sopollari, Marg'ilon atlaslari, Buxoro zardo'zlik mahsulotlari va Chust pichoqlari.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -102,7 +102,7 @@
 <script src="js/favorites.js"></script>
 <script src="js/map.js"></script>
 <script>
-const API = window.saffar_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
+const API = window.Saffar_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
 
 function escapeHtml(str) {
   if (!str) return "";
@@ -164,11 +164,11 @@ function renderCraftList() {
   }
 
   list.innerHTML = filtered.map(c => {
-    const session = window.saffarSession ? window.saffarSession.getSession() : null;
+    const session = window.SaffarSession ? window.SaffarSession.getSession() : null;
     const isOwner = session && window.checkCanEditOrDelete && window.checkCanEditOrDelete(c, session.user);
     const deleteListingBtn = isOwner ? `<button type="button" class="btn-delete-listing" onclick="event.stopPropagation(); deleteListing('crafts', ${c.id})" title="E'lonni o'chirish">🗑 Ochirish</button>` : '';
     const editListingBtn = isOwner ? `<button type="button" class="btn-edit-listing" onclick="event.stopPropagation(); openEditListingModal('crafts', ${c.id})" title="E'lonni tahrirlash" style="background:rgba(20,32,56,0.08); color:var(--indigo); border:none; border-radius:8px; padding:6px 12px; font-size:12.5px; font-weight:700; cursor:pointer;">✏️ Tahrirlash</button>` : '';
-    const isFav = window.saffarFav ? window.saffarFav.isFavorite("craft", c.id) : false;
+    const isFav = window.SaffarFav ? window.SaffarFav.isFavorite("craft", c.id) : false;
     const gMapUrl = c.googleMapsUrl || `https://maps.google.com/?q=${c.coordinates[0]},${c.coordinates[1]}`;
     const ownerAvatarHtml = (c.ownerAvatar || c.userAvatar)
       ? `<img src="${escapeHtml(c.ownerAvatar || c.userAvatar)}" alt="${escapeHtml(c.masterName || c.ownerName || 'Usta')}" style="width:22px; height:22px; border-radius:50%; object-fit:cover; border:1px solid rgba(20,32,56,0.15); flex-shrink:0;">`
@@ -217,8 +217,8 @@ function renderCraftList() {
 window.toggleFav = function(e, type, id) {
   e.stopPropagation();
   const item = allCrafts.find(x => x.id === id);
-  if (item && window.saffarFav) {
-    const isNowFav = window.saffarFav.toggleFavorite({ type: "craft", id: item.id, title: item.title, city: item.city, price: item.price, image: item.image });
+  if (item && window.SaffarFav) {
+    const isNowFav = window.SaffarFav.toggleFavorite({ type: "craft", id: item.id, title: item.title, city: item.city, price: item.price, image: item.image });
     const btn = e.currentTarget;
     btn.classList.toggle("active", isNowFav);
     btn.textContent = isNowFav ? "❤️" : "♡";

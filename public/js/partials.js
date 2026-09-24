@@ -1,14 +1,14 @@
 // Renders the shared header/footer and reflects sign-in state in the nav.
 (function () {
-  const API = window.saffar_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
+  const API = window.Saffar_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
 
   function currentPage() {
     return (location.pathname.split("/").pop() || "index.html");
   }
 
   function getSession() {
-    const token = localStorage.getItem("saffar_token");
-    const userRaw = localStorage.getItem("saffar_user");
+    const token = localStorage.getItem("Saffar_token");
+    const userRaw = localStorage.getItem("Saffar_user");
     if (!token || !userRaw) return null;
     try {
       return { token, user: JSON.parse(userRaw) };
@@ -111,7 +111,7 @@
          </div>`;
     }
 
-    const currLangCode = (localStorage.getItem("saffar_lang") || "uz").toLowerCase();
+    const currLangCode = (localStorage.getItem("Saffar_lang") || "uz").toLowerCase();
 
     mount.innerHTML = `
       <nav class="nav" aria-label="Main navigation">
@@ -120,11 +120,11 @@
             <button type="button" class="mobile-menu-toggle" id="openMobileMenuBtn" aria-label="Mobil menyuni ochish">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
             </button>
-            <a href="index.html" class="brand" aria-label="saffar Home">
+            <a href="index.html" class="brand" aria-label="Saffar Home">
               <span class="brand-mark" aria-hidden="true">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 20L9 8L13 15L16 10L21 20" stroke="#16233f" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></svg>
               </span>
-              saffar
+              Saffar
             </a>
           </div>
 
@@ -176,7 +176,7 @@
             <span class="brand-mark" style="width:30px; height:30px;" aria-hidden="true">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 20L9 8L13 15L16 10L21 20" stroke="#16233f" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></svg>
             </span>
-            saffar
+            Saffar
           </div>
           <button type="button" class="mobile-drawer-close" id="closeMobileDrawerBtn" aria-label="Yopish">✕</button>
         </div>
@@ -308,7 +308,7 @@
                 <span class="brand-mark" style="background:rgba(251,247,238,0.12)" aria-hidden="true">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 20L9 8L13 15L16 10L21 20" stroke="#fbf7ee" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></svg>
                 </span>
-                saffar
+                Saffar
               </div>
               <p style="max-width:260px;font-size:14px;color:rgba(251,247,238,0.85);">Unique places to stay, local foods and traditional crafts across Uzbekistan.</p>
             </div>
@@ -326,7 +326,7 @@
             <div>
               <h4>Company</h4>
               <ul>
-                <li><a href="about.html">About saffar</a></li>
+                <li><a href="about.html">About Saffar</a></li>
                 <li><a href="services.html">Our Services</a></li>
                 <li><a href="contact.html">Contact Us</a></li>
                 <li><a href="contact.html">FAQs &amp; Help</a></li>
@@ -343,7 +343,7 @@
             </div>
           </div>
           <div class="footer-bottom">
-            <span>&copy; 2026 saffar. Explore Uzbekistan.</span>
+            <span>&copy; 2026 Saffar. Explore Uzbekistan.</span>
             <span class="legal"><a href="about.html">Privacy</a><a href="about.html">Terms</a><a href="services.html">Services</a></span>
           </div>
         </div>
@@ -1154,7 +1154,7 @@
           successBox.classList.add("show");
           setTimeout(async () => {
             modalDiv.style.display = "none";
-            await window.saffarAlert({ title: "Muvaffaqiyatli", message: "E'loningiz muvaffaqiyatli yangilandi!", icon: "✅" });
+            await window.SaffarAlert({ title: "Muvaffaqiyatli", message: "E'loningiz muvaffaqiyatli yangilandi!", icon: "✅" });
             location.reload();
           }, 800);
         }
@@ -1190,7 +1190,7 @@
 
   window.openEditListingModal = async function(category, id) {
     const session = getSession();
-    if (!session) return window.saffarAlert({ title: "Diqqat", message: "Avval tizimga kiring.", icon: "🔒" });
+    if (!session) return window.SaffarAlert({ title: "Diqqat", message: "Avval tizimga kiring.", icon: "🔒" });
 
     // Fetch listing data
     let item = null;
@@ -1204,13 +1204,13 @@
     }
 
     if (!item) {
-      return window.saffarAlert({ title: "Xatolik", message: "E'lon ma'lumotlarini yuklab bo'lmadi.", icon: "⚠️" });
+      return window.SaffarAlert({ title: "Xatolik", message: "E'lon ma'lumotlarini yuklab bo'lmadi.", icon: "⚠️" });
     }
 
     const isAdmin = session.user.role === "admin" || session.user.email === "abdulquddusxoshimov777@gmail.com";
     const isOwner = isAdmin || (item.ownerId && item.ownerId === session.user.id) || (item.ownerName && item.ownerName === session.user.name);
     if (!isOwner) {
-      return window.saffarAlert({ title: "Ruxsat yo'q", message: "Faqat o'zingiz qo'shgan e'lonni (yoki Admin) tahrirlashingiz mumkin.", icon: "🔒" });
+      return window.SaffarAlert({ title: "Ruxsat yo'q", message: "Faqat o'zingiz qo'shgan e'lonni (yoki Admin) tahrirlashingiz mumkin.", icon: "🔒" });
     }
 
     initEditListingModal();
@@ -1319,16 +1319,16 @@
   window.openEditReviewModal = function(reviewId, currentText, currentRating, onUpdated) {
     const session = getSession();
     if (!session) {
-      return window.saffarAlert({ title: "Diqqat", message: "Sharhni tahrirlash uchun avval tizimga kiring.", icon: "🔒" });
+      return window.SaffarAlert({ title: "Diqqat", message: "Sharhni tahrirlash uchun avval tizimga kiring.", icon: "🔒" });
     }
 
-    const existingModal = document.getElementById("saffarEditReviewModal");
+    const existingModal = document.getElementById("SaffarEditReviewModal");
     if (existingModal) existingModal.remove();
 
     let selectedRating = Number(currentRating) || 5;
 
     const modal = document.createElement("div");
-    modal.id = "saffarEditReviewModal";
+    modal.id = "SaffarEditReviewModal";
     modal.className = "modal-overlay";
     modal.style.cssText = "display:flex; z-index:999999; backdrop-filter:blur(12px); background:rgba(10,18,40,0.65); animation:modalIn 0.22s ease;";
 
@@ -1417,7 +1417,7 @@
         const data = await res.json();
         if (data.ok) {
           modal.remove();
-          await window.saffarAlert({ title: "Muvaffaqiyatli", message: "Sharhingiz muvaffaqiyatli tahrirlandi!", icon: "✅" });
+          await window.SaffarAlert({ title: "Muvaffaqiyatli", message: "Sharhingiz muvaffaqiyatli tahrirlandi!", icon: "✅" });
           if (typeof onUpdated === "function") {
             onUpdated(data.review);
           } else {
@@ -1439,13 +1439,13 @@
   };
 
   // Custom App-Native Glassmorphism Confirm Dialog
-  window.saffarConfirm = function({ title, message, icon, confirmText, cancelText, danger }) {
+  window.SaffarConfirm = function({ title, message, icon, confirmText, cancelText, danger }) {
     return new Promise((resolve) => {
-      const existing = document.getElementById("saffarConfirmModal");
+      const existing = document.getElementById("SaffarConfirmModal");
       if (existing) existing.remove();
 
       const modal = document.createElement("div");
-      modal.id = "saffarConfirmModal";
+      modal.id = "SaffarConfirmModal";
       modal.className = "modal-overlay";
       modal.style.cssText = "display:flex; z-index:999999; backdrop-filter:blur(10px); background:rgba(10,18,40,0.65); animation:modalIn 0.22s ease;";
       modal.innerHTML = `
@@ -1454,10 +1454,10 @@
           <h3 style="font-family:var(--font-display); font-size:22px; margin:0 0 10px; color:var(--ink);">${escapeHtml(title || "Tasdiqlash")}</h3>
           <p style="font-size:14.5px; color:rgba(28,26,23,0.75); line-height:1.6; margin:0 0 24px;">${escapeHtml(message || "")}</p>
           <div style="display:flex; gap:12px; justify-content:center;">
-            <button type="button" id="saffarConfirmCancel" class="btn btn-ghost" style="flex:1; border-radius:12px; padding:11px 18px; font-weight:600;">
+            <button type="button" id="SaffarConfirmCancel" class="btn btn-ghost" style="flex:1; border-radius:12px; padding:11px 18px; font-weight:600;">
               ${escapeHtml(cancelText || "Bekor qilish")}
             </button>
-            <button type="button" id="saffarConfirmOk" class="btn ${danger ? '' : 'btn-primary'}" style="flex:1; border-radius:12px; padding:11px 18px; font-weight:700; ${danger ? 'background:var(--clay); color:#fff; border:none;' : ''}">
+            <button type="button" id="SaffarConfirmOk" class="btn ${danger ? '' : 'btn-primary'}" style="flex:1; border-radius:12px; padding:11px 18px; font-weight:700; ${danger ? 'background:var(--clay); color:#fff; border:none;' : ''}">
               ${escapeHtml(confirmText || "Tasdiqlayman")}
             </button>
           </div>
@@ -1471,20 +1471,20 @@
         resolve(result);
       };
 
-      document.getElementById("saffarConfirmCancel").onclick = () => cleanup(false);
-      document.getElementById("saffarConfirmOk").onclick = () => cleanup(true);
+      document.getElementById("SaffarConfirmCancel").onclick = () => cleanup(false);
+      document.getElementById("SaffarConfirmOk").onclick = () => cleanup(true);
       modal.onclick = (e) => { if (e.target === modal) cleanup(false); };
     });
   };
 
   // Custom App-Native Alert Modal
-  window.saffarAlert = function({ title, message, icon }) {
+  window.SaffarAlert = function({ title, message, icon }) {
     return new Promise((resolve) => {
-      const existing = document.getElementById("saffarAlertModal");
+      const existing = document.getElementById("SaffarAlertModal");
       if (existing) existing.remove();
 
       const modal = document.createElement("div");
-      modal.id = "saffarAlertModal";
+      modal.id = "SaffarAlertModal";
       modal.className = "modal-overlay";
       modal.style.cssText = "display:flex; z-index:999999; backdrop-filter:blur(10px); background:rgba(10,18,40,0.65); animation:modalIn 0.22s ease;";
       modal.innerHTML = `
@@ -1492,7 +1492,7 @@
           <div style="font-size:44px; margin-bottom:12px;">${icon || 'ℹ️'}</div>
           <h3 style="font-family:var(--font-display); font-size:21px; margin:0 0 10px; color:var(--ink);">${escapeHtml(title || "Xabarnoma")}</h3>
           <p style="font-size:14.5px; color:rgba(28,26,23,0.75); line-height:1.6; margin:0 0 24px;">${escapeHtml(message || "")}</p>
-          <button type="button" id="saffarAlertOk" class="btn btn-primary" style="width:100%; border-radius:12px; padding:11px 18px; font-weight:700;">
+          <button type="button" id="SaffarAlertOk" class="btn btn-primary" style="width:100%; border-radius:12px; padding:11px 18px; font-weight:700;">
             Tushunarli
           </button>
         </div>
@@ -1505,7 +1505,7 @@
         resolve(true);
       };
 
-      document.getElementById("saffarAlertOk").onclick = cleanup;
+      document.getElementById("SaffarAlertOk").onclick = cleanup;
       modal.onclick = (e) => { if (e.target === modal) cleanup(); };
     });
   };
@@ -1513,7 +1513,7 @@
   async function openAddListingModal() {
     const session = getSession();
     if (!session) {
-      await window.saffarAlert({ title: "Tizimga kirish kerak", message: "Joy qo'shish uchun avval tizimga kiring.", icon: "🔒" });
+      await window.SaffarAlert({ title: "Tizimga kirish kerak", message: "Joy qo'shish uchun avval tizimga kiring.", icon: "🔒" });
       location.href = "login.html?redirect=add";
       return;
     }
@@ -1522,7 +1522,7 @@
     const isHost = session.user.role === "host";
 
     if (!isHost && !isAdmin) {
-      const wantUpgrade = await window.saffarConfirm({
+      const wantUpgrade = await window.SaffarConfirm({
         title: "Mezbon akkaunti kerak",
         message: "E'lon qo'shish uchun Mezbon / Joy beruvchi (Host) akkaunti kerak.\n\nAkkauntingiz turini hoziroq Mezbon (Host) ga o'tkazishni xohlaysizmi?",
         icon: "🏠",
@@ -1542,15 +1542,15 @@
           });
           const data = await res.json();
           if (data.ok) {
-            await window.saffarAlert({ title: "Muvaffaqiyatli", message: "Akkauntingiz muvaffaqiyatli Mezbon (Host) roliga o'tkazildi!", icon: "🎉" });
-            localStorage.setItem("saffar_user", JSON.stringify(data.user));
+            await window.SaffarAlert({ title: "Muvaffaqiyatli", message: "Akkauntingiz muvaffaqiyatli Mezbon (Host) roliga o'tkazildi!", icon: "🎉" });
+            localStorage.setItem("Saffar_user", JSON.stringify(data.user));
             renderHeader();
           } else {
-            await window.saffarAlert({ title: "Xatolik", message: data.message || "Xatolik yuz berdi.", icon: "⚠️" });
+            await window.SaffarAlert({ title: "Xatolik", message: data.message || "Xatolik yuz berdi.", icon: "⚠️" });
             return;
           }
         } catch(err) {
-          await window.saffarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
+          await window.SaffarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
           return;
         }
       } else {
@@ -1579,7 +1579,7 @@
 
   window.deleteListing = async function(category, id) {
     const session = getSession();
-    if (!session) return window.saffarAlert({ title: "Diqqat", message: "Avval tizimga kiring.", icon: "🔒" });
+    if (!session) return window.SaffarAlert({ title: "Diqqat", message: "Avval tizimga kiring.", icon: "🔒" });
 
     // Normalize category: handle 'stay'/'home'/'places' and remove double 's'
     let normCat = String(category || "stays").toLowerCase().trim();
@@ -1589,7 +1589,7 @@
     if (normCat === "food") normCat = "foods";
     if (normCat === "craft") normCat = "crafts";
 
-    const confirmed = await window.saffarConfirm({
+    const confirmed = await window.SaffarConfirm({
       title: "E'lonni o'chirish",
       message: "Ushbu e'lonni o'chirishni tasdiqlaysizmi? Bu amalni ortga qaytarib bo'lmaydi.",
       icon: "🗑",
@@ -1606,13 +1606,13 @@
       });
       const data = await res.json();
       if (data.ok) {
-        await window.saffarAlert({ title: "O'chirildi", message: data.message || "E'lon muvaffaqiyatli o'chirildi.", icon: "✅" });
+        await window.SaffarAlert({ title: "O'chirildi", message: data.message || "E'lon muvaffaqiyatli o'chirildi.", icon: "✅" });
         location.reload();
       } else {
-        await window.saffarAlert({ title: "Xatolik", message: data.message || "E'lonni o'chirishda xatolik.", icon: "⚠️" });
+        await window.SaffarAlert({ title: "Xatolik", message: data.message || "E'lonni o'chirishda xatolik.", icon: "⚠️" });
       }
     } catch (err) {
-      await window.saffarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
+      await window.SaffarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
     }
   };
 
@@ -1627,7 +1627,7 @@
       e.preventDefault();
       e.stopPropagation();
       const lang = langOpt.dataset.lang;
-      localStorage.setItem("saffar_lang", lang);
+      localStorage.setItem("Saffar_lang", lang);
       const label = document.getElementById("siteLangLabel");
       if (label) label.textContent = lang.toUpperCase();
       if (dropdown) dropdown.classList.remove("show");
@@ -1648,26 +1648,26 @@
     }
   });
 
-  window.saffarSession = { getSession, initials };
+  window.SaffarSession = { getSession, initials };
   window.renderHeader = renderHeader;
   
   // ---- GLOBAL FULLSCREEN IMAGE LIGHTBOX ----
   function initLightbox() {
-    if (document.getElementById("saffarLightboxModal")) return;
+    if (document.getElementById("SaffarLightboxModal")) return;
 
     const modal = document.createElement("div");
-    modal.id = "saffarLightboxModal";
-    modal.className = "saffar-lightbox-overlay";
+    modal.id = "SaffarLightboxModal";
+    modal.className = "Saffar-lightbox-overlay";
     modal.style.display = "none";
     modal.innerHTML = `
-      <div class="saffar-lightbox-backdrop"></div>
-      <button type="button" class="saffar-lightbox-close" id="lightboxCloseBtn" aria-label="Yopish">✕</button>
-      <button type="button" class="saffar-lightbox-arrow prev" id="lightboxPrevBtn" aria-label="Oldingi rasm">‹</button>
-      <div class="saffar-lightbox-content">
+      <div class="Saffar-lightbox-backdrop"></div>
+      <button type="button" class="Saffar-lightbox-close" id="lightboxCloseBtn" aria-label="Yopish">✕</button>
+      <button type="button" class="Saffar-lightbox-arrow prev" id="lightboxPrevBtn" aria-label="Oldingi rasm">‹</button>
+      <div class="Saffar-lightbox-content">
         <img id="lightboxMainImg" src="" alt="To'liq rasm" />
-        <div class="saffar-lightbox-caption" id="lightboxCaption"></div>
+        <div class="Saffar-lightbox-caption" id="lightboxCaption"></div>
       </div>
-      <button type="button" class="saffar-lightbox-arrow next" id="lightboxNextBtn" aria-label="Keyingi rasm">›</button>
+      <button type="button" class="Saffar-lightbox-arrow next" id="lightboxNextBtn" aria-label="Keyingi rasm">›</button>
     `;
     document.body.appendChild(modal);
 
@@ -1712,7 +1712,7 @@
     };
 
     document.getElementById("lightboxCloseBtn").onclick = window.closeLightbox;
-    document.querySelector(".saffar-lightbox-backdrop").onclick = window.closeLightbox;
+    document.querySelector(".Saffar-lightbox-backdrop").onclick = window.closeLightbox;
     document.getElementById("lightboxPrevBtn").onclick = (e) => { e.stopPropagation(); showImage(currentIndex - 1); };
     document.getElementById("lightboxNextBtn").onclick = (e) => { e.stopPropagation(); showImage(currentIndex + 1); };
 
@@ -1798,7 +1798,7 @@
       .then(r => r.json())
       .then(d => {
         if (d.ok && d.user) {
-          localStorage.setItem("saffar_user", JSON.stringify(d.user));
+          localStorage.setItem("Saffar_user", JSON.stringify(d.user));
           renderHeader();
         }
       })

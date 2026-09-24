@@ -70,8 +70,8 @@ if (-not $token) {
 }
 
 $gitExe = 'C:\Users\user\AppData\Local\GitHubDesktop\app-3.6.6\resources\app\git\cmd\git.exe'
-$repoPath = 'd:\saffar'
-$repoUrl = "https://abdulquddusxoshimov777-debug:$token@github.com/abdulquddusxoshimov777-debug/saffar.git"
+$repoPath = 'd:\Saffar'
+$repoUrl = "https://abdulquddusxoshimov777-debug:$token@github.com/abdulquddusxoshimov777-debug/Saffar.git"
 
 & $gitExe -C $repoPath add -A 2>&1
 & $gitExe -C $repoPath commit -m "Feat: Crafts no-location, Lightbox, Profile page, Weather 14 regions, Population counter, Metro map, i18n fix, About moved under Hero" 2>&1

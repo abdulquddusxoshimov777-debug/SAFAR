@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saqlanganlar (Sevimlilar) — saffar</title>
+<title>Saqlanganlar (Sevimlilar) — Saffar</title>
 <meta name="description" content="Siz saqlab qo'ygan uylar, taomlar va joylar ro'yxati.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -85,7 +85,7 @@ function escapeHtml(str) {
 
 function renderSavedItems() {
   const container = document.getElementById("savedListContainer");
-  const favs = window.saffarFav ? window.saffarFav.getFavorites() : [];
+  const favs = window.SaffarFav ? window.SaffarFav.getFavorites() : [];
 
   if (!favs.length) {
     container.innerHTML = `
@@ -125,8 +125,8 @@ function renderSavedItems() {
 }
 
 window.removeFav = function(type, id) {
-  if (window.saffarFav) {
-    window.saffarFav.toggleFavorite({ type, id });
+  if (window.SaffarFav) {
+    window.SaffarFav.toggleFavorite({ type, id });
     renderSavedItems();
   }
 };

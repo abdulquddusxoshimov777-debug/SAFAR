@@ -1,5 +1,5 @@
 const fs = require('fs');
-let html = fs.readFileSync('d:/saffar/public/index.html', 'utf8');
+let html = fs.readFileSync('d:/Saffar/public/index.html', 'utf8');
 
 const isCrlf = html.includes('\r\n');
 html = html.replace(/\r\n/g, '\n');
@@ -155,7 +155,7 @@ const statsBannerSection = `<!-- ============ UZBEKISTAN STATS BANNER SECTION (H
 // Assemble the final index.html in the EXACT sequence requested by the user:
 // 1. Header & Hero
 // 2. Curated photos from every corner of Uzbekistan
-// 3. Biz haqimizda (About saffar)
+// 3. Biz haqimizda (About Saffar)
 // 4. O'zbekiston Statistikasi (Stats Banner -> stats.html)
 // 5. Toshkent Metrosi (Metro Banner -> metro.html)
 // 6. Ob-havo (Weather Section with 3 regions + toggle)
@@ -174,9 +174,9 @@ const finalHtml = [
 ].join('\n\n');
 
 if (isCrlf) {
-  fs.writeFileSync('d:/saffar/public/index.html', finalHtml.replace(/\n/g, '\r\n'), 'utf8');
+  fs.writeFileSync('d:/Saffar/public/index.html', finalHtml.replace(/\n/g, '\r\n'), 'utf8');
 } else {
-  fs.writeFileSync('d:/saffar/public/index.html', finalHtml, 'utf8');
+  fs.writeFileSync('d:/Saffar/public/index.html', finalHtml, 'utf8');
 }
 
 console.log('index.html reordered and assembled successfully in the exact user order!');

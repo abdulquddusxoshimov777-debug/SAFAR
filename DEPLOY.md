@@ -1,4 +1,4 @@
-# 🚀 saffar App — Render.com ga Deploy Qilish Yo'riqnomasi
+# 🚀 Saffar App — Render.com ga Deploy Qilish Yo'riqnomasi
 
 > **Render.com** — eng qulay va bepul hosting. Kredit karta SHART EMAS.
 > Sizning app 10–15 daqiqada internetga chiqadi!
@@ -30,7 +30,7 @@ git config --global user.name "Abdulquddus"
 git config --global user.email "abdulquddusxoshimov777@gmail.com"
 
 # 2. Loyiha papkasiga o'tish
-cd "D:/saffar Cloude"
+cd "D:/Saffar Cloude"
 
 # 3. Git repositoriyasini boshlash
 git init
@@ -39,18 +39,18 @@ git init
 git add .
 
 # 5. Birinchi commit
-git commit -m "saffar app - initial commit"
+git commit -m "Saffar app - initial commit"
 ```
 
 Keyin GitHub.com ga kiring va yangi repository yarating:
 1. GitHub.com → "+" → "New repository"
-2. Nom: `saffar-app`
+2. Nom: `Saffar-app`
 3. `Private` tanlang (xavfsizlik uchun)
 4. "Create repository" bosing
 
 Keyin quyidagi buyruqlarni bajaring (GitHub sizga ko'rsatadi):
 ```powershell
-git remote add origin https://github.com/SIZNING_GITHUB_ISMINGIZ/saffar-app.git
+git remote add origin https://github.com/SIZNING_GITHUB_ISMINGIZ/Saffar-app.git
 git branch -M main
 git push -u origin main
 ```
@@ -62,13 +62,13 @@ git push -u origin main
 1. **render.com** saytiga kiring
 2. **"New +"** → **"Web Service"** bosing
 3. **"Connect GitHub"** bosib GitHub akkauntingizni ulang
-4. **`saffar-app`** repositoryni tanlang → **"Connect"**
+4. **`Saffar-app`** repositoryni tanlang → **"Connect"**
 
 ### Sozlamalar (muhim!):
 
 | Parametr | Qiymat |
 |----------|--------|
-| **Name** | `saffar-app` |
+| **Name** | `Saffar-app` |
 | **Region** | `Frankfurt (EU Central)` |
 | **Root Directory** | `backend` |
 | **Build Command** | `npm install` |
@@ -91,7 +91,7 @@ git push -u origin main
 ### ✅ Muvaffaqiyat!
 Deploy tugagach, Render sizga bunday URL beradi:
 ```
-https://saffar-app.onrender.com
+https://Saffar-app.onrender.com
 ```
 
 ---
@@ -129,6 +129,6 @@ Render ga listings.json ni yuklash uchun:
 ## 📞 Muammo bo'lsa
 
 Render logs ni ko'rish uchun:
-Dashboard → `saffar-app` → "Logs" bo'limi
+Dashboard → `Saffar-app` → "Logs" bo'limi
 
 Agar xatolik ko'rsangiz, log'ni nusxalab yuboring — men yordam beraman!
