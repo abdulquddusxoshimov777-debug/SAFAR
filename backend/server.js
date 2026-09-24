@@ -233,7 +233,7 @@ function readListings() {
 function writeListings(listings) {
   try {
     fs.writeFileSync(LISTINGS_FILE, JSON.stringify(listings, null, 2), "utf-8");
-    db.saveListings(listings);
+    // db.saveListings(listings);
   } catch (err) {
     console.error("Failed to write listings.json:", err);
   }
