@@ -1059,6 +1059,158 @@ reviewForm.addEventListener("submit", async e => {
   setTimeout(fetchLiveWeather, 300);
 })();
 
+// ========== ADMIN IMAGE EDITOR ==========
+(function initAdminImageEditor() {
+  const ADMIN_EMAIL = "abdulquddusxoshimov777@gmail.com";
+  const session = window.SaffarSession ? window.SaffarSession.getSession() : null;
+  if (!session || !session.user || session.user.email !== ADMIN_EMAIL) return;
+
+  const STORAGE_KEY = "saffar_admin_images";
+
+  function getSavedImages() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch { return {}; }
+  }
+  function saveImage(key, url) {
+    const data = getSavedImages();
+    data[key] = url;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  // Apply saved images on load
+  const saved = getSavedImages();
+
+  // Hero banner
+  if (saved["hero"]) {
+    const heroEl = document.querySelector(".hero-photo");
+    if (heroEl) {
+      heroEl.style.backgroundImage = `linear-gradient(180deg, rgba(10,18,40,0.45) 0%, rgba(10,18,40,0.62) 60%, rgba(10,18,40,0.82) 100%), url('${saved["hero"]}')`;
+    }
+  }
+
+  // Gallery cards
+  document.querySelectorAll(".curated-gallery-img img").forEach((img, i) => {
+    if (saved["gallery_" + i]) img.src = saved["gallery_" + i];
+  });
+
+  // ---- Edit Modal ----
+  const modalHtml = `
+    <div id="adminImgModal" style="display:none; position:fixed; inset:0; background:rgba(10,18,40,0.72); z-index:99999; align-items:center; justify-content:center;">
+      <div style="background:#fff; border-radius:18px; padding:32px 28px; max-width:480px; width:92%; box-shadow:0 20px 60px rgba(0,0,0,0.25); position:relative;">
+        <button id="adminImgClose" style="position:absolute; top:14px; right:16px; border:none; background:none; font-size:20px; cursor:pointer; color:#888;">✕</button>
+        <h3 style="margin:0 0 6px; font-size:18px; color:#16233f;">📸 Rasmni o'zgartirish</h3>
+        <p id="adminImgLabel" style="font-size:13px; color:#888; margin:0 0 16px;"></p>
+        <label style="font-size:13px; font-weight:700; color:#16233f; display:block; margin-bottom:6px;">Yangi rasm URL manzili:</label>
+        <input id="adminImgUrl" type="url" placeholder="https://..." style="width:100%; padding:10px 14px; border:1.5px solid #ddd; border-radius:10px; font-size:14px; box-sizing:border-box; outline:none;">
+        <div id="adminImgPreview" style="margin-top:12px; height:160px; border-radius:12px; overflow:hidden; background:#f5f0e8; display:none;">
+          <img id="adminImgPreviewImg" src="" alt="Preview" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+        <div style="display:flex; gap:10px; margin-top:18px;">
+          <button id="adminImgSave" style="flex:1; padding:11px; background:#c0521f; color:#fff; border:none; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer;">✅ Saqlash</button>
+          <button id="adminImgReset" style="padding:11px 16px; background:#f5f0e8; color:#16233f; border:none; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer;">🔄 Asl rasm</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML("beforeend", modalHtml);
+
+  const modal = document.getElementById("adminImgModal");
+  const urlInput = document.getElementById("adminImgUrl");
+  const previewImg = document.getElementById("adminImgPreviewImg");
+  const previewBox = document.getElementById("adminImgPreview");
+  const labelEl = document.getElementById("adminImgLabel");
+  let currentKey = null;
+  let currentEl = null;
+  let originalSrc = null;
+
+  document.getElementById("adminImgClose").onclick = () => modal.style.display = "none";
+  modal.addEventListener("click", e => { if (e.target === modal) modal.style.display = "none"; });
+
+  urlInput.addEventListener("input", () => {
+    const v = urlInput.value.trim();
+    if (v.startsWith("http")) {
+      previewImg.src = v;
+      previewBox.style.display = "block";
+    } else {
+      previewBox.style.display = "none";
+    }
+  });
+
+  document.getElementById("adminImgSave").onclick = () => {
+    const url = urlInput.value.trim();
+    if (!url) { alert("URL kiriting!"); return; }
+    saveImage(currentKey, url);
+    if (currentKey === "hero") {
+      const heroEl = document.querySelector(".hero-photo");
+      if (heroEl) heroEl.style.backgroundImage = `linear-gradient(180deg, rgba(10,18,40,0.45) 0%, rgba(10,18,40,0.62) 60%, rgba(10,18,40,0.82) 100%), url('${url}')`;
+    } else {
+      if (currentEl) currentEl.src = url;
+    }
+    modal.style.display = "none";
+  };
+
+  document.getElementById("adminImgReset").onclick = () => {
+    const data = getSavedImages();
+    delete data[currentKey];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    if (currentKey === "hero") {
+      const heroEl = document.querySelector(".hero-photo");
+      if (heroEl) heroEl.style.backgroundImage = "";
+    } else {
+      if (currentEl && originalSrc) currentEl.src = originalSrc;
+    }
+    modal.style.display = "none";
+  };
+
+  function openModal(key, label, el, origSrc) {
+    currentKey = key;
+    currentEl = el;
+    originalSrc = origSrc;
+    labelEl.textContent = label;
+    const cur = getSavedImages()[key] || origSrc || "";
+    urlInput.value = cur;
+    if (cur && cur.startsWith("http")) {
+      previewImg.src = cur;
+      previewBox.style.display = "block";
+    } else {
+      previewBox.style.display = "none";
+    }
+    modal.style.display = "flex";
+  }
+
+  // ---- Add edit button to HERO ----
+  const heroEl = document.querySelector(".hero-photo");
+  if (heroEl) {
+    heroEl.style.position = "relative";
+    const heroBtn = document.createElement("button");
+    heroBtn.textContent = "✏️ Hero rasmini o'zgartirish";
+    heroBtn.style.cssText = "position:absolute; top:14px; right:14px; z-index:10; background:rgba(255,255,255,0.92); border:none; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:700; color:#16233f; cursor:pointer; box-shadow:0 2px 12px rgba(0,0,0,0.18);";
+    heroBtn.onclick = (e) => {
+      e.stopPropagation();
+      openModal("hero", "Bosh sahifa hero banneri", null, "https://aerotur.travel/storage/app/media/uploaded-files/1774346071156.png");
+    };
+    heroEl.appendChild(heroBtn);
+  }
+
+  // ---- Add edit buttons to gallery cards ----
+  document.querySelectorAll(".curated-gallery-img").forEach((card, i) => {
+    card.style.position = "relative";
+    const img = card.querySelector("img");
+    const h3 = card.querySelector("h3");
+    const label = h3 ? h3.textContent : ("Rasm " + (i + 1));
+    const origSrc = img ? img.src : "";
+
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "✏️";
+    editBtn.title = "Rasmni o'zgartirish";
+    editBtn.style.cssText = "position:absolute; top:10px; left:10px; z-index:10; background:rgba(255,255,255,0.92); border:none; border-radius:8px; padding:5px 9px; font-size:14px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.18);";
+    editBtn.onclick = (e) => {
+      e.stopPropagation();
+      openModal("gallery_" + i, label, img, origSrc);
+    };
+    card.appendChild(editBtn);
+  });
+})();
+
+
 </script>
 </body>
 </html>
