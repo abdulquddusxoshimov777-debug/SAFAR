@@ -467,6 +467,13 @@
     <div id="weatherGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:16px;">
       <!-- Populated via JavaScript with 14 regions -->
     </div>
+
+    <!-- Toggle button for 14 regions -->
+    <div style="text-align:center; margin-top:28px;">
+      <button type="button" id="btnToggleAllWeather" class="btn" style="background:#ffffff; border:1px solid var(--line); padding:11px 28px; border-radius:999px; font-weight:700; font-size:14.5px; color:var(--indigo); cursor:pointer; box-shadow:var(--shadow-card); transition:all 0.2s ease;">
+        Batafsil barchasi (14 ta viloyat) ↓
+      </button>
+    </div>
   </div>
 </section>
 
@@ -553,10 +560,14 @@ function buildReviewCard(r) {
       mediaPart = `<div class="review-media-gallery" style="display:flex; gap:8px; overflow-x:auto; padding:4px 0; margin-bottom:12px;">${imgsHtml}</div>`;
     }
   }
+  const revAvatarHtml = r.userAvatar
+    ? `<img src="${escapeHtml(r.userAvatar)}" alt="${escapeHtml(r.userName)}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`
+    : `<span style="font-weight:700;">${escapeHtml((r.userName||"?").trim()[0].toUpperCase())}</span>`;
+
   return `
     <div class="review-card">
       <div class="review-header">
-        <a href="profile.html?id=${encodeURIComponent(r.userId || r.userEmail || '')}" class="review-avatar" aria-hidden="true" style="text-decoration:none;" title="${escapeHtml(r.userName)} profilini ko'rish">${escapeHtml((r.userName||"?")[0].toUpperCase())}</a>
+        <a href="profile.html?id=${encodeURIComponent(r.userId || r.userEmail || '')}" class="review-avatar" aria-hidden="true" style="text-decoration:none; overflow:hidden; display:inline-flex; align-items:center; justify-content:center;" title="${escapeHtml(r.userName)} profilini ko'rish">${revAvatarHtml}</a>
         <div class="review-meta">
           <strong style="display:inline-flex; align-items:center; flex-wrap:wrap;">
             <a href="profile.html?id=${encodeURIComponent(r.userId || r.userEmail || '')}" style="color:inherit; text-decoration:none;" title="${escapeHtml(r.userName)} profilini ko'rish">${escapeHtml(r.userName)}</a>

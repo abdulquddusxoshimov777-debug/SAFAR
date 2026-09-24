@@ -125,7 +125,7 @@ const postActionLimiter = rateLimit({
 app.use("/api/", generalApiLimiter);
 app.use(express.static(path.join(__dirname, "..", "public")));
 
-// const db = require("./db");
+const db = require("./db");
 
 function readUsers() {
   if (!fs.existsSync(USERS_FILE)) return [];
@@ -143,8 +143,8 @@ function readUsers() {
   }
 }
 function writeUsers(users) {
-  // db.saveUsers(users);
   fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+  db.saveUsers(users);
 }
 
 // Automatically ensure default Admin user exists with correct password and role
@@ -304,9 +304,25 @@ function saveAllListings() {
   });
 }
 
-// Dynamic Rating & Reviews Counter helper
+// Dynamic Rating, Reviews Counter & Owner Avatar helper
 function attachCalculatedRating(item, targetType) {
   if (!item) return item;
+
+  // Dynamically attach owner avatar from users database if available
+  try {
+    const users = readUsers();
+    const owner = users.find(u =>
+      (item.ownerId && String(u.id) === String(item.ownerId)) ||
+      (item.userId && String(u.id) === String(item.userId)) ||
+      (item.ownerEmail && (u.email || "").toLowerCase() === item.ownerEmail.toLowerCase()) ||
+      (item.userEmail && (u.email || "").toLowerCase() === item.userEmail.toLowerCase())
+    );
+    if (owner && owner.avatarUrl) {
+      item.ownerAvatar = owner.avatarUrl;
+      item.userAvatar = owner.avatarUrl;
+    }
+  } catch(e) {}
+
   const reviews = readReviews();
   const itemType = targetType || (item.category ? "place" : "stay");
   const matchingReviews = reviews.filter(r => (r.targetType === itemType || r.targetType === targetType) && String(r.targetId || r.stayId) === String(item.id));
@@ -598,6 +614,23 @@ app.get("/api/reviews", (req, res) => {
   if (targetType && targetId) {
     reviews = reviews.filter(r => r.targetType === targetType && String(r.targetId) === String(targetId));
   }
+  // Attach userAvatar dynamically from users list
+  try {
+    const users = readUsers();
+    const userMap = {};
+    users.forEach(u => {
+      if (u.id) userMap[String(u.id)] = u;
+      if (u.email) userMap[u.email.toLowerCase()] = u;
+    });
+    reviews = reviews.map(r => {
+      const u = (r.userId && userMap[String(r.userId)]) || (r.userEmail && userMap[r.userEmail.toLowerCase()]);
+      return {
+        ...r,
+        userAvatar: (u && u.avatarUrl) ? u.avatarUrl : (r.userAvatar || null)
+      };
+    });
+  } catch(e) {}
+
   // Sort reviews: 5/5 stars FIRST (descending rating), then newest date first
   reviews.sort((a, b) => {
     if (b.rating !== a.rating) return b.rating - a.rating;
@@ -619,6 +652,7 @@ app.post("/api/reviews", requireAuth, postActionLimiter, (req, res) => {
     userId: req.user.id,
     userName: req.user.name,
     userEmail: req.user.email,
+    userAvatar: req.user.avatarUrl || null,
     text: text.trim(),
     rating: Number(rating),
     stayId: stayId || null,
@@ -846,6 +880,8 @@ app.post("/api/listings/add", requireAuth, postActionLimiter, (req, res) => {
     ownerEmail: (user.email || req.user.email || "").trim().toLowerCase(),
     userEmail: (user.email || req.user.email || "").trim().toLowerCase(),
     ownerName: user.name || req.user.name || "Mezbon",
+    ownerAvatar: user.avatarUrl || null,
+    userAvatar: user.avatarUrl || null,
     title: title.trim(),
     city: finalCity,
     tag: tag || "Yangi Joy",

@@ -170,6 +170,10 @@ function renderCraftList() {
     const editListingBtn = isOwner ? `<button type="button" class="btn-edit-listing" onclick="event.stopPropagation(); openEditListingModal('crafts', ${c.id})" title="E'lonni tahrirlash" style="background:rgba(20,32,56,0.08); color:var(--indigo); border:none; border-radius:8px; padding:6px 12px; font-size:12.5px; font-weight:700; cursor:pointer;">✏️ Tahrirlash</button>` : '';
     const isFav = window.SafarFav ? window.SafarFav.isFavorite("craft", c.id) : false;
     const gMapUrl = c.googleMapsUrl || `https://maps.google.com/?q=${c.coordinates[0]},${c.coordinates[1]}`;
+    const ownerAvatarHtml = (c.ownerAvatar || c.userAvatar)
+      ? `<img src="${escapeHtml(c.ownerAvatar || c.userAvatar)}" alt="${escapeHtml(c.masterName || c.ownerName || 'Usta')}" style="width:22px; height:22px; border-radius:50%; object-fit:cover; border:1px solid rgba(20,32,56,0.15); flex-shrink:0;">`
+      : `<span style="width:22px; height:22px; border-radius:50%; background:var(--sand-deep); color:var(--indigo); display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; border:1px solid rgba(20,32,56,0.15); flex-shrink:0;">${escapeHtml((c.masterName || c.ownerName || 'U').trim()[0].toUpperCase())}</span>`;
+
     return `
     <div class="stay-card craft-card-item" data-id="${c.id}" onclick="selectCraft(${c.id}, true)">
       <div class="stay-thumb">
@@ -180,10 +184,12 @@ function renderCraftList() {
       <div class="stay-body">
         <div class="stay-top">
           <div>
-            <div class="stay-loc" style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-              <span>👤 Usta:</span>
-              <a href="profile.html?id=${encodeURIComponent(c.ownerId || c.userId || c.ownerEmail || c.masterName || c.ownerName || '')}" onclick="event.stopPropagation()" style="font-weight:700; color:var(--indigo); text-decoration:underline;">${escapeHtml(c.masterName || c.ownerName || 'Usta')}</a>
-              <span>· ${escapeHtml(c.city || 'O\'zbekiston')}</span>
+            <div class="stay-loc" style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:4px;">
+              <a href="profile.html?id=${encodeURIComponent(c.ownerId || c.userId || c.ownerEmail || '')}" onclick="event.stopPropagation()" style="display:inline-flex; align-items:center; gap:6px; text-decoration:none;" title="${escapeHtml(c.masterName || c.ownerName || 'Usta')} profilini ko'rish">
+                ${ownerAvatarHtml}
+                <span style="font-weight:700; color:var(--indigo);">${escapeHtml(c.masterName || c.ownerName || 'Usta')}</span>
+              </a>
+              <span style="font-size:12px; color:rgba(28,26,23,0.65);">· ${escapeHtml(c.city || 'O\'zbekiston')}</span>
             </div>
             <div class="stay-title">${escapeHtml(c.title)}</div>
           </div>

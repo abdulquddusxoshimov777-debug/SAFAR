@@ -33,19 +33,31 @@
     .metro-svg-wrap {
       width: 100%;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       background: #ffffff;
       border-radius: 18px;
       border: 1px solid var(--line-soft);
       padding: 10px;
-      display: flex;
-      justify-content: center;
+      display: block;
+      text-align: center;
       position: relative;
     }
     .metro-svg {
       max-width: 1000px;
       width: 100%;
       height: auto;
-      min-width: 720px;
+      min-width: 660px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    @media (max-width: 650px) {
+      .metro-svg-wrap {
+        padding: 4px;
+        text-align: left;
+      }
+      .metro-svg {
+        min-width: 580px;
+      }
     }
     .station-node {
       cursor: pointer;
@@ -203,7 +215,7 @@
 
       <!-- INTERACTIVE METRO SVG MAP -->
       <div class="metro-svg-wrap">
-        <svg class="metro-svg" viewBox="150 140 650 530" id="metroSvg" xmlns="http://www.w3.org/2000/svg">
+        <svg class="metro-svg" viewBox="80 130 720 540" id="metroSvg" xmlns="http://www.w3.org/2000/svg">
           <!-- Metro lines background tracks -->
           <g id="metroTracks">
             <!-- 1. Chilonzor yo'li (Red) -->
