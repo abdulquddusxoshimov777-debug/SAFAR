@@ -51,10 +51,10 @@ Write-Host "Token starts with: $($token.Substring(0, [Math]::Min(8, $token.Lengt
 Write-Host "Token length: $($token.Length)"
 
 $gitExe = 'C:\Users\user\AppData\Local\GitHubDesktop\app-3.6.6\resources\app\git\cmd\git.exe'
-$repoPath = 'd:\Safar'
+$repoPath = 'd:\saffar'
 
 # Try with token (may be OAuth or PAT)
-$repoUrl = "https://x-access-token:$token@github.com/abdulquddusxoshimov777-debug/Safar.git"
+$repoUrl = "https://x-access-token:$token@github.com/abdulquddusxoshimov777-debug/saffar.git"
 
 Write-Host "Pushing..."
 & $gitExe -C $repoPath push $repoUrl master 2>&1

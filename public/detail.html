@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Batafsil ma'lumot — Safar</title>
+<title>Batafsil ma'lumot — saffar</title>
 <meta name="description" content="Batafsil ma'lumotlar, telefon raqami, manzili va sayohatchilar sharhlari.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -162,7 +162,7 @@
 <script src="js/partials.js"></script>
 <script src="js/i18n.js"></script>
 <script>
-const API = window.SAFAR_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
+const API = window.saffar_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
 
 function escapeHtml(str) {
   if (!str) return "";
@@ -289,7 +289,7 @@ async function loadDetail() {
       console.warn("Could not fetch API reviews for item", e);
     }
 
-    const session = window.SafarSession ? window.SafarSession.getSession() : null;
+    const session = window.saffarSession ? window.saffarSession.getSession() : null;
 
     // Combine static reviewsList and fetched API reviews
     const combinedReviews = [...fetchedReviews];
@@ -356,7 +356,7 @@ async function loadDetail() {
 
       <div class="detail-grid">
         <div>
-          <span class="eyebrow" style="text-transform:uppercase;">${escapeHtml(item.tag || item.category || "Safar")} · ${escapeHtml(city)}</span>
+          <span class="eyebrow" style="text-transform:uppercase;">${escapeHtml(item.tag || item.category || "saffar")} · ${escapeHtml(city)}</span>
           <h1 style="margin:8px 0 12px; font-size:32px;">${escapeHtml(title)}</h1>
           
           <div style="display:flex; gap:16px; align-items:center; margin-bottom:24px; flex-wrap:wrap;">
@@ -488,10 +488,10 @@ async function loadDetail() {
 
     // Handle Delete Review logic
     window.deleteReview = async function(revId) {
-      const sessionObj = window.SafarSession ? window.SafarSession.getSession() : null;
-      if (!sessionObj) return window.safarAlert({ title: "Diqqat", message: "Avval tizimga kiring.", icon: "🔒" });
+      const sessionObj = window.saffarSession ? window.saffarSession.getSession() : null;
+      if (!sessionObj) return window.saffarAlert({ title: "Diqqat", message: "Avval tizimga kiring.", icon: "🔒" });
 
-      const confirmed = await window.safarConfirm({
+      const confirmed = await window.saffarConfirm({
         title: "Sharhni o'chirish",
         message: "Ushbu sharhni o'chirishni tasdiqlaysizmi?",
         icon: "🗑",
@@ -508,13 +508,13 @@ async function loadDetail() {
         });
         const dData = await res.json();
         if (dData.ok) {
-          await window.safarAlert({ title: "O'chirildi", message: "Sharh muvaffaqiyatli o'chirildi.", icon: "✅" });
+          await window.saffarAlert({ title: "O'chirildi", message: "Sharh muvaffaqiyatli o'chirildi.", icon: "✅" });
           loadDetail();
         } else {
-          await window.safarAlert({ title: "Xatolik", message: dData.message || "Sharhni o'chirishda xatolik.", icon: "⚠️" });
+          await window.saffarAlert({ title: "Xatolik", message: dData.message || "Sharhni o'chirishda xatolik.", icon: "⚠️" });
         }
       } catch (err) {
-        await window.safarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
+        await window.saffarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
       }
     };
 
@@ -522,7 +522,7 @@ async function loadDetail() {
     const reviewForm = document.getElementById("itemReviewForm");
     reviewForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const token = localStorage.getItem("safar_token");
+      const token = localStorage.getItem("saffar_token");
       const alertBox = document.getElementById("reviewAlert");
       alertBox.style.display = "none";
 

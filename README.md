@@ -1,4 +1,4 @@
-# Safar — Uzbekistan Silk Road stays
+# saffar — Uzbekistan Silk Road stays
 
 A full clone-style booking site: landing page, stays listing with a live map panel,
 and a real sign in / create account flow backed by a Node.js API.
@@ -6,7 +6,7 @@ and a real sign in / create account flow backed by a Node.js API.
 ## What's inside
 
 ```
-safar-app/
+saffar-app/
   backend/            Node + Express API (auth, users, stays)
     server.js
     package.json
@@ -24,12 +24,12 @@ safar-app/
 ## Run it
 
 ```bash
-cd safar-app/backend
+cd saffar-app/backend
 npm install
 npm start
 ```
 
-The server prints `Safar backend running on http://localhost:4000` and also serves
+The server prints `saffar backend running on http://localhost:4000` and also serves
 the frontend, so open **http://localhost:4000** in your browser — everything
 (pages + API) comes from that one address.
 

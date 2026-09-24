@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Foydalanuvchi Profili — Safar</title>
-  <meta name="description" content="Safar platformasidagi foydalanuvchi profili va uning joylagan e'lonlari.">
+  <title>Foydalanuvchi Profili — saffar</title>
+  <meta name="description" content="saffar platformasidagi foydalanuvchi profili va uning joylagan e'lonlari.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=2.2">
@@ -189,7 +189,7 @@
 <script src="js/i18n.js"></script>
 <script>
 (function() {
-  const API = window.SAFAR_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
+  const API = window.saffar_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
   const params = new URLSearchParams(location.search);
   const userId = params.get("id") || params.get("user");
 
@@ -227,7 +227,7 @@
 
       // Fill header
       document.getElementById("profileName").textContent = u.name || "Noma'lum foydalanuvchi";
-      document.title = `${u.name} — Safar Profili`;
+      document.title = `${u.name} — saffar Profili`;
 
       const avatarBox = document.getElementById("profileAvatar");
       if (u.avatarUrl) {

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stays in Uzbekistan — Safar</title>
+<title>Stays in Uzbekistan — saffar</title>
 <meta name="description" content="Browse hand-picked homes, courtyards and mountain retreats across Uzbekistan.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -109,7 +109,7 @@
 <script src="js/favorites.js"></script>
 <script src="js/map.js"></script>
 <script>
-const API = window.SAFAR_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
+const API = window.saffar_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
 
 function escapeHtml(str) {
   if (!str) return "";
@@ -181,7 +181,7 @@ function renderList() {
   document.getElementById("stayCountLabel").textContent = `${filtered.length} homes along the Silk Road`;
   
   if (!filtered.length) {
-    const emptyMsg = window.safar_t ? window.safar_t("msg_empty_stays") : "No stays found matching your criteria.";
+    const emptyMsg = window.saffar_t ? window.saffar_t("msg_empty_stays") : "No stays found matching your criteria.";
     list.innerHTML = `
       <div class="empty-stays-card">
         <div class="empty-icon" aria-hidden="true">🏛</div>
@@ -200,7 +200,7 @@ function renderList() {
       <div class="stay-thumb">
         <img src="${escapeHtml(s.image || "")}" alt="${escapeHtml(s.title)}" loading="lazy">
         ${s.superhost ? '<span class="badge-super">Superhost</span>' : ""}
-        <button type="button" class="heart-btn ${window.SafarFav?.isFavorite('stay', s.id) ? 'active' : ''}" aria-label="Favorite stay" onclick="toggleFav(event, 'stay', ${s.id})">${window.SafarFav?.isFavorite('stay', s.id) ? '❤️' : '♡'}</button>
+        <button type="button" class="heart-btn ${window.saffarFav?.isFavorite('stay', s.id) ? 'active' : ''}" aria-label="Favorite stay" onclick="toggleFav(event, 'stay', ${s.id})">${window.saffarFav?.isFavorite('stay', s.id) ? '❤️' : '♡'}</button>
       </div>
       <div class="stay-body">
         <div class="stay-top">
@@ -226,8 +226,8 @@ function renderList() {
 window.toggleFav = function(e, type, id) {
   e.stopPropagation();
   const item = allStays.find(x => x.id === id);
-  if (item && window.SafarFav) {
-    const isNowFav = window.SafarFav.toggleFavorite({ type: "stay", id: item.id, title: item.title, city: item.city, price: `${item.price}/night`, image: item.image });
+  if (item && window.saffarFav) {
+    const isNowFav = window.saffarFav.toggleFavorite({ type: "stay", id: item.id, title: item.title, city: item.city, price: `${item.price}/night`, image: item.image });
     const btn = e.currentTarget;
     btn.classList.toggle("active", isNowFav);
     btn.textContent = isNowFav ? "❤️" : "♡";
@@ -294,7 +294,7 @@ async function load() {
   } catch (err) {
     console.error("Failed to load stays:", err);
     document.getElementById("stayList").innerHTML =
-      `<p style="color:rgba(28,26,23,0.5);">Couldn't reach the Safar backend. Make sure the backend server is running.</p>`;
+      `<p style="color:rgba(28,26,23,0.5);">Couldn't reach the saffar backend. Make sure the backend server is running.</p>`;
     return;
   }
 

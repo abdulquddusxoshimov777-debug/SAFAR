@@ -370,7 +370,7 @@
           O'zbekistonning haqiqiy ruhi va mehmondo'stligini kashf eting
         </h2>
         <p style="font-size:15.5px; color:rgba(28,26,23,0.78); line-height:1.65; margin-bottom:16px;">
-          Safar ? qadimiy Ipak yo'li bo'ylab sayohat qiluvchilar, mahalliy samimiy mezbonlar, milliy hunarmandlar va mohir oshpazlarni vositachisiz birlashtiruvchi zamonaviy ochiq sayyohlik platformasi.
+          saffar ? qadimiy Ipak yo'li bo'ylab sayohat qiluvchilar, mahalliy samimiy mezbonlar, milliy hunarmandlar va mohir oshpazlarni vositachisiz birlashtiruvchi zamonaviy ochiq sayyohlik platformasi.
         </p>
         <p style="font-size:15px; color:rgba(28,26,23,0.75); line-height:1.6; margin-bottom:24px;">
           Biz har bir mehmonga o'zbek xalqining haqiqiy mehmondo'stligini his qildirish, madaniy merosimizni butun jahonga tanitish niyatida ishlaymiz.
@@ -508,7 +508,7 @@
 <script src="js/partials.js"></script>
 <script src="js/i18n.js"></script>
 <script>
-const API = window.SAFAR_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
+const API = window.saffar_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
 
 function escapeHtml(str) {
   if (!str) return "";
@@ -529,7 +529,7 @@ if (searchSubmitBtn) {
 // ====== REVIEWS SECTION ======
 // Only show general reviews (no targetType) on home page preview row
 function buildReviewCard(r) {
-  const session = window.SafarSession ? window.SafarSession.getSession() : null;
+  const session = window.saffarSession ? window.saffarSession.getSession() : null;
   const isAdmin = session && (session.user.role === "admin" || (session.user.email || "").toLowerCase() === "abdulquddusxoshimov777@gmail.com");
   const isOwner = session && r.id && (
     isAdmin ||
@@ -592,10 +592,10 @@ window.editReviewItem = function(id, currentText, currentRating) {
 };
 
 window.deleteReview = async function(id) {
-  const sessionObj = window.SafarSession ? window.SafarSession.getSession() : null;
+  const sessionObj = window.saffarSession ? window.saffarSession.getSession() : null;
   if (!sessionObj) return alert("Avval tizimga kiring.");
 
-  const confirmed = window.safarConfirm ? await window.safarConfirm({
+  const confirmed = window.saffarConfirm ? await window.saffarConfirm({
     title: "Sharhni o'chirish",
     message: "Ushbu sharhni o'chirishni tasdiqlaysizmi?",
     icon: "🗑",
@@ -613,8 +613,8 @@ window.deleteReview = async function(id) {
     });
     const dData = await res.json();
     if (dData.ok) {
-      if (window.safarAlert) {
-        await window.safarAlert({ title: "O'chirildi", message: "Sharh muvaffaqiyatli o'chirildi.", icon: "✅" });
+      if (window.saffarAlert) {
+        await window.saffarAlert({ title: "O'chirildi", message: "Sharh muvaffaqiyatli o'chirildi.", icon: "✅" });
       } else {
         alert("Sharh muvaffaqiyatli o'chirildi.");
       }
@@ -639,7 +639,7 @@ async function loadReviews() {
     // Filter: only show reviews WITHOUT a targetType (general/public reviews)
     const generalReviews = (data.reviews || []).filter(r => !r.targetType);
     if (generalReviews.length === 0) {
-      const emptyMsg = window.safar_t ? window.safar_t("rev_empty") : "Hozircha sharhlar yo'q. Birinchi bo'ling!";
+      const emptyMsg = window.saffar_t ? window.saffar_t("rev_empty") : "Hozircha sharhlar yo'q. Birinchi bo'ling!";
       feed.innerHTML = `<div class="review-empty" data-i18n="rev_empty">${escapeHtml(emptyMsg)}</div>`;
       return;
     }
@@ -684,7 +684,7 @@ async function loadReviews() {
     }, 2000);
   } catch(e) {
     console.error("Failed to load reviews:", e);
-    const errMsg = window.safar_t ? window.safar_t("msg_err_server") : "Server bilan bog'lanib bo'lmadi.";
+    const errMsg = window.saffar_t ? window.saffar_t("msg_err_server") : "Server bilan bog'lanib bo'lmadi.";
     feed.innerHTML = `<div class="review-empty">${escapeHtml(errMsg)}</div>`;
   }
 }
@@ -699,7 +699,7 @@ const closeReviewBtn = document.getElementById("closeReviewModal");
 
 function openModal() {
   modal.style.display = "flex";
-  const token = localStorage.getItem("safar_token");
+  const token = localStorage.getItem("saffar_token");
   if (token) {
     reviewForm.style.display = "block";
     authGate.style.display = "none";
@@ -798,7 +798,7 @@ function renderMediaPreviews() {
 // Submit review form with reset & UX feedback
 reviewForm.addEventListener("submit", async e => {
   e.preventDefault();
-  const token = localStorage.getItem("safar_token");
+  const token = localStorage.getItem("saffar_token");
   const text = document.getElementById("revText").value.trim();
   const rating = parseInt(document.getElementById("revRating").value);
   const locationName = document.getElementById("revLocation").value.trim();
@@ -809,7 +809,7 @@ reviewForm.addEventListener("submit", async e => {
   successBox.classList.remove("show");
 
   if (!text) {
-    const writeMsg = window.safar_t ? window.safar_t("msg_rev_write") : "Iltimos, sharhingizni yozing.";
+    const writeMsg = window.saffar_t ? window.saffar_t("msg_rev_write") : "Iltimos, sharhingizni yozing.";
     alertBox.textContent = writeMsg;
     alertBox.classList.add("show");
     return;
@@ -834,7 +834,7 @@ reviewForm.addEventListener("submit", async e => {
       alertBox.textContent = data.message || "Error submitting review.";
       alertBox.classList.add("show");
     } else {
-      const succMsg = window.safar_t ? window.safar_t("msg_rev_success") : "Sharhingiz muvaffaqiyatli joylandi!";
+      const succMsg = window.saffar_t ? window.saffar_t("msg_rev_success") : "Sharhingiz muvaffaqiyatli joylandi!";
       successBox.textContent = succMsg;
       successBox.classList.add("show");
 
@@ -854,12 +854,12 @@ reviewForm.addEventListener("submit", async e => {
     }
   } catch(err) {
     console.error("Submit review error:", err);
-    const servMsg = window.safar_t ? window.safar_t("msg_err_server") : "Server bilan bog'lanib bo'lmadi.";
+    const servMsg = window.saffar_t ? window.saffar_t("msg_err_server") : "Server bilan bog'lanib bo'lmadi.";
     alertBox.textContent = servMsg;
     alertBox.classList.add("show");
   }
   btn.disabled = false;
-  btn.textContent = window.safar_t ? window.safar_t("modal_submit") : "Sharh joylash";
+  btn.textContent = window.saffar_t ? window.saffar_t("modal_submit") : "Sharh joylash";
 });
 
 // ---- LIVE DEMOGRAPHIC POPULATION TICKER ----

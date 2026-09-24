@@ -1,4 +1,4 @@
-// Safar backend — authentication + stays, places, foods & crafts API
+// saffar backend — authentication + stays, places, foods & crafts API
 // Load environment variables from .env file if present
 try { require("dotenv").config(); } catch(e) { /* dotenv optional */ }
 
@@ -13,7 +13,7 @@ const rateLimit = require("express-rate-limit");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-const JWT_SECRET = process.env.JWT_SECRET || "safar-dev-secret-change-me";
+const JWT_SECRET = process.env.JWT_SECRET || "saffar-dev-secret-change-me";
 const USERS_FILE = path.join(__dirname, "users.json");
 const REVIEWS_FILE = path.join(__dirname, "reviews.json");
 const LISTINGS_FILE = path.join(__dirname, "listings.json");
@@ -1184,7 +1184,7 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, async () => {
-  console.log(`Safar backend running on http://localhost:${PORT}`);
+  console.log(`saffar backend running on http://localhost:${PORT}`);
   try {
     // await db.initDatabase();
   } catch (err) {

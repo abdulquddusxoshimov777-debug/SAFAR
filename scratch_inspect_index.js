@@ -1,5 +1,5 @@
 const fs = require('fs');
-const html = fs.readFileSync('d:/Safar/public/index.html', 'utf8');
+const html = fs.readFileSync('d:/saffar/public/index.html', 'utf8');
 
 // Find all sections
 const regex = /<section[^>]*id=['"]([^'"]+)['"]/g;

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Uzbek Foods & Culinary Map — Safar</title>
+<title>Uzbek Foods & Culinary Map — saffar</title>
 <meta name="description" content="Discover authentic Uzbek dishes and see where they are created on Uzbekistan's interactive culinary map.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -102,7 +102,7 @@
 <script src="js/favorites.js"></script>
 <script src="js/map.js"></script>
 <script>
-const API = window.SAFAR_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
+const API = window.saffar_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
 
 function escapeHtml(str) {
   if (!str) return "";
@@ -180,7 +180,7 @@ function renderFoodList() {
       <div class="stay-thumb">
         <img src="${escapeHtml(f.image)}" alt="${escapeHtml(f.title)}" loading="lazy">
         <span class="badge-super">${escapeHtml(f.tag || "Taom")}</span>
-        <button type="button" class="heart-btn ${window.SafarFav?.isFavorite('food', f.id) ? 'active' : ''}" aria-label="Favorite food" onclick="toggleFav(event, 'food', ${f.id})">${window.SafarFav?.isFavorite('food', f.id) ? '❤️' : '♡'}</button>
+        <button type="button" class="heart-btn ${window.saffarFav?.isFavorite('food', f.id) ? 'active' : ''}" aria-label="Favorite food" onclick="toggleFav(event, 'food', ${f.id})">${window.saffarFav?.isFavorite('food', f.id) ? '❤️' : '♡'}</button>
       </div>
       <div class="stay-body">
         <div class="stay-top">
@@ -213,8 +213,8 @@ function renderFoodList() {
 window.toggleFav = function(e, type, id) {
   e.stopPropagation();
   const item = allFoods.find(x => x.id === id);
-  if (item && window.SafarFav) {
-    const isNowFav = window.SafarFav.toggleFavorite({ type: "food", id: item.id, title: item.title, city: item.city, price: item.price, image: item.image });
+  if (item && window.saffarFav) {
+    const isNowFav = window.saffarFav.toggleFavorite({ type: "food", id: item.id, title: item.title, city: item.city, price: item.price, image: item.image });
     const btn = e.currentTarget;
     btn.classList.toggle("active", isNowFav);
     btn.textContent = isNowFav ? "❤️" : "♡";

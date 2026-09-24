@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your account — Safar</title>
+<title>Your account — saffar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=2.2">
@@ -141,9 +141,9 @@
 <script src="js/partials.js"></script>
 <script src="js/i18n.js"></script>
 <script>
-const API = window.SAFAR_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
-const token = localStorage.getItem("safar_token");
-const cachedUser = localStorage.getItem("safar_user");
+const API = window.saffar_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
+const token = localStorage.getItem("saffar_token");
+const cachedUser = localStorage.getItem("saffar_user");
 
 if (!token || !cachedUser) {
   location.href = "login.html";
@@ -163,7 +163,7 @@ function paint(user) {
   if (user.avatarUrl) {
     avatarEl.innerHTML = `<img src="${user.avatarUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
   } else {
-    avatarEl.textContent = window.SafarSession ? window.SafarSession.initials(user.name) : (user.name[0] || "?");
+    avatarEl.textContent = window.saffarSession ? window.saffarSession.initials(user.name) : (user.name[0] || "?");
   }
 
   document.getElementById("fieldName").textContent = user.name;
@@ -197,10 +197,10 @@ async function refresh() {
     const data = await res.json();
     if (data.ok) {
       paint(data.user);
-      localStorage.setItem("safar_user", JSON.stringify(data.user));
+      localStorage.setItem("saffar_user", JSON.stringify(data.user));
     } else {
-      localStorage.removeItem("safar_token");
-      localStorage.removeItem("safar_user");
+      localStorage.removeItem("saffar_token");
+      localStorage.removeItem("saffar_user");
       location.href = "login.html";
     }
   } catch {
@@ -236,7 +236,7 @@ if (btnUploadAvatar && avatarFileInput) {
         });
         const data = await res.json();
         if (data.ok) {
-          localStorage.setItem("safar_user", JSON.stringify(data.user));
+          localStorage.setItem("saffar_user", JSON.stringify(data.user));
           paint(data.user);
           if (window.renderHeader) window.renderHeader();
           alert("Profil rasmingiz muvaffaqiyatli saqlandi!");
@@ -255,11 +255,11 @@ if (btnUploadAvatar && avatarFileInput) {
 const btnToggleRole = document.getElementById("btnToggleRole");
 if (btnToggleRole) {
   btnToggleRole.onclick = async () => {
-    const current = JSON.parse(localStorage.getItem("safar_user") || "{}");
+    const current = JSON.parse(localStorage.getItem("saffar_user") || "{}");
     const targetRole = current.role === "host" ? "tourist" : "host";
     const label = targetRole === "host" ? "Joy beruvchi / Mezbon (Host)" : "Sayohatchi / Turist (Tourist)";
     
-    const confirmed = await window.safarConfirm({
+    const confirmed = await window.saffarConfirm({
       title: "Akkaunt turini o'zgartirish",
       message: `Akkauntingiz turini "${label}"ga o'zgartirishni tasdiqlaysizmi?`,
       icon: "🔄",
@@ -279,15 +279,15 @@ if (btnToggleRole) {
       });
       const data = await res.json();
       if (data.ok) {
-        localStorage.setItem("safar_user", JSON.stringify(data.user));
+        localStorage.setItem("saffar_user", JSON.stringify(data.user));
         paint(data.user);
         if (window.renderHeader) window.renderHeader();
-        await window.safarAlert({ title: "Muvaffaqiyatli", message: data.message || "Akkaunt turi o'zgardi!", icon: "🎉" });
+        await window.saffarAlert({ title: "Muvaffaqiyatli", message: data.message || "Akkaunt turi o'zgardi!", icon: "🎉" });
       } else {
-        await window.safarAlert({ title: "Xatolik", message: data.message || "Xatolik yuz berdi.", icon: "⚠️" });
+        await window.saffarAlert({ title: "Xatolik", message: data.message || "Xatolik yuz berdi.", icon: "⚠️" });
       }
     } catch(err) {
-      await window.safarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
+      await window.saffarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
     }
   };
 }
@@ -343,7 +343,7 @@ async function loadMyListings() {
 }
 
 window.deleteMyListing = async function(category, id) {
-  const confirmed = await window.safarConfirm({
+  const confirmed = await window.saffarConfirm({
     title: "E'lonni o'chirish",
     message: "Ushbu e'loningizni o'chirishni tasdiqlaysizmi? Bu amalni ortga qaytarib bo'lmaydi.",
     icon: "🗑",
@@ -360,7 +360,7 @@ window.deleteMyListing = async function(category, id) {
     });
     const data = await res.json();
     if (data.ok) {
-      await window.safarAlert({ title: "O'chirildi", message: "E'loningiz muvaffaqiyatli o'chirildi.", icon: "✅" });
+      await window.saffarAlert({ title: "O'chirildi", message: "E'loningiz muvaffaqiyatli o'chirildi.", icon: "✅" });
       
 // BIO SAVE HANDLER
 const btnSaveBio = document.getElementById("btnSaveBio");
@@ -382,14 +382,14 @@ if (btnSaveBio && bioText) {
       });
       const data = await res.json();
       if (data.ok) {
-        localStorage.setItem("safar_user", JSON.stringify(data.user));
+        localStorage.setItem("saffar_user", JSON.stringify(data.user));
         if (bioStatus) {
           bioStatus.textContent = "✅ Bio muvaffaqiyatli saqlandi!";
           bioStatus.style.display = "inline";
           setTimeout(() => { bioStatus.style.display = "none"; }, 3500);
         }
-        if (window.safarAlert) {
-          await window.safarAlert({ title: "Muvaffaqiyatli", message: "Bio ma'lumotlaringiz saqlandi!", icon: "✅" });
+        if (window.saffarAlert) {
+          await window.saffarAlert({ title: "Muvaffaqiyatli", message: "Bio ma'lumotlaringiz saqlandi!", icon: "✅" });
         }
       } else {
         alert(data.message || "Xatolik yuz berdi.");
@@ -405,24 +405,24 @@ if (btnSaveBio && bioText) {
 
 loadMyListings();
     } else {
-      await window.safarAlert({ title: "Xatolik", message: data.message || "Xatolik yuz berdi.", icon: "⚠️" });
+      await window.saffarAlert({ title: "Xatolik", message: data.message || "Xatolik yuz berdi.", icon: "⚠️" });
     }
   } catch(err) {
-    await window.safarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
+    await window.saffarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
   }
 };
 
 loadMyListings();
 
 document.getElementById("signOutBtn").addEventListener("click", () => {
-  localStorage.removeItem("safar_token");
-  localStorage.removeItem("safar_user");
+  localStorage.removeItem("saffar_token");
+  localStorage.removeItem("saffar_user");
   location.href = "login.html";
 });
 
 // DELETE ACCOUNT HANDLER
 document.getElementById("deleteAccountBtn").addEventListener("click", async () => {
-  const confirmed = await window.safarConfirm({
+  const confirmed = await window.saffarConfirm({
     title: "Akkauntni o'chirish",
     message: "Haqiqatan ham akkauntingizni o'chirib tashlamoqchimisiz?\n\nUshbu amalni ortga qaytarib bo'lmaydi!",
     icon: "⚠️",
@@ -439,15 +439,15 @@ document.getElementById("deleteAccountBtn").addEventListener("click", async () =
     });
     const data = await res.json();
     if (data.ok) {
-      await window.safarAlert({ title: "Xayr!", message: data.message || "Akkauntingiz o'chirildi.", icon: "👋" });
-      localStorage.removeItem("safar_token");
-      localStorage.removeItem("safar_user");
+      await window.saffarAlert({ title: "Xayr!", message: data.message || "Akkauntingiz o'chirildi.", icon: "👋" });
+      localStorage.removeItem("saffar_token");
+      localStorage.removeItem("saffar_user");
       location.href = "index.html";
     } else {
-      await window.safarAlert({ title: "Xatolik", message: data.message || "Akkauntni o'chirishda xatolik.", icon: "⚠️" });
+      await window.saffarAlert({ title: "Xatolik", message: data.message || "Akkauntni o'chirishda xatolik.", icon: "⚠️" });
     }
   } catch(err) {
-    await window.safarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
+    await window.saffarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
   }
 });
 </script>

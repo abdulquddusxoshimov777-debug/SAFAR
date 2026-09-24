@@ -1,5 +1,5 @@
 (function () {
-  const API = window.SAFAR_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
+  const API = window.saffar_API_BASE || (location.protocol === "file:" ? "http://localhost:4000" : "");
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -48,8 +48,8 @@
   }
 
   function saveSession(token, user) {
-    localStorage.setItem("safar_token", token);
-    localStorage.setItem("safar_user", JSON.stringify(user));
+    localStorage.setItem("saffar_token", token);
+    localStorage.setItem("saffar_user", JSON.stringify(user));
   }
 
   function getRedirectDestination() {
@@ -96,7 +96,7 @@
         setTimeout(() => (location.href = getRedirectDestination()), 700);
       } catch (err) {
         console.error("Login request failed:", err);
-        showAlert("Couldn't reach the Safar server. Make sure the backend is running.");
+        showAlert("Couldn't reach the saffar server. Make sure the backend is running.");
         setLoading(btn, false, "Sign in");
       }
     });
@@ -154,7 +154,7 @@
         setTimeout(() => (location.href = getRedirectDestination()), 700);
       } catch (err) {
         console.error("Signup request failed:", err);
-        showAlert("Couldn't reach the Safar server. Make sure the backend is running.");
+        showAlert("Couldn't reach the saffar server. Make sure the backend is running.");
         setLoading(btn, false, "Create account");
       }
     });

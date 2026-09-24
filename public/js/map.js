@@ -1,5 +1,5 @@
-// Safar Leaflet Map Integrations — Real interactive maps of Uzbekistan
-// Uses CartoDB Voyager tiles to match Safar's plaster/sand theme.
+// saffar Leaflet Map Integrations — Real interactive maps of Uzbekistan
+// Uses CartoDB Voyager tiles to match saffar's plaster/sand theme.
 
 // 1. Auth Page Map (illustrative, static but real)
 window.initAuthMap = function (elementId, highlightCity) {

@@ -1,15 +1,15 @@
-// Safar Favorites (Izbrannye / Saved Items) Manager
+// saffar Favorites (Izbrannye / Saved Items) Manager
 (function() {
   function getFavorites() {
     try {
-      return JSON.parse(localStorage.getItem("safar_favorites")) || [];
+      return JSON.parse(localStorage.getItem("saffar_favorites")) || [];
     } catch {
       return [];
     }
   }
 
   function saveFavorites(list) {
-    localStorage.setItem("safar_favorites", JSON.stringify(list));
+    localStorage.setItem("saffar_favorites", JSON.stringify(list));
   }
 
   function isFavorite(type, id) {
@@ -18,7 +18,7 @@
   }
 
   function toggleFavorite(item) {
-    const token = localStorage.getItem("safar_token");
+    const token = localStorage.getItem("saffar_token");
     if (!token) {
       alert("Sevimlilarga saqlash uchun avval tizimga kiring.");
       location.href = "login.html?redirect=saved";
@@ -37,5 +37,5 @@
     return added;
   }
 
-  window.SafarFav = { getFavorites, isFavorite, toggleFavorite };
+  window.saffarFav = { getFavorites, isFavorite, toggleFavorite };
 })();

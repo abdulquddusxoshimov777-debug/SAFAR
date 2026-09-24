@@ -1,4 +1,4 @@
-// Default seed data for Safar app — Stays, Places, Foods, Crafts
+// Default seed data for saffar app — Stays, Places, Foods, Crafts
 // Used when listings.json is empty or missing on first deployment
 
 const DEFAULT_SEED_STAYS = [
@@ -131,7 +131,7 @@ const DEFAULT_SEED_PLACES = [
     ],
     coordinates: [41.3268, 69.2364],
     googleMapsUrl: "https://maps.google.com/?q=41.3268,69.2364",
-    ownerName: "Safar Guide",
+    ownerName: "saffar Guide",
     ownerEmail: "abdulquddusxoshimov777@gmail.com",
     phone: "+998 71 242 00 00",
     address: "Toshkent shahri, Zarkaynar ko'chasi",
@@ -155,7 +155,7 @@ const DEFAULT_SEED_PLACES = [
     ],
     coordinates: [41.3245, 69.2612],
     googleMapsUrl: "https://maps.google.com/?q=41.3245,69.2612",
-    ownerName: "Safar Guide",
+    ownerName: "saffar Guide",
     ownerEmail: "abdulquddusxoshimov777@gmail.com",
     phone: "+998 71 200 00 00",
     address: "Toshkent shahri, Shayxontohur tumani",
@@ -179,7 +179,7 @@ const DEFAULT_SEED_PLACES = [
     ],
     coordinates: [41.3039, 69.2482],
     googleMapsUrl: "https://maps.google.com/?q=41.3039,69.2482",
-    ownerName: "Safar Guide",
+    ownerName: "saffar Guide",
     ownerEmail: "abdulquddusxoshimov777@gmail.com",
     phone: "+998 71 200 11 22",
     address: "Toshkent shahri, Bobur ko'chasi",
@@ -203,7 +203,7 @@ const DEFAULT_SEED_PLACES = [
     ],
     coordinates: [39.6548, 66.9758],
     googleMapsUrl: "https://maps.google.com/?q=39.6548,66.9758",
-    ownerName: "Safar Guide",
+    ownerName: "saffar Guide",
     ownerEmail: "abdulquddusxoshimov777@gmail.com",
     phone: "+998 66 235 00 00",
     address: "Samarqand shahri, Registon ko'chasi",
