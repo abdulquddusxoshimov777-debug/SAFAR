@@ -201,13 +201,6 @@ function renderFoodList() {
       </div>
     </div>`;
   }).join("");
-        <div class="card-actions-row" style="margin-top:12px;">
-          <a class="btn-detail" href="detail.html?type=food&id=${f.id}" onclick="event.stopPropagation()">🔍 Batafsil</a>
-          <a href="${escapeHtml(gMapUrl)}" class="btn-book" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">📍 Maps xarita</a>
-        </div>
-      </div>
-    </div>`;
-  }).join("");
 }
 
 window.toggleFav = function(e, type, id) {
