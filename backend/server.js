@@ -125,7 +125,7 @@ const postActionLimiter = rateLimit({
 app.use("/api/", generalApiLimiter);
 app.use(express.static(path.join(__dirname, "..", "public")));
 
-const db = require("./db");
+// const db = require("./db");
 
 function readUsers() {
   if (!fs.existsSync(USERS_FILE)) return [];
@@ -144,7 +144,7 @@ function readUsers() {
 }
 function writeUsers(users) {
   fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
-  db.saveUsers(users);
+ //  db.saveUsers(users);
 }
 
 // Automatically ensure default Admin user exists with correct password and role
