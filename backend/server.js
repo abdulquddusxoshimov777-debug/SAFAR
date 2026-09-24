@@ -195,7 +195,7 @@ function readReviews() {
 }
 function writeReviews(reviews) {
   fs.writeFileSync(REVIEWS_FILE, JSON.stringify(reviews, null, 2));
-  db.saveReviews(reviews);
+  // db.saveReviews(reviews);
 }
 
 function readMessages() {
@@ -1186,7 +1186,7 @@ app.get("/", (req, res) => {
 app.listen(PORT, async () => {
   console.log(`Safar backend running on http://localhost:${PORT}`);
   try {
-    await db.initDatabase();
+    // await db.initDatabase();
   } catch (err) {
     console.error("Database initialization error:", err.message);
   }
