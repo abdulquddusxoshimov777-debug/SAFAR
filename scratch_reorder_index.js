@@ -62,7 +62,6 @@ const curatedPhotosSection = `<!-- ============ O'ZBEKISTONNING HAR BIR BURCHAGI
           O'zbekistonning har bir burchagidan tanlab olingan rasmlar
         </h2>
         <p style="margin-top:6px; color:rgba(28,26,23,0.7); max-width:640px; font-size:15px;">
-          Registon maydonidan tortib Orol dengizi kemalarigacha, Buxoro gumbazlaridan Zomin tog'larigacha bo'lgan betakror go'zalliklar. (Rasmni to'liq ko'rish uchun ustiga bosing)
         </p>
       </div>
       <a href="places.html" class="view-all">Barcha joylarni ko'rish →</a>

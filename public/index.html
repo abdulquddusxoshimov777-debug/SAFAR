@@ -293,7 +293,6 @@
           O'zbekistonning har bir burchagidan tanlab olingan rasmlar
         </h2>
         <p style="margin-top:6px; color:rgba(28,26,23,0.7); max-width:640px; font-size:15px;">
-          Registon maydonidan tortib Orol dengizi kemalarigacha, Buxoro gumbazlaridan Zomin tog'larigacha bo'lgan betakror go'zalliklar. (Rasmni to'liq ko'rish uchun ustiga bosing)
         </p>
       </div>
       <a href="places.html" class="view-all">Barcha joylarni ko'rish →</a>
@@ -362,12 +361,12 @@
   <div class="container">
     <div class="home-about-wrap">
       <div class="home-about-img">
-        <img src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80" alt="Registon maydoni" loading="lazy">
+        <img src="https://media.istockphoto.com/id/1688089925/ru/%D1%84%D0%BE%D1%82%D0%BE/%D0%BC%D0%B8%D0%BD%D0%B0%D1%80%D0%B5%D1%82-%D0%B8-%D0%BC%D0%B5%D0%B4%D1%80%D0%B5%D1%81%D0%B5-%D0%B8%D1%81%D0%BB%D0%B0%D0%BC-%D1%85%D0%BE%D0%B4%D0%B6%D0%B0-%D0%B4%D1%80%D0%B5%D0%B2%D0%BD%D0%B5%D0%B3%D0%BE-%D0%B3%D0%BE%D1%80%D0%BE%D0%B4%D0%B0-%D1%85%D0%B8%D0%B2%D0%B0-%D0%BD%D0%B0-%D1%80%D0%B0%D1%81%D1%81%D0%B2%D0%B5%D1%82%D0%B5-%D1%83%D0%B7%D0%B1%D0%B5%D0%BA%D0%B8%D1%81%D1%82%D0%B0%D0%BD.jpg?s=612x612&w=0&k=20&c=s2Crbe3WpJRge6JREcx4yN74w_AvQkblvdW_IKzV668=" alt="Registon maydoni" loading="lazy">
       </div>
       <div>
         <span class="eyebrow">Biz haqimizda</span>
         <h2 style="font-family:var(--font-display); font-size:clamp(26px, 3.5vw, 36px); color:var(--indigo); margin:10px 0 16px; line-height:1.2;">
-          O'zbekistonning haqiqiy ruhi va mehmondo'stligini kashf eting
+          O'zbekistonni qanday ekanligini kashf qiling! 
         </h2>
         <p style="font-size:15.5px; color:rgba(28,26,23,0.78); line-height:1.65; margin-bottom:16px;">
           Saffar ? qadimiy Ipak yo'li bo'ylab sayohat qiluvchilar, mahalliy samimiy mezbonlar, milliy hunarmandlar va mohir oshpazlarni vositachisiz birlashtiruvchi zamonaviy ochiq sayyohlik platformasi.
@@ -502,62 +501,6 @@
     <div class="reviews-grid" id="reviewsAllGrid" style="display:none; margin-top:32px;"></div>
   </div>
 </section>
-
-<!-- ============ REVIEW MODAL ============ -->
-<div class="modal-overlay" id="reviewModal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <div class="modal-box">
-    <div class="modal-header">
-      <h3 id="modalTitle" data-i18n="modal_title">Tajribangizni ulashing</h3>
-      <button class="modal-close" id="closeReviewModal" aria-label="Close modal">✕</button>
-    </div>
-    <div id="modalAuthGate" style="display:none; text-align:center; padding:24px 0;">
-      <p data-i18n="modal_signin_msg">Sharh qoldirish uchun tizimga kiring.</p>
-      <div style="display:flex; gap:12px; justify-content:center; margin-top:16px;">
-        <a href="login.html?redirect=reviews" class="btn btn-primary" data-i18n="modal_signin_btn">Kirish</a>
-        <a href="signup.html?redirect=reviews" class="btn btn-ghost" data-i18n="modal_signup_btn">Ro'yxatdan o'tish</a>
-      </div>
-    </div>
-    <form id="reviewForm" style="display:none;">
-      <div class="rev-form-row">
-        <div class="rev-field">
-          <label for="revLocation" data-i18n="modal_stay">Uy / Joylashuv</label>
-          <input type="text" id="revLocation" placeholder="e.g. Bukhara Courtyard House">
-        </div>
-        <div class="rev-field">
-          <label data-i18n="modal_rating">Baho</label>
-          <div class="star-picker" id="starPicker">
-            <span class="star active" data-v="1" role="button" aria-label="1 star">★</span>
-            <span class="star active" data-v="2" role="button" aria-label="2 stars">★</span>
-            <span class="star active" data-v="3" role="button" aria-label="3 stars">★</span>
-            <span class="star active" data-v="4" role="button" aria-label="4 stars">★</span>
-            <span class="star active" data-v="5" role="button" aria-label="5 stars">★</span>
-          </div>
-          <input type="hidden" id="revRating" value="5">
-        </div>
-      </div>
-      <div class="rev-field">
-        <label for="revText" data-i18n="modal_text">Sharhingiz</label>
-        <textarea id="revText" rows="4" placeholder="Boshqalarga tajribangiz haqida aytib bering…" data-i18n-placeholder="modal_text_ph"></textarea>
-      </div>
-      <!-- Media upload -->
-      <div class="rev-field">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-          <label data-i18n="modal_media">Rasmlar (Max 5MB / rasm)</label>
-          <button type="button" id="btnAddPhoto" class="btn btn-ghost" style="padding:4px 10px; font-size:12px; font-weight:700;">+ Add photo</button>
-        </div>
-        <div class="media-drop" id="mediaDrop" tabindex="0" role="button" aria-label="Upload photos or video">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="1.7"/><polyline points="17 8 12 3 7 8" stroke="currentColor" stroke-width="1.7"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="1.7"/></svg>
-          <span data-i18n="modal_media_hint">Rasm/video yuklash uchun bosing yoki torting</span>
-          <input type="file" id="mediaInput" accept="image/*,video/*" multiple style="display:none;">
-        </div>
-        <div class="media-preview-list" id="mediaPreviewList" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;"></div>
-      </div>
-      <div class="form-alert" id="revAlert"></div>
-      <div class="form-success" id="revSuccessBox"></div>
-      <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;" id="revSubmitBtn" data-i18n="modal_submit">Sharh joylash</button>
-    </form>
-  </div>
-</div>
 
 <div id="site-footer"></div>
 

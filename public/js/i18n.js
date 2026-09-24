@@ -28,7 +28,7 @@
 
       // About us
       about_eyebrow: "Biz haqimizda",
-      about_h2: "O'zbekistonning haqiqiy ruhi va mehmondo'stligini kashf eting",
+      about_h2: "O'zbekistonni qanday ekanligini kashf qiling!",
 
       // Population Demographics
       pop_title: "O'zbekiston aholisi soni",
