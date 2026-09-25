@@ -1286,17 +1286,14 @@
   window.checkCanEditOrDelete = function(item, user) {
     if (!user || !item) return false;
     if (window.checkUserIsAdmin(user)) return true;
-    const userId = String(user.id || "");
+    const userId = String(user.id || "").trim();
     const userEmail = (user.email || "").trim().toLowerCase();
-    const userName = (user.name || "").trim().toLowerCase();
 
-    const itemOwnerId = String(item.ownerId || "");
-    const itemOwnerEmail = (item.ownerEmail || "").trim().toLowerCase();
-    const itemOwnerName = (item.ownerName || "").trim().toLowerCase();
+    const itemOwnerId = String(item.ownerId || item.userId || "").trim();
+    const itemOwnerEmail = (item.ownerEmail || item.userEmail || "").trim().toLowerCase();
 
     if (itemOwnerId && itemOwnerId === userId) return true;
     if (itemOwnerEmail && itemOwnerEmail === userEmail) return true;
-    if (itemOwnerName && itemOwnerName === userName) return true;
     return false;
   };
 

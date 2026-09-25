@@ -41,7 +41,10 @@
       "phone": "+998712108888",
       "address": "Ukchi St 1, 100027, Tashkent, Uzbekistan",
       "desc": "Across the road from Tashkent City Park, this sleek hotel is 4 km from souvenir shopping at Chorsu Bazaar and a 9-minute walk from the nearest metro station.\nPolished rooms feature free Wi-Fi, flat-screen TVs, safes and designer toiletries. Upgraded rooms offer access to a private lounge providing food and drinks. The 1-bedroom suites add kitchenettes, living room, whirlpool tubs and/or city views. Limited room service is offered.\nParking is complimentary, as is breakfast for upgraded room guests. Other amenities include a gym, an indoor pool, a hot tub and a spa, as well as 2 restaurants (1 rooftop Asian) and a lobby bar.",
-      "reviewsList": []
+      "reviewsList": [],
+      "userId": "mu2tnk74cxpgjo",
+      "ownerEmail": "abdulquddusxoshimov777@gmail.com",
+      "userEmail": "abdulquddusxoshimov777@gmail.com"
     }
   ],
   "places": [
@@ -87,7 +90,10 @@
       "address": "Tafakkur ko'chasi 57, Тоshkent, Toshkent, Uzbekistan",
       "desc": "Large, enduring market with stalls selling local foods & souvenirs, plus clothing & household items.",
       "reviewsList": [],
-      "category": "Bazaars"
+      "category": "Bazaars",
+      "userId": "mu2tnk74cxpgjo",
+      "ownerEmail": "abdulquddusxoshimov777@gmail.com",
+      "userEmail": "abdulquddusxoshimov777@gmail.com"
     },
     {
       "id": 1789581187096,
@@ -132,7 +138,10 @@
       "address": "87G9+V57, Shaykhontohur Street 28, 100128, Tashkent, Uzbekistan",
       "desc": "Anhor Park is a fun place to spend an evening with family and kids. The park has a good collection of rides.",
       "reviewsList": [],
-      "category": "Parks"
+      "category": "Parks",
+      "userId": "mu2tnk74cxpgjo",
+      "ownerEmail": "abdulquddusxoshimov777@gmail.com",
+      "userEmail": "abdulquddusxoshimov777@gmail.com"
     },
     {
       "id": 1789580404394,
@@ -184,7 +193,10 @@
       "address": "г, Babur Street 174, Tashkent, Uzbekistan",
       "desc": "A fairytale castle & a fantasy town with colorful houses, cafes & entertainment, at a theme park.",
       "reviewsList": [],
-      "category": "Parks"
+      "category": "Parks",
+      "userId": "mu2tnk74cxpgjo",
+      "ownerEmail": "abdulquddusxoshimov777@gmail.com",
+      "userEmail": "abdulquddusxoshimov777@gmail.com"
     }
   ],
   "foods": [
@@ -217,7 +229,10 @@
       "phone": "+998 90 123 45 67",
       "address": "Toshkent shahri, Chorsu yaqinida",
       "desc": "Mazali, issiq va qarsildoq milliy gumma va xonim. Choyxona sharoitida tayyorlanadi.",
-      "reviewsList": []
+      "reviewsList": [],
+      "ownerId": "mu2tnk74cxpgjo",
+      "userId": "mu2tnk74cxpgjo",
+      "userEmail": "abdulquddusxoshimov777@gmail.com"
     },
     {
       "id": 1789500000020,
@@ -248,7 +263,10 @@
       "phone": "+998 66 231 22 33",
       "address": "Samarqand shahri, Dagbitskaya ko'chasi",
       "desc": "Haqiqiy devzira guruch va sariq sabzidan qatlamlab pishirilgan betakror Samarqandcha to'y oshi.",
-      "reviewsList": []
+      "reviewsList": [],
+      "ownerId": "mu2tnk74cxpgjo",
+      "userId": "mu2tnk74cxpgjo",
+      "userEmail": "abdulquddusxoshimov777@gmail.com"
     },
     {
       "id": 1789500000021,
@@ -279,7 +297,10 @@
       "phone": "+998 71 240 55 66",
       "address": "Toshkent shahri, Labzak ko'chasi",
       "desc": "Toshkentning mashhur choyxona palovi, to'yimli va nihoyatda lazzatli.",
-      "reviewsList": []
+      "reviewsList": [],
+      "ownerId": "mu2tnk74cxpgjo",
+      "userId": "mu2tnk74cxpgjo",
+      "userEmail": "abdulquddusxoshimov777@gmail.com"
     }
   ],
   "crafts": [
@@ -312,7 +333,10 @@
       "phone": "+998 73 452 11 00",
       "address": "Farg'ona viloyati, Rishton shahri, Kulollar mahallasi",
       "desc": "Ming yillik an'anaga ega Rishton moviy sirlangan milliy palov lagani. 100% qo'l mehnati.",
-      "reviewsList": []
+      "reviewsList": [],
+      "ownerId": "mu2tnk74cxpgjo",
+      "userId": "mu2tnk74cxpgjo",
+      "userEmail": "abdulquddusxoshimov777@gmail.com"
     },
     {
       "id": 1789500000031,
@@ -343,7 +367,10 @@
       "phone": "+998 65 221 44 88",
       "address": "Buxoro shahri, Zardo'zlar ko'chasi 8",
       "desc": "Oltin va kumush iplar bilan baxmal matoga naqsh solib tikilgan hashamatli milliy to'n.",
-      "reviewsList": []
+      "reviewsList": [],
+      "ownerId": "mu2tnk74cxpgjo",
+      "userId": "mu2tnk74cxpgjo",
+      "userEmail": "abdulquddusxoshimov777@gmail.com"
     },
     {
       "id": 1789500000032,
@@ -374,7 +401,10 @@
       "phone": "+998 69 421 33 22",
       "address": "Namangan viloyati, Chust shahri, Hunarmandlar ko'chasi",
       "desc": "Mashhur Chust pichoqlarining eng sara namunasi. O'tkir, chidamli va betakror naqshli.",
-      "reviewsList": []
+      "reviewsList": [],
+      "ownerId": "mu2tnk74cxpgjo",
+      "userId": "mu2tnk74cxpgjo",
+      "userEmail": "abdulquddusxoshimov777@gmail.com"
     }
   ]
 }

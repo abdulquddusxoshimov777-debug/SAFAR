@@ -543,10 +543,9 @@ app.get("/api/me/listings", requireAuth, (req, res) => {
     myListings = allItems;
   } else {
     myListings = allItems.filter(x => {
-      const oId = String(x.ownerId || "");
-      const oName = (x.ownerName || "").trim().toLowerCase();
-      const oEmail = (x.ownerEmail || "").trim().toLowerCase();
-      return (oId && oId === userId) || (oEmail && oEmail === userEmail) || (oName && oName === userName);
+      const oId = String(x.ownerId || x.userId || "").trim();
+      const oEmail = (x.ownerEmail || x.userEmail || "").trim().toLowerCase();
+      return (oId && oId === userId) || (oEmail && oEmail === userEmail);
     });
   }
 
@@ -582,15 +581,13 @@ app.get("/api/users/:id/profile", (req, res) => {
   const allCrafts = CRAFTS_DATA.map(x => ({ ...x, categoryType: "crafts" }));
   const allItems = [...allStays, ...allPlaces, ...allFoods, ...allCrafts];
 
-  const searchId = String(publicUser.id || "");
-  const searchEmail = (user ? user.email : (param.includes("@") ? param : "")).toLowerCase();
-  const searchName = (publicUser.name || "").trim().toLowerCase();
+  const searchId = String(publicUser.id || "").trim();
+  const searchEmail = (user ? user.email : (param.includes("@") ? param : "")).trim().toLowerCase();
 
   const userListings = allItems.filter(x => {
-    const oId = String(x.ownerId || "");
-    const oName = (x.ownerName || "").trim().toLowerCase();
-    const oEmail = (x.ownerEmail || "").trim().toLowerCase();
-    return (oId && oId === searchId) || (searchEmail && oEmail === searchEmail) || (searchName && oName === searchName);
+    const oId = String(x.ownerId || x.userId || "").trim();
+    const oEmail = (x.ownerEmail || x.userEmail || "").trim().toLowerCase();
+    return (searchId && oId === searchId) || (searchEmail && oEmail === searchEmail);
   });
 
   userListings.sort((a, b) => (b.id || 0) - (a.id || 0));
@@ -966,16 +963,14 @@ app.put("/api/listings/:category/:id", requireAuth, (req, res) => {
 
   const { dataset, index, item } = found;
 
+  const userId = String(req.user.id || "").trim();
   const userEmail = (req.user.email || "").trim().toLowerCase();
-  const userName = (req.user.name || "").trim().toLowerCase();
-  const itemOwnerEmail = (item.ownerEmail || "").trim().toLowerCase();
-  const itemOwnerName = (item.ownerName || "").trim().toLowerCase();
+  const itemOwnerId = String(item.ownerId || item.userId || "").trim();
+  const itemOwnerEmail = (item.ownerEmail || item.userEmail || "").trim().toLowerCase();
 
   const isAdmin = isUserAdmin(req.user);
-  const isAuthor = (item.ownerId && String(item.ownerId) === String(req.user.id)) ||
-                   (item.userId && String(item.userId) === String(req.user.id)) ||
-                   (itemOwnerEmail && itemOwnerEmail === userEmail) ||
-                   (itemOwnerName && itemOwnerName === userName);
+  const isAuthor = (itemOwnerId && itemOwnerId === userId) ||
+                   (itemOwnerEmail && itemOwnerEmail === userEmail);
 
   if (!isAdmin && !isAuthor) {
     return res.status(403).json({ ok: false, message: "Faqat o'zingiz qo'shgan e'lonni (yoki Admin) tahrirlay olasiz." });
@@ -1047,15 +1042,14 @@ app.delete("/api/listings/:category/:id", requireAuth, (req, res) => {
 
   const { dataset, index, item } = found;
 
+  const userId = String(req.user.id || "").trim();
   const userEmail = (req.user.email || "").trim().toLowerCase();
-  const userName = (req.user.name || "").trim().toLowerCase();
-  const itemOwnerEmail = (item.ownerEmail || "").trim().toLowerCase();
-  const itemOwnerName = (item.ownerName || "").trim().toLowerCase();
+  const itemOwnerId = String(item.ownerId || item.userId || "").trim();
+  const itemOwnerEmail = (item.ownerEmail || item.userEmail || "").trim().toLowerCase();
 
   const isAdmin = isUserAdmin(req.user);
-  const isAuthor = (item.ownerId && String(item.ownerId) === String(req.user.id)) ||
-                   (itemOwnerEmail && itemOwnerEmail === userEmail) ||
-                   (itemOwnerName && itemOwnerName === userName);
+  const isAuthor = (itemOwnerId && itemOwnerId === userId) ||
+                   (itemOwnerEmail && itemOwnerEmail === userEmail);
 
   if (!isAdmin && !isAuthor) {
     return res.status(403).json({ ok: false, message: "Faqat o'zingiz qo'shgan e'lonni (yoki Admin) o'chira olasiz." });

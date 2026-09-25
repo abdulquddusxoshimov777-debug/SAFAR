@@ -361,7 +361,15 @@ window.deleteMyListing = async function(category, id) {
     const data = await res.json();
     if (data.ok) {
       await window.SaffarAlert({ title: "O'chirildi", message: "E'loningiz muvaffaqiyatli o'chirildi.", icon: "✅" });
-      
+      loadMyListings();
+    } else {
+      await window.SaffarAlert({ title: "Xatolik", message: data.message || "Xatolik yuz berdi.", icon: "⚠️" });
+    }
+  } catch(err) {
+    await window.SaffarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
+  }
+};
+
 // BIO SAVE HANDLER
 const btnSaveBio = document.getElementById("btnSaveBio");
 const bioText = document.getElementById("userBioText");
@@ -402,15 +410,6 @@ if (btnSaveBio && bioText) {
     }
   };
 }
-
-loadMyListings();
-    } else {
-      await window.SaffarAlert({ title: "Xatolik", message: data.message || "Xatolik yuz berdi.", icon: "⚠️" });
-    }
-  } catch(err) {
-    await window.SaffarAlert({ title: "Xatolik", message: "Server bilan bog'lanishda xatolik.", icon: "❌" });
-  }
-};
 
 loadMyListings();
 

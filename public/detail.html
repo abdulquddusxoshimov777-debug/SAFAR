@@ -343,8 +343,9 @@ async function loadDetail() {
     const isListingOwner = session && (
       isAdmin ||
       (item.ownerId && String(item.ownerId) === String(session.user.id)) ||
+      (item.userId && String(item.userId) === String(session.user.id)) ||
       (item.ownerEmail && (item.ownerEmail || "").toLowerCase() === (session.user.email || "").toLowerCase()) ||
-      (!item.ownerId && !item.ownerEmail && item.ownerName && item.ownerName.toLowerCase() === (session.user.name || "").toLowerCase())
+      (item.userEmail && (item.userEmail || "").toLowerCase() === (session.user.email || "").toLowerCase())
     );
 
     container.innerHTML = `
